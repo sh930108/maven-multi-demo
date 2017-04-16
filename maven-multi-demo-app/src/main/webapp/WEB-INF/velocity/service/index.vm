@@ -1,0 +1,136 @@
+#set ($layout ="/admin/layout/service.vm")
+<!-- waiting -->
+<div id="waitLoginmodal" class="modal hide" data-backdrop="static" aria-hidden="true">
+    <img src="$!{request.getContextPath()}/res/webim/img/waitting.gif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;登录中...
+</div>
+<header class="head" id="mm_header">
+    <div class="logo"><img src="http://s.mamhao.cn/admin/webim/img/logo.png"><span>客服工作台</span></div>
+    <button class="m-btn fr" onclick="logout()"><i class="m-icon m-icon-leave"></i>退出</button>
+</header>
+<div class="m-container">
+    <div class="center">
+        <!-- chat -->
+        <div class="tab">
+            <ul id="chatTab">
+            </ul>
+        </div>
+        <div class="chat" id="chatBox">
+            <div class="chat-content" id="null-nouser"></div>
+        </div>
+        <div class="chat-sendbox">
+            <div class="bar">
+                <a href="javascript:;" id="emoji"><i class="m-icon m-icon-emoji"></i></a>
+                <a href="javascript:;" id="file"><i class="m-icon m-icon-image"></i></a>
+                <select id="frequently-used-msgs">
+                </select>
+                <a class="link fr" href="javascript:;" id="history"><i class="m-icon m-icon-clock"></i><span>消息记录</span><i class="m-icon m-icon-expand"></i></a>
+                <div id="wl_faces_box" class="wl_faces_box">
+                    <div class="wl_faces_content">
+                        <div id="wl_faces_main" class="wl_faces_main">
+                            <ul id="emotionUL"></ul>
+                        </div>
+                    </div>
+                    <div class="wlf_icon"></div>
+                </div>
+            </div>
+            <div class="chat-sendbox-content">
+                <textarea id="talkInputId"></textarea>
+            </div>
+            <div class="bar">
+                <button class="m-btn m-btn-success m-btn-mini fr" id="sendMessage">发送</button>
+                <span class="fr">Ctrl+Enter可换行</span>
+            </div>
+        </div>
+    </div>
+    <div class="left">
+        <!-- contact list -->
+        <div class="user-infos">
+            <div class="img-txt">
+                <a href="javascript:;" class="avatar-big"><img src="http://s.mamhao.cn/admin/webim/img/default_avatar.png" alt="user"></a>
+                <div class="cont">
+                    <h5>${account.realName}</h5>
+                    <input id="username" type="hidden" value="${account.username}"/>
+                    <input id="realname" type="hidden" value="${account.realName}"/>
+                    <br><!-- <select id="status"><option value="login">在线</option><option value="leave">离开</option></select> -->
+                </div>
+            </div>
+            <!-- 搜索好友 -->
+            <div class="column">
+                <input type="text" name="searchfriend" placeholder="输入用户昵称" onchange="searchFriend(this.value)" id="searchkey"/>
+                <span id="searchFriend" class="icon icon-search" onclick="searchFriend()"></span>
+                <span id="removesearch" class="icon icon-remove" style="display:none;" onclick="$('#searchkey').val('');searchFriend();"></span>
+            </div>
+        </div>
+        <div class="accordion" id="contact_list">
+            <div class="accordion-group" id="0" groupname="默认分组">
+                <div class="title">
+                    我的好友<i class='m-icon m-icon-expand fl'></i>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse in">
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 默认隐藏 -->
+    <div class="right">
+        <!-- member info -->
+    </div>
+
+    <div id="simpleModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="simpleModalLabel">消息通知</h5>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+            <button class="m-btn m-btn-normal" data-dismiss="modal" aria-hidden="true">取消</button>
+            <button class="m-btn m-btn-primary" id="confirm">确定</button>
+        </div>
+    </div>
+    <div id="fileModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="simpleModalLabel">图片选择</h5>
+        </div>
+        <div class="modal-body">
+            <input type="text" name="copyFile" class="textbox" />
+            <input type='hidden' id="sendfiletype" />
+            <a href="javascript:void(0);"  class="piclink">浏览</a>
+            <input type="file" class="uploadFile" name="upload" id="fileinput" onchange="getFile(this,'copyFile')" value="pic"/>
+        </div>
+        <div class="modal-footer">
+            <button class="m-btn m-btn-normal" data-dismiss="modal" aria-hidden="true">取消</button>
+            <button class="m-btn m-btn-primary" onclick="sendPic()">发送</button>
+        </div>
+    </div>
+    <div id="historyModal" class="modal hide" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h5 id="historyModalLabel">历史消息</h5>
+        </div>
+        <div class="modal-body">
+
+        </div>
+        <div class="modal-footer">
+            共 <span id="total-page"></span> 页
+            <button class="m-btn m-btn-normal" id="prev">上一页</button>
+            <button class="m-btn m-btn-normal" id="next">下一页</button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function size(){
+    var containerH = window.innerHeight - $(".head").height();
+    $(".m-container").height(containerH);
+    $(".chat").height(containerH - $(".tab").height() - $(".chat-sendbox").height());
+}
+size();
+function getFile(obj,inputName){
+    var file_name = $(obj).val();
+    $("input[name='"+inputName+"']").val(file_name);
+}
+
+</script>

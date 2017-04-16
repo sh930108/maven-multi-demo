@@ -1,0 +1,429 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 124, "cmenu": 126});
+</script>
+<div id="content-header">
+    <h1>财务管理 |分公司提现审核</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<ul class="nav nav-tabs">
+                    <li >
+                      <a href="$!{request.getContextPath()}/fm/locationCompanyWithDrawRecordList.do">自营提现审核</a>
+                    </li>
+                    <li>
+                      <a href="$!{request.getContextPath()}/comToExamine/getcomToExamine.do">代销提现审核</a>
+                    </li>
+					<li class="active">
+                      <a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do">区域提现审核</a>
+                    </li>
+                  </ul>
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>区域提现查询列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do">
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">下单时间：</label>
+									<div class="controls">
+										<input id="startTime"  name="startTime" class="Wdate" type="text" value="$!{request.getParameter('startTime')}" size="15" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+										<span>至</span>
+										<input id="endTime" name="endTime" class="Wdate" type="text" value="$!{request.getParameter('endTime')}" size="15" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+										##<a class="btn_p" href="javascript:void(0)" onclick="showTime('7')">最近7天</a>&nbsp;
+										##<a class="btn_p" href="javascript:void(0)" onclick="showTime('30')">最近30天</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">提现公司名称：</label>
+									<div class="controls">
+										<input name="companyName" value="$!{request.getParameter('companyName')}" type="text" size="15" />
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">提现编号：</label>
+									<div class="controls">
+										<input name="id" value="$!{request.getParameter('id')}" id="nid" type="text" size="15" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							
+						</div>
+						<div class="form-actions app-ad-block">
+							<button class="btn btn-success" type="submit" id="commit">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							<a class="btn btn-danger" href="$!{request.getContextPath()}/share/company/withdraw/exportShareAreaCompanyWithDraw.do" >提现导出</a>
+							<button type="button" name="files" class="file_upload " id="importXls">提现导入</button>
+						</div>
+					</form>
+				</div>
+			 <div class="widget-box">
+				<div class="widget-content">
+					<div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li #if($!{request.getParameter('queryType')}==-1 || "$!{request.getParameter('queryType')}" == "") class="active" #end><a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do">全部</a></li>
+							<li #if($!{request.getParameter('queryType')}==0) class="active" #end><a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do?queryType=0&page=1">待审核</a></li>
+                            <li #if($!{request.getParameter('queryType')}==1) class="active" #end><a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do?queryType=1&page=1">审核通过</a></li>
+                            <li #if($!{request.getParameter('queryType')}==2) class="active" #end><a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do?queryType=2&page=1">提现成功</a></li>
+                            <li #if($!{request.getParameter('queryType')}==3) class="active" #end><a href="$!{request.getContextPath()}/share/company/withdraw/queryCompanyWithdrawList.do?queryType=3&page=1">提现失败</a></li>
+                        </ul>
+					<table class="table table-text-center">
+						<thead>
+							<tr>
+								<th>提现编号</th>
+								<th>提现公司名称</th>
+								<th>提现卡号</th>
+								<th>开户人</th>
+								<th>开户行地址</th>
+								<th>提现金额(元)</th>
+								<th>申请日期</th>
+								<th>提现流水号</th>
+								<th>状态</th>
+								<th width="170px">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($co in $data)
+							#set($index = $loopCounter + 1)
+							<tr>
+								<td>$!{co.oNo}</td>
+								<td title="$!{co.companyName}">$!{co.companyName}</td>
+								<td>$!{co.card}</td>
+								<td>$!{co.bankAccount}</td>
+								<td>$!{co.prvName}$!{co.cityName}$!{co.bankSub}</td>
+								<td><p class="p_money">#formatAmount($!{co.money})</p></td>
+								<td>$!date.format('yyyy-MM-dd HH:mm:ss',$co.createTime)</td>
+								<td>
+									#if($!{co.serialNumber}!=0)
+										$!{co.serialNumber}
+									#else
+										
+									#end
+								</td>
+								#if($co.operateStatus==0)
+									<td><span class="badge badge-info">待审核</span></td>
+								#elseif($co.operateStatus==3)
+									<td>
+										<span class="badge">提现失败</span>
+										<button class="btn btn-primary btn-mini" onclick="showSingleModal('reasonModal','$!{co.oNo}','失败原因：$!{co.reason}')" title="$!{co.reason}" >查看原因</button>
+										<div aria-hidden="false" id="reasonModal" class="modal hide in">
+											<div class="modal-header">
+												<button data-dismiss="modal" class="close" type="button">×</button>
+												<h3></h3>
+											</div>
+											<div class="modal-body">
+												<p></p>
+											</div>
+											<div class="modal-footer"><a data-dismiss="modal" class="btn" href="javascript:;">关闭</a> </div>
+										</div>
+									</td>
+								#elseif($co.operateStatus==1)
+									<td><span class="badge badge-success">审核通过</span></td>
+								#else
+									<td><span class="badge badge-success">提现成功</span></td>
+								#end
+								<td>
+									#if($co.operateStatus==0)
+										<a class="btn btn-success btn-mini" onclick="updateCash('$!{co.oNo}',1,this);">通过</a>
+										<a class="btn btn-danger btn-mini" href="javascript:void(0)" onclick="updateCash('$!{co.oNo}',3,this);">拒绝</a>
+									#elseif($co.operateStatus==2)
+									#elseif($co.operateStatus==1)
+										<a class="btn btn-primary btn-mini" href="javascript:void(0)" onclick="updateCash('$!{co.oNo}',2,this);">确认提现</a>
+									#else
+									#end
+								</td>
+							</tr>
+							#end
+							</tbody>
+						</table>
+						##分页
+						#parse("pagination.vm")
+				</div>
+                </div>
+			</div>
+            </div>
+		</div>
+	</div>
+</div>
+
+<div aria-hidden="false" id="refuseModal" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3>请填写拒绝理由</h3>
+	</div>
+	<div class="modal-body">
+		<form class="form-horizontal form-horizontal-inline" type="post" action="$!{request.getContextPath()}/share/company/withdraw/updateShareAreaCompanyWithDraw.do" id="reasonForm">
+			<input type="hidden" id="reasonStatus" name="operateStatus" value=""/>
+			<input type="hidden" id="reasonNo" name="no" value=""/>
+			<div class="row-fluid">
+				<div class="span12">
+					<div class="control-group">
+						<label class="control-label">拒绝理由：</label>
+						<div class="controls">
+							<input type="text" id="reason" name="reason"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" type="button" id="submitReason">提交</button>
+		<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+	</div>
+</div>
+
+
+<div aria-hidden="false" id="alipayModal" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3>请填写流水号</h3>
+	</div>
+		<input type="hidden" id="numberStatus" name="operateStatus" value=""/>
+			<input type="hidden" id="numberNo" name="no" value=""/>
+	<div class="modal-body">
+			<div class="row-fluid">
+				<div class="span12">
+					<div class="control-group">
+						<label class="control-label">流水号：</label>
+						<div class="controls">
+							<input type="text" id="number" name="reason"/>
+						</div>
+					</div>
+				</div>
+			</div>
+
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-success" type="submit" id="submitNumber">提交</button>
+		<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+	</div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="$!{request.getContextPath()}/res/uploadify/uploadify.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script>
+    $(function () {
+        $('#commit').click(function () {
+            var startTime = $('#startTime').val();
+            var endTime = $('#endTime').val();
+            if (startTime == "") {
+                if (endTime != "") {
+                    Toast.show("请先选择开始日期");
+                    $('#startTime').focus();
+                    return false;
+                }
+            } else {
+                if (endTime == "") {
+                    Toast.show("请选择结束日期");
+                    $('#endTime').focus();
+                    return false;
+                } else {
+                    if (startTime > endTime) {
+                        Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+                        $('#startTime').focus();
+                        return false;
+                    }
+                }
+            }
+			if($("#nid").val()!=null){
+				if(!/^[0-9]*$/.test($("#nid").val())){
+					Toast.show("提现编号请输入正整数");
+					return false;
+				}
+			}
+            $('#form').submit();
+        });
+
+        $('#submitReason').click(function () {
+            var reason = $('#reason').val();
+            if (reason == "") {
+                Toast.show("请填写拒绝理由");
+                $('#reason').focus();
+                return;
+            }
+            Matrix.JSON({
+                showLoad: true,
+                type: "POST",
+                val: {
+                    'id': $('#reasonNo').val(),
+                    'reason': $('#reason').val(),
+                    'status': $('#reasonStatus').val()
+                },
+                url: "$!{request.getContextPath()}/share/company/withdraw/updateShareAreaCompanyWithDraw.do",
+                fun: function () {
+                    Toast.show({
+                        template: "拒绝成功",
+                        callback: function () {
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+
+        });
+
+        $('#submitNumber').click(function () {
+            var number = $('#number').val();
+            if (number == "") {
+                Toast.show("请填写流水号");
+                $('#number').focus();
+                return false;
+            } else {
+                Matrix.JSON({
+                    showLoad: true,
+                    type: "POST",
+                    val: {
+                        'id': $('#numberNo').val(),
+                        'status': $('#numberStatus').val(),
+                        'serialNumber': number
+                    },
+                    url: "$!{request.getContextPath()}/share/company/withdraw/updateShareAreaCompanyWithDraw.do",
+                    fun: function () {
+                        Toast.show({
+                            template: "更新成功",
+                            callback: function () {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+
+        $('#importXls').uploadify({
+            'uploader': '$!{request.getContextPath()}/share/company/withdraw/uploadCompanyCashExcel.do',
+            'swf': '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+            'cancelImg': '$!{request.getContextPath()}/res/uploadify/uploadify-cancel.png',
+            'folder': 'uploads',//您想将文件保存到的路径
+            'queueID': 'fileQueue',//与下面的id对应
+            'queueSizeLimit': 5,
+            'formData': {'gtId': ''},
+            'fileTypeDesc': '商品主图',
+            'fileTypeExts': '*.xls;*.xlsx', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            'fileDataName': 'file',
+            'auto': true,
+            'multi': true,
+            'simUploadLimit': 2,
+            'buttonText': '提现导入',
+            'onUploadSuccess': function (file, data, response) {//上传完成时触发（每个文件触发一次）
+                Toast.show("更新状态成功");
+                window.location.reload();
+            },
+            'onSelectError': function (file, errorCode, errorMsg) {
+                switch (errorCode) {
+                    case -100:
+                        Toast.show("上传的文件数量已经超出系统限制的" + $('#importXls').uploadify('settings', 'queueSizeLimit') + "个文件！");
+                        break;
+                    case -110:
+                        Toast.show("文件 [" + file.name + "] 大小超出系统限制的" + $('#importXls').uploadify('settings', 'queueSizeLimit') + "大小！");
+                        break;
+                    case -120:
+                        Toast.show("文件 [" + file.name + "] 大小异常！");
+                        break;
+                    case -130:
+                        Toast.show("文件 [" + file.name + "] 类型不正确！");
+                        break;
+                }
+            }
+        });
+    });
+
+    // 显示提现拒绝理由窗口
+    function showSingleModal(divId, title, content) {
+        var m = $("#" + divId);
+        m.find("h3").html(title);
+        m.find(".modal-body").html("<p>" + content + "</p>");
+        m.modal("show");
+    }
+
+    function updateCash(no, status, obj) {
+        if (status == 1) {
+            if (confirm("您确认审核通过该笔提现么？")) {
+                Matrix.JSON({
+                    showLoad: true,
+                    type: "POST",
+                    val: {
+                        'id': no,
+                        'status': status
+                    },
+                    url: "$!{request.getContextPath()}/share/company/withdraw/updateShareAreaCompanyWithDraw.do",
+                    fun: function () {
+                        Toast.show({
+                            template: "审核成功",
+                            callback: function () {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
+            }
+        } else if (status == 2) {
+		
+            $('#numberStatus').val(status);
+            $('#numberNo').val(no);
+            $("#alipayModal").modal("show");
+        } else {
+            $('#reasonStatus').val(status);
+            $('#reasonNo').val(no);
+            $("#refuseModal").find("h3").html(no);
+            $("#refuseModal").modal("show");
+        }
+    }
+
+    function exportWith() {
+        if (confirm("你确定导出提现记录么？")) {
+            window.location.href = "$!{request.getContextPath()}/fm/exportWithDraw.do";
+        }
+    }
+
+    function getBeforeDate(n) {
+        var n = n;
+        var d = new Date();
+        var year = d.getFullYear();
+        var mon = d.getMonth() + 1;
+        var day = d.getDate();
+        var hour = d.getHours();
+        var minute = d.getMinutes();
+        var second = d.getSeconds();
+        var s;
+        if (day <= n) {
+            if (mon > 1) {
+                mon = mon - 1;
+            } else {
+                year = year - 1;
+                mon = 12;
+            }
+        }
+        d.setDate(d.getDate() - n);
+        year = d.getFullYear();
+        mon = d.getMonth() + 1;
+        day = d.getDate();
+        s = year + "-" + (mon < 10 ? ('0' + mon) : mon) + "-" + (day < 10 ? ('0' + day) : day) + ' ' + hour + ':' + minute + ':' + second;
+        return s;
+
+    }
+
+    function showTime(day) {
+        var startTime = getBeforeDate(day);
+        $('#startTime').val(startTime);
+        var currentDate = getBeforeDate(0);
+        $('#endTime').val(currentDate);
+        window.location.href = "$!{request.getContextPath()}/fm/locationCompanyWithDrawRecordList.do?operateStatus=-1&page=1&startTime=" + startTime + "&endTime=" + currentDate;
+    }
+</script>

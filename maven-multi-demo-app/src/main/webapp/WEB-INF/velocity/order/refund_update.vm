@@ -1,0 +1,762 @@
+﻿##超时订单退款允许处理
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>
+    后台维护 | 超时退款处理（符其他手动维护处理）
+    </h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>退超时订单退款允许处理（处理：修改了收货时间为当前时间）</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">订单号：</label>
+			        <div class="controls">
+			        <input type="text" class="span12" id="orderNo" name="orderNo" value="">
+			           <a class="btn btn-primary" id="lately07" href="javascript:void(0);">开始处理</a>&nbsp;
+			            <br/><font color="red" ><label id="refund-msg" class="control-label"></label></font>
+			        </div>
+			      </div> </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>A004解锁库存</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			       <label class="control-label">API平台：</label>
+			       <select id="callA004-apiType" class="span4">
+		            <option value=1>GB API</option>
+		            <option value=2>MC API</option>
+		           </select>
+			        <label class="control-label">TML_NUM_ID小票：</label>
+			        <input type="text" class="span4"  id="callA004-tmlNo" value="">
+			         <label class="control-label">ORDER_NO订单号：</label>
+			        <input type="text" class="span4" id="callA004-orderNo" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="callA004" href="javascript:void(0);">开始处理</a>&nbsp;
+			         <br/><font color="red" ><label id="callA004-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>A033手动组装调用</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			      
+			        <label class="control-label">退款单号：</label>
+			        <input type="text" class="span4" id="callA033-refundLineNo" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="callA033-cmt" href="javascript:void(0);">开始处理</a>&nbsp;
+			         <br/><font color="red" ><label id="callA033-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>GB/MC接口手动调用</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			       <label class="control-label">API平台：</label>
+			       <select id="callapi-apiType" class="span4">
+		            <option value=1>GB API</option>
+		            <option value=2>MC API</option>
+		           </select>
+			        <label class="control-label">CMD(如：A001)：</label>
+			        <input type="text" class="span4"  id="callapi-cmd" value="">
+			         <label class="control-label">JSON：</label>
+			         <textarea  id="callapi-json" rows="5" width="500px"></textarea>
+			        <br/>
+			        <a class="btn btn-primary" id="callapi" href="javascript:void(0);">调用</a>&nbsp;
+			        <br/><font color="red" ><label id="callapi-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>memcache维护</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">key：</label>
+			        <input type="text" class="span4"  id="mem-key" value="">
+			         <label class="control-label">invald time(秒)：</label>
+			        <input type="text" class="span4" id="mem-time" value="">
+			         <label class="control-label">value：</label>
+			        <input type="text" class="span4" id="mem-value" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="setmem" href="javascript:void(0);">设置值</a>&nbsp;
+			        <a class="btn btn-primary" id="getmem" href="javascript:void(0);">获取值</a>&nbsp;
+			        <a class="btn btn-primary" id="delmem" href="javascript:void(0);">删除值</a>&nbsp;
+			        <a class="btn btn-primary" id="delmemns" href="javascript:void(0);">删除命名空间</a>
+			       <br/> 
+			       命名空间：<br/> 
+			   促销价：GoodsPricePmt <br/> 
+                                  标准价：GoodsPriceTag <br/> 
+                                  妈妈好自定义价：goodsCustomTag <br/> 
+                                  会员购广告位：purchaseBanners <br/> 
+                               门店缓存：shopSimCache <br/>
+                                  区域和地址：addr <br/> h5商品缓存：h5Goods<br/> 
+                    </label>
+			         <br/><font color="red" ><label id="mem-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>redis维护</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">key：</label>
+			        <input type="text" class="span4"  id="redis-key" value="">
+			         <label class="control-label">invald time(秒)：</label>
+			        <input type="text" class="span4" id="redis-time" value="">
+			         <label class="control-label">value：</label>
+			        <input type="text" class="span4" id="redis-value" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="setredis" href="javascript:void(0);">设置值</a>&nbsp;
+			        <a class="btn btn-primary" id="getredis" href="javascript:void(0);">获取值</a>&nbsp;
+			        <a class="btn btn-primary" id="delredis" href="javascript:void(0);">删除值</a>
+			       <br/> 
+			     
+                    </label>
+			         <br/><font color="red" ><label id="redis-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>优惠券维护</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">兑换码：</label>
+			        <input type="text" class="span4"  id="coupon-key" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="coupon-query" href="javascript:void(0);">查询兑换码</a>&nbsp;
+			        <a class="btn btn-primary" id="coupon-delbase" href="javascript:void(0);">删除未领取的兑换码</a>&nbsp;
+			        <!--<a class="btn btn-primary" id="coupon-del" href="javascript:void(0);">删除已领取的兑换码</a>-->
+			         
+			       <br/><font color="red" ><label id="coupon-msg" class="control-label"></label></font>
+			      </div>  
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>发票手动补充</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			       <label class="control-label">发票类型：</label>
+			       <select id="invoice-invoiceType" class="span4">
+		            <option value=1>个人</option>
+		            <option value=2>公司</option>
+		           </select>
+			        <label class="control-label">订单批次号：</label>
+			        <input type="text" class="span4"  id="invoice-orderBatchNo" value="">
+			        <br/>
+			         <label class="control-label">抬头：</label>
+			        <input type="text" class="span4"  id="invoice-invoceTitle" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="invoice-cmt" href="javascript:void(0);">确定</a>&nbsp;
+			        <br/><font color="red" ><label id="invoice-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>手动添加地址</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">用户ID：</label>
+			        <input type="text" class="span4"  id="addr-memberId" value="">
+			        <br/>
+			         <label class="control-label">收货人：</label>
+			        <input type="text" class="span4"  id="addr-consignee" value="">
+			        <br/>
+			         <label class="control-label">收货人联系方式：</label>
+			        <input type="text" class="span4"  id="addr-phone" value="">
+			        <br/>
+			         <label class="control-label">区域ID：</label>
+			        <input type="text" class="span4"  id="addr-areaId" value="">
+			        <br/>
+			         <label class="control-label">GPS定位地址：</label>
+			        <input type="text" class="span4"  id="addr-gpsAddr" value="">
+			        <br/>
+			         <label class="control-label">详细地址：</label>
+			        <input type="text" class="span4"  id="addr-addrDetail" value="">
+			        <br/>
+			         <label class="control-label">经度：</label>
+			        <input type="text" class="span4"  id="addr-lng" value="">
+			        <br/>
+			         <label class="control-label">纬度：</label>
+			        <input type="text" class="span4"  id="addr-lat" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="addr-cmt" href="javascript:void(0);">确定</a>&nbsp;
+			        <br/><font color="red" ><label id="addr-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>地址维护</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <a class="btn btn-primary" id="addr-init-cmt" href="javascript:void(0);">初始化地址</a>&nbsp;
+			        <br/><font color="red" ><label class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>优惠券查询（支持多张查询，例如1,2,3）</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <div class="span5">
+
+                        <div class="row-fluid">
+                            <div class="control-group">
+                                <label class="control-label">优惠券id：</label>
+                                <div class="controls">
+                                    <input type="text" class="span12" id="voucherIds" name="orderNo" value="">
+                                    <a class="btn btn-primary" id="search_vouchers" href="javascript:void(0);">查询</a>&nbsp;
+                                    <br/><font color="red" ><label id="searchvouchers-msg"></label></font>
+                                </div>
+                            </div>
+						</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>优惠券赠送活动</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <div class="span5">
+
+                        <div class="row-fluid">
+                            <div class="control-group">
+                               <!--
+                                <label class="control-label"><a href="$!{request.getContextPath()}/order/toCouponConf.do">MC下单赠券配置</a></label>
+                                -->
+                            </div>
+						</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>商品条码维护</h5>
+                </div>
+                <div class="widget-content nopadding form-horizontal ">
+
+                        <div class="row-fluid">
+                            <div class="control-group">
+                                <div class="controls">
+                                	DIV_NUM_ID: <input type="text" class="span3" name="divNumId" value="">
+                                    ITEM_NUM_ID: <input type="text" class="span3" name="itemNumId" value="">
+                                    BARCODE: <input type="text" class="span3" name="barcode" value="">
+                                    <a class="btn btn-primary" id="barcodeInsert" href="javascript:;">添加</a>&nbsp;
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>微推广问题</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			        <label class="control-label">key：</label>
+			        <input type="text" class="span4"  id="wtgK" value="">
+			         <label class="control-label">mobile：</label>
+			        <input type="text" class="span4" id="mobile" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="getGbMongoLog" href="javascript:void(0);">获取信息</a>&nbsp;
+                    </label>
+			         <br/><font color="red" ><label id="gblog-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>微推广入口修正</h5>
+                </div>
+                <div class="widget-content nopadding">
+				<div class="span5">
+				<div class="row-fluid">
+			      <div class="control-group">
+			         <label class="control-label">mobile：</label>
+			         <input type="text" class="span4" id="mobileTag" value="">
+			        <br/>
+			        <a class="btn btn-primary" id="modifyProMemberId" href="javascript:void(0);">确认</a>&nbsp;
+                    </label>
+			         <br/><font color="red" ><label id="modifyPro-msg" class="control-label"></label></font>
+			      </div> 
+			   </div>
+			    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    Matrix.Nav({"menu": 176, "cmenu": 191});
+
+	##条码维护
+    $("#barcodeInsert").on("click",function(){
+
+		if(!confirm("确定添加?")){
+			return;
+		}
+        var divNumId = $("input[name='divNumId']").val();
+        var itemNumId = $("input[name='itemNumId']").val();
+        var barcode = $("input[name='barcode']").val();
+
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            val: {divNumId: divNumId, itemNumId:itemNumId, barcode:barcode},
+            url: root + "/gb/barcode/insert.do",
+            fun: function(data){
+                Toast.show(data.msg);
+				if(data.success){
+                	$("input[name='divNumId']").val('');
+                    $("input[name='itemNumId']").val('');
+                    $("input[name='barcode']").val('');
+				}
+            }
+        });
+    });
+
+	$("#lately07").bind("click",function(){
+		var orderNo = $("#orderNo").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {orderNo: orderNo},
+			url: root + "/order/refundUpdate.do",
+			fun: function(msg){
+				$("#refund-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#callA004").bind("click",function(){
+		var apiType = $("#callA004-apiType").val();
+		var tmlNo = $("#callA004-tmlNo").val();
+		var orderNo = $("#callA004-orderNo").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {apiType:apiType,tmlNo:tmlNo,orderNo:orderNo},
+			url: root + "/order/callA004.do",
+			fun: function(msg){
+				$("#callA004-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#callapi").bind("click",function(){
+		var cmd = $("#callapi-cmd").val();
+		var jsonstr = $("#callapi-json").val();
+		var apiType = $("#callapi-apiType").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {apiType:apiType,cmd:cmd,jsonstr:jsonstr},
+			url: root + "/order/callapi.do",
+			fun: function(msg){
+				$("#callapi-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#setmem").bind("click",function(){
+		var key = $("#mem-key").val();
+		var time = $("#mem-time").val();
+		var value = $("#mem-value").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key,time:time,value:value},
+			url: root + "/order/setmem.do",
+			fun: function(msg){
+				$("#mem-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#getmem").bind("click",function(){
+		var key = $("#mem-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/getmem.do",
+			fun: function(msg){
+				$("#mem-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#delmem").bind("click",function(){
+		var key = $("#mem-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/delmem.do",
+			fun: function(msg){
+				$("#mem-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#delmemns").bind("click",function(){
+		var key = $("#mem-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/delmemns.do",
+			fun: function(msg){
+				$("#mem-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#coupon-query").bind("click",function(){
+		var key = $("#coupon-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/couponquery.do",
+			fun: function(msg){
+				$("#coupon-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#coupon-delbase").bind("click",function(){
+		var key = $("#coupon-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/coupondelbase.do",
+			fun: function(msg){
+				$("#coupon-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#coupon-del").bind("click",function(){
+		var key = $("#coupon-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/coupondel.do",
+			fun: function(msg){
+				$("#coupon-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#invoice-cmt").bind("click",function(){
+		var orderBatchNo = $("#invoice-orderBatchNo").val();
+		var invoiceType = $("#invoice-invoiceType").val();
+		var invoceTitle = $("#invoice-invoceTitle").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {orderBatchNo:orderBatchNo,invoiceType:invoiceType,invoceTitle:invoceTitle},
+			url: root + "/order/addOrderInvoice.do",
+			fun: function(msg){
+				$("#invoice-msg").html("处理结果："+msg.msg+"mongo查看命令：A048");
+			}
+		});
+	});
+	$("#callA033-cmt").bind("click",function(){
+		var refundLineNo = $("#callA033-refundLineNo").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {refundLineNo:refundLineNo},
+			url: root + "/order/callA033ByManual.do",
+			fun: function(msg){
+				$("#callA033-msg").html("处理结果："+msg.msg+"mongo查看命令：A033");
+			}
+		});
+	});
+	$("#addr-cmt").bind("click",function(){
+		var memberId = $("#addr-memberId").val();
+		var consignee = $("#addr-consignee").val();
+		var phone = $("#addr-phone").val();
+		var areaId = $("#addr-areaId").val();
+		var gpsAddr = $("#addr-gpsAddr").val();
+		var addrDetail = $("#addr-addrDetail").val();
+		var lng = $("#addr-lng").val();
+		var lat = $("#addr-lat").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {memberId:memberId,consignee:consignee,phone:phone,areaId:areaId,gpsAddr:gpsAddr,addrDetail:addrDetail,lng:lng,lat:lat},
+			url: root + "/order/addAddr.do",
+			fun: function(msg){
+				$("#addr-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#addr-init-cmt").bind("click",function(){
+		var refundLineNo = $("#callA033-refundLineNo").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {refundLineNo:refundLineNo},
+			url: root + "/order/initCity.do",
+			fun: function(msg){
+				$("#addr-init-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+$("#setredis").bind("click",function(){
+		var key = $("#redis-key").val();
+		var time = $("#redis-time").val();
+		var value = $("#redis-value").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key,time:time,value:value},
+			url: root + "/order/setredis.do",
+			fun: function(msg){
+				$("#redis-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#getredis").bind("click",function(){
+		var key = $("#redis-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/getredis.do",
+			fun: function(msg){
+				$("#redis-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	$("#delredis").bind("click",function(){
+		var key = $("#redis-key").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {key:key},
+			url: root + "/order/delredis.do",
+			fun: function(msg){
+				$("#redis-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+
+	$("#search_vouchers").bind("click",function(){
+		var voucherIds = $("#voucherIds").val();
+        $.ajax({
+            url:'$!{request.getContextPath()}/order/queryVoucher.do',
+            type:'post',
+            data:'voucherIds='+voucherIds,
+            error:function(){
+                alert('error');
+            },
+            success:function(data){
+                $("#searchvouchers-msg").html("处理结果："+data.msg);
+            }
+        });
+
+	});
+	
+	$("#getGbMongoLog").bind("click",function(){
+		var wtgK = $("#wtgK").val();
+		var mobile = $("#mobile").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {wtgK:wtgK,mobile:mobile},
+			url: root + "/gblog/getGbMongoLog.do",
+			fun: function(msg){
+				$("#gblog-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+	
+	$("#modifyProMemberId").bind("click",function(){
+		var mobileTag = $("#mobileTag").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {mobile:mobileTag},
+			url: root + "/gblog/modifyProMemberId.do",
+			fun: function(msg){
+				$("#modifyPro-msg").html("处理结果："+msg.msg);
+			}
+		});
+	});
+</script>

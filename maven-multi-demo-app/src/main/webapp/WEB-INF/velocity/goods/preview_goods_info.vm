@@ -1,0 +1,97 @@
+#parse("/admin/com/common.vm")
+#set ($layout ="/admin/layout/mobile.vm")
+	<div class="focus-all royalSlider heroSlider rsMinW">
+  	#foreach($gl in $plist)
+    <img src="$goodsImagePath/$!{goods.styleId}/$gl.pic"/>
+		#end
+  </div>
+  <div class="title">
+  	<h2>$!{goods.styleTitle}</h2>
+    <p>$!{goods.styleSmallTitle}</p>
+  </div>
+  #if($!{goods.styleMomCare} != "")
+  <div class="block mama">
+  	<strong>好妈妈说：</strong>$!{goods.styleMomCare}
+  </div>
+  #end
+  <div class="block" id="intro-all">
+  #if($!goods.styleCheckStatus == 1)
+  	<dl>
+    	<dt><s></s>质检担保</dt>
+      <dd>
+      	#foreach($pic in $checkPics)
+        <img src="$goodsImagePath/$!{goods.styleId}/$!pic">
+        #end
+      </dd>
+    </dl>
+  #end
+   <dl>
+	<dt><s></s>商品参数</dt>
+	 <dd class="parameters">
+	<p><strong>产品名称</strong>$goods.styleTitle</p>
+	<p><strong>品牌</strong>$!brandName</p>
+	<p><strong>产品型号</strong>$goods.styleId</p>
+  #if($hasParamsList.size()!=0)
+	    #foreach($g in $hasParamsList)
+			<p><strong>$g.goodsKey</strong><em>$g.goodsValue</em></p>
+		#end
+	   
+	 
+  #end
+   </dd>
+   </dl>
+	  <dl>
+      <dt><s></s>图文详情</dt>
+      <dd>
+		  $!{goods.styleHtml}
+      </dd>
+  </dl>
+      <dl>
+          <dt><s></s>商品规格</dt>
+		  <dd class="parameters">
+              #if($!colorName.size() != 0)
+			  	<p><strong>颜色</strong>#foreach($color in $colorName)<span>$!{color}</span>#end</p>
+			  #end
+			  #if($!sizeName.size() != 0)
+			  	<p><strong>尺码</strong>#foreach($size in $sizeName)<span>$!{size}</span>#end</p>
+			  #end
+		  </dd>
+      </dl>
+  </div>
+<script type="text/javascript">
+	$('.focus-all').royalSlider({
+		loop: true,
+		arrowsNav:false,
+		slidesSpacing: 0,
+		imageScaleMode: 'fill',
+		autoScaleSlider: true,
+		autoScaleSliderWidth: $(document).width(),
+		autoScaleSliderHeight: $(document).width(),
+		autoPlay: {
+			enabled: true,
+			stopAtAction: false,
+			delay: 5e3
+		}
+	});
+	var imgs = $("img");
+	imgs.each(function(){
+		var thas = $(this);
+		if(thas.attr("alt") && thas.attr("alt").indexOf("http://") != -1){
+			thas.attr("src", thas.attr("alt"));
+		}
+	});
+	
+	function introTAB(){
+		var intro = $("#intro-all"), dt = intro.find("dt");
+		dt.on("click", function(){
+			var thas = $(this), dl = thas.parent();
+			//intro.find("dl").removeClass("in");
+			if(dl.hasClass("in")){
+				dl.removeClass("in");
+			}else{
+				dl.addClass("in");
+			}
+		});
+	};
+	introTAB();
+</script>

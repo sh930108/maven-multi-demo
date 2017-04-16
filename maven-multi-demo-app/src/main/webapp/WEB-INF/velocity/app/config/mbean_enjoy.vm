@@ -1,0 +1,551 @@
+##App配置管理-妈豆尊享
+
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 119});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 配置管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <ul class="nav nav-tabs">
+                    ##<li ><a href="$!{request.getContextPath()}/appconf/index.do">启动广告</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=0">首页顶图</a></li>
+                    ##<li class="active"><a href="$!{request.getContextPath()}/appconf/list.do?confType=1&valid=0">妈豆尊享</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=2">万众瞩目</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/iconMaintain.do">图标维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/goodsType/list.do">类目维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/appconf/list.do?confType=3&amp;styleApplyAge=-1-0">为您优选</a></li>
+                    <li><a href="$!{request.getContextPath()}/appconf/getOptimization4uPageList.do">为您优选-新版</a></li>
+                    <li><a href="$!{request.getContextPath()}/shopservice/list.do">实体店服务标签</a></li>
+
+                </ul>
+                <div class="widget-content tab-content">
+                    <div class="app-mbean-ad">
+                        <table class="table table-hover table-text-center">
+                            <thead>
+                                <tr>
+                                    <th width="200">图片预览</th>
+                                    <th>商品ID</th>
+                                    <th>活动库存</th>
+                                    <th>限购</th>
+                                    <th>上线时间</th>
+                                    <th>开抢时间</th>
+                                    <th>结束时间</th>
+                                    <th>
+										<select style="width:65px;" id="validation">
+                                            <option value="0" #if($!gcdto.valid == '0') selected #end>有效</option>
+                                            <option value="1" #if($!gcdto.valid == '1') selected #end>失效</option>
+										</select>
+									</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                #foreach($data in ${list})
+                                <tr>
+                                    <td>
+                                        <div class="photo">
+                                            #if(${data.pic} != "")
+                                            <img src="$imgpath$data.pic" alt="$!{data.title}"/>
+                                            #end
+                                        </div>
+                                    </td>
+                                    <td>$!data.style.styleNumId</td>
+                                    <td>$!data.stock</td>
+                                    <td>$!data.limitBuy</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$data.onlineDate)</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$data.beginTime)</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$data.endTime)</td>
+                                    <td>
+										#set($olineFlag = $!data.curMillisecond gt $!data.onlineMillisecond && $!data.curMillisecond lt $!data.endMillisecond)
+										#set($lazyFlag = $!data.curMillisecond lt $!data.onlineMillisecond)
+										#set($endFlag = $!data.curMillisecond gt $!data.endMillisecond)
+										#set($beginFlat=$!data.curMillisecond lt $!data.beginMillisecond)
+
+                                        #if($olineFlag && !$endFlag)
+                                            #if(!$beginFlat)
+                                               <span class="badge badge-success">抢购中</span>
+										    #else
+										      <span class="badge badge-success">进行中</span>
+										    #end
+											
+                                        #elseif($lazyFlag)
+											<span class="badge badge-important">排期中</span>
+										#end	
+                                        #if($endFlag)
+											<span class="badge badge-important">已结束</span>
+										#end
+                                    </td>
+                                    <td>
+										#if($olineFlag && !$endFlag)
+										    #if($beginFlat)
+										        <a class="btn btn-primary btn-mini" href="#inline_content" onclick="edit('$!data.style.styleNumId','$data.onlineDate')">编辑</a>
+										    #end
+ 											<a class="btn btn-inverse btn-mini" href="javascript:doOnline('$!data.style.styleNumId',false, '$data.onlineDate')" onclick="return checkDel('是否结束该活动？');">结束</a>
+											<a class="btn btn-primary btn-mini" href="#view_inline_content" onclick="view('$!data.style.styleNumId','$data.onlineDate')">查看</a>
+                                        #end
+                                        #if($lazyFlag)
+											<a class="btn btn-primary btn-mini" href="#inline_content" onclick="edit('$!data.style.styleNumId','$data.onlineDate')">编辑</a>
+											##<a class="btn btn-success btn-mini" href="javascript:doOnline('$!data.style.styleNumId',true, '$data.onlineDate');" onclick="return checkDel('是否上线？');">立刻上线</a>
+											<a class="btn btn-danger btn-mini" href="javascript:deleteById('$!data.style.styleNumId','$data.onlineDate');" onclick="return checkDel('是否删除？');">删除</a>
+										#end
+                                        #if($endFlag)
+	                                       	<a class="btn btn-primary btn-mini" href="#view_inline_content" onclick="view('$!data.style.styleNumId','$data.onlineDate')">查看</a>
+											<a class="btn btn-danger btn-mini" href="javascript:deleteById('$!data.style.styleNumId','$data.onlineDate');" onclick="return checkDel('是否删除？');">删除</a>
+										#end
+                                    </td>
+                                </tr>
+                                #end
+                                <tr>
+                                    <td colspan="9" style="text-align:left;">
+                                        <button class="btn btn-primary" data-toggle="modal" onclick="add()">添加</button>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        ##分页
+                        #parse("/pagination.vm")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加/编辑活动 -->
+<div aria-hidden="false" class="modal modal-lg hide in" id="modal-add">
+    <div class="mbeanjoy">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>编辑妈豆尊享</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" method="post" id="form-add" action="$!{request.getContextPath()}/appconf/saveMbeanGoods.do">
+            <input type="hidden"  name="confType" value="1"/>
+            <input id="gfId" type="hidden" name="id">
+            <div class="control-group">
+                <label class="control-label"><i>*</i>活动图片：<br>（360*280px）</label>
+                <div class="controls">
+                    <span class="up-photo">
+                        <input name="pic" id="pic-hidden" type="hidden" value=""/>
+                        ##<span id="picName"></span>
+                        <div class="up-pic" id="pic-pic">
+                            <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+                        </div>
+                        <div class="up-btn" data-id="pic"><a href="javascript:;" id="pic" class="btn">更换</a></div>
+                    </span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>填写商品ID：</label>
+                <div class="controls">
+                    <input type="text" placeholder="填写商品ID" name="style.styleNumId" id="styleNumId" value="" >
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>限购：</label>
+                <div class="controls">
+                    <input type="text" placeholder="填写限购数" name="limitBuy" value="" >
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="row-fluid">
+                    <label class="control-label"><i>*</i>活动价及库存：</label>
+                </div>
+                <div class="row-fluid">
+                    <table id="shareItemsList" class="table table-text-center">
+                    </table>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>上线时间：</label>
+                <div class="controls">
+                    <input type="text" placeholder="填写上线时间" name="onlineDate" value="" id="onlineDate" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d', maxDate:'#F{$dp.$D(\'beginTime\')}'});">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>开抢时间：</label>
+                <div class="controls">
+                    <input type="text" placeholder="填写开抢时间" name="beginTime" value="" id="beginTime" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'onlineDate\')}'});">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>结束时间：</label>
+                <div class="controls">
+                    <input type="text" placeholder="填写结束时间" name="endTime" value="" id="endTime" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'beginTime\')}'});">
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success btn_submit" id="commit-add">完成</button>
+        <a class="btn" href="javascript:;" id="cancel" data-dismiss="modal">取消</a>  
+    </div>
+    </div>
+</div>
+
+<!-- 查看 -->
+<div class="modal hide" aria-hidden="true" id="modal-view">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>查看活动详情</h3>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-info">活动价及库存：</div>
+        <div class="mbeanjoy">
+            <table class="table table-text-center">
+                <thead>
+                    <tr>
+                        <th>颜色</th>
+                        <th>尺寸</th>
+                        <th>单品编码</th>
+                        <th>指导价</th>
+                        <th>活动价</th>
+                        <th>活动库存</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-data"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer"><a href="javascript:;" class="btn" data-dismiss="modal">关闭</a> </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript">
+    //文件上传
+    $(".up-btn").each(function () {
+        var self = $(this);
+        self.children().uploadify({
+            uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',
+            swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+            queueID: 'null', // 上传进度列表;
+            fileTypeDesc: "jpg",
+            fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            multi: false,
+            wmode: "transparent",
+            buttonText: '选择图片',
+            width: "100%",
+            height: "100%",
+            onUploadStart: function () {
+                var id = this.button.parents(".up-btn").data("id");
+                $("#" + id + "-pic").html('');
+            },
+            onUploadSuccess: function (file, data, response) {
+                //上传完成时触发（每个文件触发一次）;
+                var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                if (!data.success) {
+                    Toast.show(data.msg);
+                    $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+                } else {
+					deleteFileByName($("#" + id + "-hidden").val());
+                    $("#" + id + "-pic").html('<img src="$imgpath' + data.fileName + '"/>');
+                    $("#" + id + "-hidden").val(data.fileName);
+                }
+            }
+        });
+    });
+
+    /*显示模态框*/
+    function showModal(modalid, width, height) {
+        $('#' + modalid).modal().css({
+            width: (width == '' ? '' : width),
+            height: (height ? height : 'auto'),
+            'margin-left': function () {
+                return -($(this).width() / 2);
+            }
+        });
+    }
+
+    /*添加商品*/
+    function add() {
+        $("input").val("");
+        $("input[name='confType']").val(1);
+        $("#pic-pic").find("img").attr("src", "$!{request.getContextPath()}/res/images/photo-default.png");
+        $("#shareItemsList").html('');
+        bindStyleNumIdBlur();
+        showModal('modal-add');
+    }
+
+    /*查看商品*/
+    function view(id, onlineTime) {
+        if (id == "") {
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            url: root + "/appconf/getMBeanGoodsConfByStyleNumId.do",
+            data: {styleNumId: id, onlineTime: onlineTime},
+            dataType: "json",
+            success: function (ret) {
+                if (ret.success && ret.count > 0) {
+                    var dataArray = [];
+                    $.each(ret.data, function (i, o) {
+                        if (i === 0) {
+                            $('#picName').html(o.pic);
+                            $('#pic-hidden').val(o.pic);
+                            $("#styleNumId").val(o.styleNumId);
+                            $("input[name='limitBuy']").val(o.limitBuy);
+                            $("input[name='beginTime']").val(new Date(o.beginTime).format("yyyy-MM-dd hh:mm:ss"));
+                            $("input[name='onlineDate']").val(new Date(o.onlineDate).format("yyyy-MM-dd hh:mm:ss"));
+                            $("input[name='endTime']").val(new Date(o.endTime).format("yyyy-MM-dd hh:mm:ss"));
+                        }
+                        dataArray.push(['<tr>',
+                            '<td>' + (o.colorName ? o.colorName : '/') + '<input type="hidden" name="itemNumIdAry" value="' + o.itemNumId + '"/></td>',
+                            '<td>' + (o.sizeName ? o.sizeName : '/') + '<input type="hidden" name="gfIdAry" value="' + o.id + '"/></td>',
+                            '<td>' + o.itemId + '</td>',
+                            '<td>' + (o.standardPrice ? o.standardPrice : "/") + '</td>',
+                            '<td><span class="label label-important">' + o.beans + '</span>妈豆 + <span class="label label-important">' + o.money / 100 + '</span>元</td>',
+                            '<td>' + o.stock + '</td>',
+                            '</tr>'].join(''));
+                    });
+                    $("#sales-data").html(dataArray.join(''));
+                    $('#modal-view').modal().css({
+                        width: '660px', 'margin-left': function () {
+                            return -($(this).width() / 2);
+                        }
+                    });
+                } else {
+                    Toast.show(ret.msg);
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+
+    }
+
+    /*编辑商品*/
+    function edit(id, onlineTime) {
+        if (id == "") {
+            return false;
+        }
+        $.ajax({
+            type: "GET",
+            url: root + "/appconf/getMBeanGoodsConfByStyleNumId.do",
+            data: {styleNumId: id, onlineTime: onlineTime},
+            dataType: "json",
+            success: function (ret) {
+                if (ret.success && ret.count > 0) {
+                    var arr = ['<tr>',
+                        '<th>颜色</th>',
+                        '<th>尺寸</th>',
+                        '<th>单品编码</th>',
+                        '<th>指导价</th>',
+                        '<th>活动价</th>',
+                        '<th>活动库存</th>',
+                        '</tr>'];
+                    $.each(ret.data, function (i, o) {
+                        if (i === 0) {
+                            //$('#picName').html(o.pic);
+                            if (o.pic) {
+                                $("#pic-pic").find("img").attr("src", "$imgpath" + o.pic + "");
+                            }
+                            $('#pic-hidden').val(o.pic);
+                            $("#styleNumId").val(o.styleNumId);
+                            $("input[name='limitBuy']").val(o.limitBuy);
+                            $("input[name='beginTime']").val(new Date(o.beginTime).format("yyyy-MM-dd hh:mm:ss"));
+                            $("input[name='onlineDate']").val(new Date(o.onlineDate).format("yyyy-MM-dd hh:mm:ss"));
+                            $("input[name='endTime']").val(new Date(o.endTime).format("yyyy-MM-dd hh:mm:ss"));
+                        }
+                        arr.push(['<tr>',
+                            '<td>' + (o.colorName ? o.colorName : '/') + '<input type="hidden" name="itemNumIdAry" value="' + o.itemNumId + '"/></td>',
+                            '<td>' + (o.sizeName ? o.sizeName : '/') + '<input type="hidden" name="gfIdAry" value="' + o.id + '"/></td>',
+                            '<td>' + o.itemNumId + '</td>',
+                            '<td>' + (o.standardPrice ? o.standardPrice : "") + '</td>',
+                            '<td><input type="text" name="beansAry" value="' + o.beans + '"/>妈豆<input type="text" name="moneyAry" value="' + (o.money / 100) + '"/>元</td>',
+                            '<td><input type="text" name="stockAry" value="' + o.stock + '"/></td>',
+                            '</tr>'].join(''));
+                    });
+
+                    $("#styleNumId").off("blur");
+                    $("#shareItemsList").html(arr.join(''));
+                    showModal("modal-add");
+                } else {
+                    Toast.show(ret.msg);
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+    }
+
+    $(function () {
+
+        //保存
+        $("#commit-add").on("click", function () {
+            if (validateForm()) {
+
+                $.ajax({
+                    url: root + '/appconf/saveMbeanGoods.do',
+                    type: 'post',
+                    dataType: 'json',
+                    data: $("#form-add").serialize(),
+                    success: function (ret) {
+                        if (ret.success) {
+                            window.location.reload();
+                        } else {
+                            Toast.show(ret.msg);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                    }
+                });
+            }
+
+        });
+
+        //有效失效绑定
+        $("#validation").on("change", function () {
+            location.href = root + "/appconf/list.do?confType=1&valid=" + $(this).val();
+        });
+
+    });
+
+
+    function validateForm() {
+        var valid = true;
+        var toast = "";
+        if (isForm.isTrim($("input[name='pic']").val())) {
+            toast = "请选择商品图片";
+            valid = false;
+        } else if (isForm.isTrim($("input[name='style.styleNumId']").val())) {
+            toast = "请填写商品ID";
+            $("input[name='style.styleNumId']").focus();
+            valid = false;
+        }else if (!isForm.isImp($("input[name='style.styleNumId']").val())) {
+            toast = "请填写正确的商品ID";
+             $("input[name='style.styleNumId']").focus();
+            valid = false;
+        } else if (isForm.isTrim($("input[name='limitBuy']").val())) {
+            toast = "请填写限购数";
+            valid = false;
+        } else if (!isForm.isImp($("input[name='limitBuy']").val())) {
+            toast = "请填写正确的限购数";
+            valid = false;
+        } else if (isForm.isTrim($("input[name='onlineDate']").val())) {
+            toast = "请填写上线时间";
+            valid = false;
+        } else if (isForm.isTrim($("input[name='beginTime']").val())) {
+            toast = "请填写开始时间";
+            valid = false;
+        } else if (isForm.isTrim($("input[name='endTime']").val())) {
+            toast = "请填写结束时间";
+            valid = false;
+        }
+        
+        if(valid){
+	        var inputs = $("#shareItemsList input[type=text]"), i = 0, l = inputs.length;
+	        for(; i < l; i++){
+	        	if(isForm.isTrim(inputs.eq(i).val())){
+	                		toast = "活动价及库存不能为空";
+	        		valid = false;
+	        		inputs.eq(i).focus();
+	        		break;
+	        	}
+	        }
+        }
+        if (!valid) Toast.show(toast);
+        return valid;
+    }
+
+    //绑定焦点时间
+    function bindStyleNumIdBlur() {
+        $("#styleNumId").on("blur", function () {
+            getItemsByStyleNumId($(this).val());
+        });
+    }
+
+
+    //根据款式ID获取规格列表
+    function getItemsByStyleNumId(styleNumId) {
+        if (styleNumId && !isNaN(styleNumId)) {
+            $.getJSON(root + "/appconf/getItemsByStyleNumId.do?jsoncallback=?",
+                    {
+                        styleNumId: styleNumId
+                    }, function (ret) {
+                        console.log(ret);
+                        if (ret.success && ret.count > 0) {
+                            var arr = ['<tr>',
+                                '<th>颜色</th>',
+                                '<th>尺寸</th>',
+                                '<th>单品编码</th>',
+                                '<th>指导价</th>',
+                                '<th>活动价</th>',
+                                '<th>活动库存</th>',
+                                '</tr>'];
+                            $.each(ret.data, function (i, o) {
+                                arr.push(['<tr>',
+                                    '<td>' + (o.colorName ? o.colorName : '/') + '</td>',
+                                    '<td>' + (o.sizeName ? o.sizeName : '/') + '</td>',
+                                    '<td>' + o.itemNumId + '</td>',
+                                    '<td>' + (o.standardPrice ? o.standardPrice : "/") + '</td>',
+                                    '<td><input type="hidden" name="itemNumIdAry" value="' + o.itemNumId + '"/><input type="text" name="beansAry"/>妈豆<input type="text" name="moneyAry"/>元</td>',
+                                    '<td><input type="text" name="stockAry"/></td>',
+                                    '</tr>'].join(''));
+                            });
+                            $("#shareItemsList").html(arr.join(''));
+
+                        } else {
+                            $("#shareItemsList").html('');
+                            Toast.show("没有找到该商品下的规格详细信息，请检查商品ID是否正确以及是否有规格信息！", 2000);
+                        }
+                    });
+        } else {
+            Toast.show("输入的商品ID为空，或有误！");
+        }
+    }
+
+
+    function deleteById(styleNumId, onlineTime) {
+        $.getJSON(root + "/appconf/deleteMBeanConfByStyleNumId.do?jsoncallback=?",
+                {
+                    styleNumId: styleNumId,
+                    onlineTime: onlineTime
+                }, function (ret) {
+                    if (ret.success) {
+                        window.location.reload();
+                    } else {
+                        Toast.show(ret.msg);
+                    }
+                });
+    }
+
+
+    //结束该活动
+    function doOnline(id, online, onlineTime) {
+        $.ajax({
+            url: root + '/appconf/updateProperty.do',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                "styleNumId": id,
+                "online": online,
+                "onlineTime": onlineTime
+            },
+            success: function (ret) {
+                if (ret.success) {
+                    window.location.reload();
+                } else {
+                    Toast.show(ret.msg);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Toast.show("[服务器异常]" + XMLHttpRequest.status);
+            }
+        });
+    }
+</script>

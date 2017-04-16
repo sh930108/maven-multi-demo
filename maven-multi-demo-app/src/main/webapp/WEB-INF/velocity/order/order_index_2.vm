@@ -1,0 +1,397 @@
+﻿##订单首页--展示子订单集合页面
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+		<div id="content-header">
+	    <h1>
+      	#if($order.deliveryWay == 2)
+      	订单管理 | 自提订单
+        #elseif ($order.dealingType == 1)
+        订单管理 | 货到付款订单
+        #else
+        订单管理 | 所有订单
+        #end
+      </h1>
+	  </div>
+    <div class="container-fluid">
+    	<hr>
+      <div class="row-fluid">
+      	<div class="span12">
+        	<div class="widget-box">
+		        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          <h5>查询条件</h5>
+		        </div>
+            <div class="widget-content nopadding">
+            	#parse("order/order_head.vm")
+            </div>
+            <div class="widget-content">
+            	<div class="widget-box widget-tabs-box">
+              	<ul class="nav nav-tabs">
+					<li #if($tabId == 1) class="active" #end><a href="javascript:clickTab(-1);">全部</a></li>
+			        <li #if($tabId == 2) class="active" #end><a href="javascript:clickTab(3);">待付款</a></li>
+			        <li #if($tabId == 3) class="active" #end><a href="javascript:clickTab(4);">待发货</a></li>
+					<li #if($tabId == 4) class="active" #end><a href="javascript:clickTab(5);">已发货</a></li>
+					<li #if($tabId == 9) class="active" #end><a href="javascript:clickTab(6);">待评价</a></li>
+					<li #if($tabId == 5) class="active" #end><a href="javascript:clickTab(0);">已完成</a></li>
+					<li #if($tabId == 6) class="active" #end><a href="javascript:clickTab(2);">已取消</a></li>
+					<li #if($tabId == 7) class="active" #end><a href="javascript:clickTab(1);">已失效</a></li>
+					<!--
+                    <li #if($tabId == 8) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=8&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">退货退款</a></li>
+			        -->
+			    </ul>
+                <div class="widget-content">
+	              	<table class="table table-text-center table-order">
+		              	<thead>
+		                  <tr>
+		                    <th class="text-left">商品</th>
+		                    <th>单价(元)/数量</th>
+		                    <th>货源</th>
+		                    <th>实付款(元)</th>
+                            <th>退款金</th>
+		                    <th>订单状态</th>
+		                    <th>操作</th>
+		                  </tr>
+		                </thead>
+                    #foreach($order in $orders)
+                    <tbody>
+                      <tr class="sep-row"><td colspan="7"></td></tr>
+                      <tr class="order-hd">
+                        <td class="text-left first">
+                          <span class="dealtime" title="$!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)"><s class="icon-time"></s> $!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)</span>
+                        #if($order.relationType == 4)
+                            订单号：$!{order.orderNo}
+                            (<span class="number">代拍订单</span>)
+                        #else
+                            <span class="number">
+							订单号：$!{order.orderNo}
+							(
+                                #if($order.platformSource==1)
+                                    #if($order.orderType == 1)
+                                        普通订单
+                                    #elseif($order.orderType == 2)
+                                        妈豆订单
+                                    #elseif($order.orderType == 3)
+                                        POS订单
+                                    #elseif($order.orderType == 4)
+                                        扫码订单
+                                    #end
+                                #elseif($order.platformSource==2)
+                                    云订单
+                                #end
+                            )
+						  </span>
+                        #end
+                        </td>
+                        <td class="text-left column" colspan="2">
+                            <span class="buyers">用户ID：$!{order.memberId}</span>
+                            <span class="buyers">CRM编号：$!{order.gbCrmNo}</span>
+                        </td>
+                        <td class="text-left column" colspan="3">
+                            <span class="buyers">收货人：$!{order.consigneeName}</span>
+                            <span class="phone">收货人手机：$!{order.consigneePhone}</span>
+                        </td>
+                        <td class="text-right">#exitDiscount($!{order.orderPay.payTotalPrice} $!{order.orderPay.payPrice} $!{order.orderPay.payFreightPrice})</td>
+                      </tr>
+                      #set($orderLineCount = $order.orderLines.size() )
+					  #set($refundCount = 0)
+						#foreach($orderLine in $order.orderLines)
+							#if($orderLine.type)
+								#set($refundCount = $refundCount + 1)
+							#end
+						#end
+                      #foreach($orderLine in $order.orderLines)
+                      <tr class="order-bd">
+                        <td class="text-left baobei">
+                          <a href="javascript:;" class="pic"><img src="$!{goodsImagePath}/$!{orderLine.picName}" /></a>
+                          <div class="desc">
+                            <p><a href="javascript:;" class="baobei-name">$!{orderLine.itemName}</a></p>
+		                         <small>$!{orderLine.spec}</small>
+                          </div>
+                        </td>
+                        <td class="price">
+                          <p class="special-num">#formatAmount($!{orderLine.payUnitPrice})</p>
+                          <p>(<span class="special-num">$!{orderLine.allocatedCount}</span>件)</p>
+                        </td>
+                        #if($foreach.count == 1)
+                        <td class="source" rowspan="$order.orderLines.size()">
+                          <p>
+                          #if($order.deliveryWay == 1)
+                            <span class="label label-success"><s class="icon-exclamation-sign"></s> 门店配送</span>
+                          #elseif($order.deliveryWay == 2)
+                            <span class="label label-warning"><s class="icon-exclamation-sign"></s> 上门自提</span>
+                          #elseif($order.deliveryWay == 3)
+                            <span class="label label-inverse"><s class="icon-exclamation-sign"></s> 快递配送</span>
+                          #end
+                          </p>
+						  <p>
+                            #if($order.warehouseType == 0)
+                                $!order.shopName
+                            #else
+                                $!order.stockName
+                            #end
+                        </p>
+                            #if($order.shiftStatus == 1)
+                                <p class="label label-important">转单订单</p>
+                            #end
+                        </td>
+                        <td class="amount" rowspan="$order.orderLines.size()">
+                          <p class="special-num"><strong>#formatAmount($!{order.orderPay.payPrice})</strong></p>
+                          <p>(含运费：<span class="special-num">#formatAmount($!{order.orderPay.payFreightPrice})</span>)</p>
+                        </td>
+                        <td>#formatAmount($!{order.orderPay.refundAmount})</td>
+                        <td class="status" rowspan="$order.orderLines.size()">
+                          #if($order.state == 0) 
+                            <span class="label label-success">已完成</span>
+                          #elseif ($order.state == 1)
+                            <span class="label">已失效</span>
+                          #elseif ($order.state == 2)
+                            <span class="label">已取消</span>
+                          #elseif ($order.state == 3)
+                            <span class="label label-warning">待付款</span>
+                          #elseif ($order.state == 4)
+                            <span class="label label-inverse">待发货</span>
+                          #elseif ($order.state == 5)
+                            <span class="label label-warning">已发货</span>
+                          #elseif ($order.state == 6)
+                            <span class="label label-info">待评价</span>
+                          #elseif ($order.state == 7)
+                            <span class="label">初始状态</span>
+                          #elseif ($order.state == 8)
+                            <span class="label label-important">已删除</span>
+						  #elseif ($order.state == 9)
+							<p><span class="label label-important">已全部退款退货</span></p>
+						  #end
+                            <p>
+                                #if($refundCount > 0 && $order.state != 9)
+                                    #if( $orderLineCount == $refundCount )
+                                        已全部退款退货
+                                    #else
+                                        (共有$refundCount件退款退货商品)
+                                    #end
+                                #end
+                            </p>
+                            #if($order.state == 5 && ($order.orderTransfer.transferStatus == 0 || $order.orderTransfer.transferStatus == 1))
+                                <p>
+                                    <a class="label label-important" href="javascript:distCommit($order.orderTransfer.trOrderNo);">准备配送</a>
+                                </p>
+                            #elseif($order.state == 5 && ($order.orderTransfer.transferStatus == 2 || $order.orderTransfer.transferStatus == 3))
+                                <p>
+                                    <span class="label label-important">已配送</span>
+                                </p>
+                            #end
+                        </td>
+                        <td class="operate" rowspan="$order.orderLines.size()">
+                          <p><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{order.orderNo}&orderState=$!{order.state}">查看详情</a></p>
+                          <p><a href="javascript:showRemark('$!{order.orderNo}','$!{order.remark}');">备注</a></p>
+                            #if($order.orderTransfer.transferStatus == 2 && ($order.state == 5 || $order.state == 6))
+                                <p>
+                                    <a class="label label-important" href="javascript:customerConfirm($order.orderTransfer.trOrderNo);">准备签收</a>
+                                </p>
+                            #elseif($order.orderTransfer.transferStatus == 3 && ($order.state == 5 || $order.state == 6))
+                                <p>
+                                    <span class="label label-important">已签收</span>
+                                </p>
+                            #end
+                        </td>
+                        #end
+                      </tr>
+                      #end
+                      #if($order.remark && $order.remark !="")
+                      <tr class="order-last">
+                        <td class="text-left" colspan="6"><span class="label label-success">商家备注：$!{order.remark}</span></td>
+                      </tr>
+                      #end
+                    </tbody>
+                    #end
+		              </table>
+                  <div class="pagination text-right">
+                    ##分页
+                    #parse("pagination.vm")
+                  </div>
+	              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form id="msg-form" class="form-horizontal">
+            <input type="hidden" name="transferOrderNo"/>
+            <div class="control-group">
+                <label class="control-label">转单门店：</label>
+                <div class="controls">
+                    <input type="text" name="trShopName" disabled="disabled"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">转单地址：</label>
+                <div class="controls">
+                    <input type="text" name="trAddress" disabled="disabled"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>请选择配送人：</label>
+                <div class="controls">
+                    <select name="consigneeName" id="consigneeNameSelect">
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">联系方式：</label>
+                <div class="controls">
+                    <input type="text" name="consigneeContact" id="consigneeContact" disabled/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="javascript:signConfirm();" id="signConfirmId">确认签收</button>
+        <button type="button" class="btn btn-primary" onclick="javascript:deliveryConfirm();" id="deliveryConfirmId">确认配送</button>
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+<script type="text/javascript">
+	Matrix.Nav({"menu": 116, "cmenu": 143});
+	//筛选按钮
+	$("#Choice").bind("click",function(){
+		$("#orderForm").attr("action","$!{request.getContextPath()}/order/index.do");
+		document.getElementById("orderForm").submit();
+	});
+
+    //onchange事件
+    $("#consigneeNameSelect").bind("change",function(){
+        var consigneeContact = $("#consigneeNameSelect option:selected").val();
+        if(consigneeContact == "0"){
+            $("#consigneeContact").val("");
+        }else{
+            $("#consigneeContact").val(consigneeContact);
+        }
+    });
+
+    //准备配送
+    function distCommit(orderNo){
+        if(null == orderNo || orderNo == ""){
+            Toast.show("订单号不能为空");
+            return false;
+        }
+        $.ajax({
+            url: '$!{request.getContextPath()}/orderTransfer/getDistribution.do',
+            data: {orderNo: orderNo},
+            type: 'post',
+            cache: false,
+            success: function (data) {
+                data = eval(data);
+                $("input[name='transferOrderNo']").val(data.orderTransfer.trOrderNo);
+                $("input[name='trShopName']").val(data.orderTransfer.trShopName);
+                $("input[name='trAddress']").val(data.orderTransfer.trAddress);
+                if(data.orderTransfer.transferStatus == 1){
+                    $("#signConfirmId").hide();
+                }else if(data.orderTransfer.transferStatus == 2 || data.orderTransfer.transferStatus == 3){
+                    $("#signConfirmId").hide();
+                    $("#deliveryConfirmId").hide();
+                }
+
+                document.getElementById("consigneeNameSelect").innerHTML = "";
+                document.getElementById("consigneeNameSelect").options.add(new Option("请选择",0));
+                for(var i=0; i<data.distributes.length; i++) {
+                    document.getElementById("consigneeNameSelect").options.add(new Option(data.distributes[i].name,data.distributes[i].phone));
+                }
+
+                var self = $(".js-tmp-modal");
+                self.find(".modal-header h3").text("选择配送人员");
+                self.modal("show");
+            },
+            error: function () {
+                Toast.show("系统异常！");
+            }
+        });
+    }
+
+    //配送人确认签收
+    function signConfirm(){
+        var orderNo = $("input[name='transferOrderNo']").val();
+        if(null == orderNo || orderNo == ""){
+            Toast.show("订单号不能为空");
+            return false;
+        }
+        $.ajax({
+            url: '$!{request.getContextPath()}/orderTransfer/confirmReceipt.do',
+            data: {orderNo: orderNo},
+            type: 'post',
+            cache: false,
+            success: function (data) {
+                data = eval(data);
+                Toast.show(data.msg);
+                window.location.reload();
+            },
+            error: function () {
+                Toast.show("系统异常！");
+            }
+        });
+    }
+
+    //配送人确认配送
+    function deliveryConfirm(){
+        var orderNo = $("input[name='transferOrderNo']").val();
+        var consigneeName = $("#consigneeNameSelect option:selected").text();
+        var consigneeContact = $("#consigneeNameSelect option:selected").val();
+        if(null == orderNo || orderNo == ""){
+            Toast.show("订单号不能为空");
+            return false;
+        }
+        if(consigneeName == "请选择" || consigneeName == "" || consigneeContact ==""){
+            Toast.show("配送信息不能为空");
+            return false;
+        }
+        $.ajax({
+            url: '$!{request.getContextPath()}/orderTransfer/confirmDistribution.do',
+            data: {orderNo: orderNo,consigneeName:consigneeName,consigneeContact:consigneeContact},
+            type: 'post',
+            cache: false,
+            success: function (data) {
+                data = eval(data);
+                Toast.show(data.msg);
+                window.location.reload();
+            },
+            error: function () {
+                Toast.show("系统异常！");
+            }
+        });
+    }
+
+    //客户确认签收
+    function customerConfirm(orderNo) {
+        if(null == orderNo || orderNo == ""){
+            Toast.show("订单号不能为空");
+            return false;
+        }
+        if(confirm('确定要确认签收嘛')) {
+            $.ajax({
+                url: '$!{request.getContextPath()}/orderTransfer/customerConfirmDistribution.do',
+                data: {orderNo: orderNo},
+                type: 'post',
+                cache: false,
+                success: function (data) {
+                    data = eval(data);
+                    Toast.show(data.msg);
+                    window.location.reload();
+                },
+                error: function () {
+                    Toast.show("系统异常！");
+                }
+            });
+            Toast.show("签收成功");
+            window.location.reload();
+            return true;
+        }
+        return false;
+    }
+</script>

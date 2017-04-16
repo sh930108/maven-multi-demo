@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+</head>
+<body>
+<script type="text/javascript">
+	$(".demoform").Validform();
+</script>
+
+	<form class="demoform">
+	
+		<input type="text" value="" name="name" datatype="s5-16" errormsg="昵称至少5个字符,最多16个字符！" />
+		
+		<!--ajax实时验证用户名-->
+		<input type="text" value="" name="name" datatype="e" ajaxurl="valid.php?myparam1=value1&myparam2=value2" sucmsg="用户名验证通过！" nullmsg="请输入用户名！" errormsg="请用邮箱或手机号码注册！"  />
+		 
+		<!--密码-->
+		<input type="password" value="" name="userpassword" datatype="*6-15" errormsg="密码范围在6~15位之间！" />
+		
+		<!--确认密码-->
+		<input type="password" value="" name="userpassword2" datatype="*" recheck="userpassword" errormsg="您两次输入的账号密码不一致！" />
+		 
+		<!--默认提示文字-->
+		<textarea tip="请在这里输入您的意见。" errormsg="很感谢您花费宝贵时间给我们提供反馈，请填写有效内容！"  datatype="s" altercss="gray" class="gray" name="msg" value="">请在这里输入您的意见。</textarea>
+		 
+	</form>
+
+</body>
+</html>

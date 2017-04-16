@@ -1,0 +1,36 @@
+<nav>
+	<div class="nav_account">
+		<account>
+			<img src="$!{request.getContextPath()}/res/images/touxiang.png" alt="" />
+			<div class="job">${account.job}</div>
+			<div class="name">${account.username}</div>
+		</account>
+	</div>
+	#foreach( $menu in $account.menus)
+    <dl class="nav_$!{velocityCount}" class="active">
+		<dt>$menu.menuName<img src="$!{request.getContextPath()}/res/images/select_xl01.png"></dt>
+		#foreach($cmenu in $menu.childMenus)
+        	<dd class="first_dd"><a href="$!{request.getContextPath()}$!{cmenu.menuUrl}">$cmenu.menuName</a>
+        	</dd>
+		#end
+	</dl>
+	#end
+</nav>
+	
+<script type="text/javascript">
+	$("nav dt").css({"background-color":"#32374A"});
+	$("nav dt img").attr("src","$!{request.getContextPath()}/res/images/select_xl01.png");
+	$(function(){
+		$("nav dd").hide();
+		$("nav dt").click(function(){
+			$("nav dt").css({"background-color":"#32374A"})
+			$(this).css({"background-color": "#0094FF"});
+			$(this).parent().find('dd').removeClass("menu_chioce");
+			$("nav dt img").attr("src","$!{request.getContextPath()}/res/images/select_xl01.png");
+			$(this).parent().find('img').attr("src","$!{request.getContextPath()}/res/images/select_xl.png");
+			$(".menu_chioce").slideUp(); 
+			$(this).parent().find('dd').slideToggle();
+			$(this).parent().find('dd').addClass("menu_chioce");
+		});
+	})
+</script>

@@ -1,0 +1,876 @@
+##退款退货订单详情
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+		<div id="content-header">
+	    <h1>订单详情</h1>
+	  </div>
+    <div class="container-fluid">
+    	<hr>
+      <div class="row-fluid">
+      	<div class="span12">
+        	<div class="widget-box collapsible order-detail">
+          	<div class="widget-title"><a href="#order-1" data-toggle="collapse"><span class="icon"><i class="icon-globe"></i></span><h5>订单状态</h5></a></div>
+            <div id="order-1" class="collapse in">
+            	<div class="widget-content">
+              	<div class="order-id">
+					订单号：$!{orderLine.order.orderNo}
+					(
+                    #if($orderLine.order.relationType == 4)
+                        代拍订单
+                    #else
+                        #if($orderLine.order.platformSource==1)
+                            #if($orderLine.order.orderType == 1)
+                                普通订单
+                            #elseif($orderLine.order.orderType == 2)
+                                妈豆订单
+                            #elseif($orderLine.order.orderType == 3)
+                                POS订单
+                            #elseif($orderLine.order.orderType == 4)
+                                扫码订单
+                            #end
+                        #elseif($orderLine.order.platformSource==2)
+                            云订单
+                        #end
+                    #end
+                   )
+                    #if($refundLine.refundShiftStatus == 1)
+                        <span class="label label-important">转单</span>
+                        #if($refundLine.status == 12)
+                            <span class="label label-important">(等待运营提交发货信息)</span>
+                        #elseif($refundLine.status == 13)
+                            <span class="label label-important">(拒绝退货)</span>
+                        #elseif($refundLine.status == 7)
+                            <span class="label label-important">(已提交物流信息)</span>
+                        #elseif($refundLine.status == 2)
+                            <span class="label label-important">(等待配送员收货确认)</span>
+                        #end
+                    #end
+                </div>
+              	<div class="order-progress order-refund">
+                	<div class="bg"><s></s></div>
+                  	#if($refundLine.refundType == 1)
+                  	<ul class="clearfix">
+					  <li class="child"><span><strong>申请退款退货</strong><del><s>1</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.applyTime)</em></span></li>
+                      #if($refundLine.status == 6)
+                      <li class="last"><span><strong>退款退货关闭</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>
+                      #elseif($refundLine.status == 5 || $refundLine.status == 8)
+                      <li><span><strong>审核未通过</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>
+                      <li class="last"><span><strong>退款退货关闭</strong><del><s>3</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$refundLine.endTime)</em></span></li>
+                      #elseif($refundLine.status == 10)
+                      <li class="last"><span><strong>订单超时关闭</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$refundLine.endTime)</em></span></li>
+                      #elseif($refundLine.status == 13)
+                       <li class="last"><span><strong>运营转单拒绝</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$refundLine.endTime)</em></span></li>
+                      #elseif($refundLine.status == 9 || $refundLine.status == 11)
+                      <li><span><strong>审核通过</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.shopHandleTime)</em></span></li>
+                      <li><span><strong>买家已退货</strong><del><s>3</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.customerHandleTime)</em></span></li>
+                      <li><span><strong>部分退货中</strong><del><s>4</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.returnGoodsTime)</em></span></li>
+                      <li><span><strong>客服介入</strong><del><s>5</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.platformTime)</em></span></li>
+                      <li class="last"><span><strong>退款退货完成</strong><del><s>6</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>
+                      #else
+                      <li><span><strong>审核通过</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.shopHandleTime)</em></span></li>
+                      <li><span><strong>买家已退货</strong><del><s>3</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.customerHandleTime)</em></span></li>
+                      <li><span><strong>平台已收货</strong><del><s>4</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.receiptTime)</em></span></li>
+                      <li><span><strong>退款处理中</strong><del><s>5</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.receiptTime)</em></span></li>
+                      <li class="last"><span><strong>退款退货完成</strong><del><s>6</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>
+                      #end
+                    </ul>
+                  #else
+                  	<ul class="clearfix">
+	                  	<li class="child"><span><strong>申请退款</strong><del><s>1</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.applyTime)</em></span></li>
+						<li><span><strong>退款中</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.applyTime)</em></span></li>
+						#if($refundLine.status == 10)
+	                    <li class="last"><span><strong>退款失败</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>
+						#else
+						<li class="last"><span><strong>退款完成</strong><del><s>2</s></del><em>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.endTime)</em></span></li>	
+						#end
+	                  </ul>
+                  #end
+                </div>
+                #if($refundLine.status == 11)
+                	<div class="order-id"><a href="javascript:showRefund();" class="btn btn-danger">确认退款</a></div>
+                #end
+                
+              </div>
+            </div>
+            <div class="widget-title"><a href="#order-2" data-toggle="collapse"><span class="icon"><i class="icon-barcode"></i></span><h5>订单概况</h5></a></div>
+            <div id="order-2" class="collapse in">
+            	<div class="widget-content">
+				<dl>
+                	<dt>促销信息</dt>
+					<dd>
+						<p><strong>全场满减金额：￥ #formatAmount($!{orderLine.order.orderPay.pmtAllReducePrice})</strong></p>
+						<p><strong>部分满减金额：￥ #formatAmount($!{orderLine.order.orderPay.pmtPartReducePrice})</strong></p>
+						<p><strong>组合促销金额：￥ #formatAmount($!{orderLine.order.orderPay.pmtGroupPrice})</strong></p>
+						<p><strong>直降促销金额：￥ #formatAmount($!{orderLine.order.orderPay.pmtSalePrice})</strong></p>
+                        <p><strong>VIP会员优惠：￥ #formatAmount($!{orderLine.order.orderPay.payVipReducePrice})</strong></p>
+                    </dd>
+                </dl>
+              	<dl>
+                	<dt>订单信息</dt>
+                  <dd>
+                  	<p><strong>支付方式：</strong>
+						#if($orderLine.order.orderPay.payTypeId == 0)
+							支付宝V1.0
+						#elseif($orderLine.order.orderPay.payTypeId == 1)
+							银联支付
+						#elseif($orderLine.order.orderPay.payTypeId == 2)
+							微信支付
+						#elseif($orderLine.order.orderPay.payTypeId == 3)
+							妈豆支付
+						#elseif($orderLine.order.orderPay.payTypeId == 4)
+							支付宝V1.1
+						#elseif($orderLine.order.orderPay.payTypeId == 5)
+							公众号支付
+						#elseif($orderLine.order.orderPay.payTypeId == 6)
+							测试支付宝类型
+                        #elseif($orderLine.order.orderPay.payTypeId == 7)
+                            代拍
+						#else
+							待付款
+						#end
+					</p>
+                    <p><strong>订单金额：</strong>￥ #formatAmount($!{orderLine.order.orderPay.payTotalPrice})</p>
+                    <p><strong>运费金额：</strong>￥#formatAmount($!{orderLine.order.orderPay.payFreightPrice})</p>
+                    <p><strong>优惠券：</strong>￥#formatAmount($!{orderLine.order.orderPay.payCouponPrice})</p>
+                    <p><strong>妈豆抵扣：</strong>￥#formatAmount($!{orderLine.order.orderPay.payMbeanPrice})</p>
+                    <p><strong>GB抵扣：</strong>￥#formatAmount($!{orderLine.order.orderPay.payGbPrice})</p>
+                    <p><strong>MotherCare抵扣：</strong>￥#formatAmount($!{orderLine.order.orderPay.payMothercarePrice})</p>
+                    <p><strong>门店活动优惠：</strong>￥#formatAmount($!{orderLine.order.orderPay.payShopActPrice})</p>
+                    <p><strong>实付金额：</strong><span class="label label-success">￥#formatAmount($!{orderLine.order.orderPay.payPrice})</span></p>
+                    <p><strong>付款时间：</strong>$!date.format('yyyy-MM-dd HH:mm:ss',$!orderLine.order.paymentTime)</p>
+                    <p><strong>配送方式：</strong>#if($orderLine.order.deliveryWay == 1)门店配送 #elseif($orderLine.order.deliveryWay == 2)上门自提 #elseif($orderLine.order.deliveryWay == 3)快递配送 #end</p>
+                    <p><strong>下单时间：</strong>$!date.format('yyyy-MM-dd HH:mm:ss',$!orderLine.order.createdTime)</p>
+                  </dd>
+                </dl>
+				<dl>
+					<dt>售后信息</dt>
+                    <dd>
+                        <p><strong>售后门店：</strong>$!{onlineSubUnitName}</p>
+                        <p><strong>售后公司：</strong>$!{companyName}</p>
+					</dd>
+                </dl>
+                <dl>
+					<dt>寄件地址</dt>
+                    <dd>
+                        <p><strong>收件人：</strong>$!{refundLine.goodsReceiptPlatformName}</p>
+                        <p><strong>电话：</strong>$!{refundLine.goodsReceiptPhone}</p>
+                        <p><strong>邮编：</strong>$!{refundLine.goodsReceiptZipCode}</p>
+                        <p><strong>地址：</strong>$!{refundLine.goodsReceiptAddr}</p>
+                        <p><strong>备注：</strong>$!{refundLine.goodsReceiptRemark}</p>
+					</dd>
+                </dl>
+                <dl>
+                	<dt>退款退货</dt>
+                  <dd>
+                  	<p><strong>退款编号：</strong>$!{refundLine.refundLineNo}</p>
+
+                      <p><strong>GB退款单号：</strong>$!{refundLine.gbBackNumId}</p>
+					#if ($refundLine.refundWay)
+						#if ($refundLine.refundWay==1)<p><strong>退货方式：</strong> 门店上门取件退货 </p>#end
+						#if ($refundLine.refundWay==2)<p><strong>退货方式：</strong> 自己送货到门退货 </p>#end
+						#if ($refundLine.refundWay==3)<p><strong>退货方式：</strong> 快递上门取件退货 </p>#end
+					#else
+						<p><strong>退货方式：</strong>原路返回</p>
+					#end
+                    <p><strong>退款金额：</strong>
+						<span class="label label-important">￥#formatAmount($!{refundLine.refundAmount})</span>
+						#if($!refundLine.mailPrice <= 0)
+							<span class="label label-important">(不含运费)</span>
+						#else
+							<span class="label label-important">(含运费)</span>
+						#end
+					</p>
+                    #if($!compensateMailPrice)
+                        <p><strong>退运费金额:</strong>
+                            <span class="label label-important">#formatAmount($compensateMailPrice.cmPrice)</span>
+                            <span class="label label-important">
+                                #if($compensateMailPrice.cmState == 0)
+                                    打款完成
+                                #elseif($compensateMailPrice.cmState == 1)
+                                    申请中
+                                #elseif($compensateMailPrice.cmState == 2)
+                                    待打款
+                                #elseif($compensateMailPrice.cmState == 3)
+                                    处理失败
+                                #end
+                            </span>
+                            打款人姓名：$compensateMailPrice.cmPayName
+                            打款账户：$compensateMailPrice.cmPayAccount
+                        </p>
+                        #if($compensateMailPrice.cmState == 1 || $compensateMailPrice.cmState == 2)
+                        <p><strong>修改退运费操作:</strong>
+                            #if($account.username == 'pengwencan')
+                                <input id="compensateId" type="button" value="修改退运费信息" onclick="editFreight($compensateMailPrice.cmId)"/>
+                            #else
+                                暂无权限
+                            #end
+                        </p>
+                        #end
+                    #end
+					<p><strong>退妈豆数：</strong>$!{refundLine.mbean}</p>
+
+                      <p><strong>退GB积分：</strong>$!{refundLine.gbCount}</p>
+
+                      <p><strong>退MC积分：</strong>$!{refundLine.mcCount}</p>
+                  	<p><strong>申请时间：</strong>$!date.format('yyyy-MM-dd HH:mm:ss',$!refundLine.applyTime)</p>
+                    <p><strong>取消原因：</strong>$!{refundLine.refundCause}</p>
+                    <p><strong>买家备注：</strong>$!{refundLine.refundRemark}</p>
+                    #if($refundLine.refundPicBuffer && "$!refundLine.refundPicBuffer" != "")
+                    <p><strong>图片备注：</strong>
+                    	#foreach ($element in $refundLine.refundPicBuffer.split(","))
+                      	<a href="$!{refund_goods_pic}$!{orderLine.order.memberId}/$!{element}" target="_blank">
+                      	<img src="$!{refund_goods_pic}$!{orderLine.order.memberId}/$!{element}"/>
+                      	</a>
+                      #end
+                    </p>
+                    #end
+                  </dd>
+                </dl>
+                <dl>
+                	<dt>收货人信息</dt>
+                  <dd>
+                  	<p><strong>收货人：</strong>$!{orderLine.order.consigneeName}</p>
+					<p><strong>收货区域：</strong>$!{gbCityArea.prvName} $!{gbCityArea.cityName} $!{gbCityArea.cityAreaName}</p>
+                    <p><strong>收货地址：</strong>$!{orderLine.order.address}</p>
+                    <p><strong>联系电话：</strong>$!{orderLine.order.consigneePhone}</p>
+                  </dd>
+                </dl>
+                <dl>
+                	<dt>发票信息</dt>
+                  <dd>
+                    #if($orderLine.order.invoiceTitle)`
+                    <p><strong>发票类型：</strong>#if($orderLine.order.invoiceType==1) 个人 #elseif($orderLine.order.invoiceType==2) 公司   #end</p>
+                    <p><strong>发票抬头：</strong>$!{orderLine.order.invoiceTitle}</p>
+                    #else
+                    <p><strong>是否需要发票：</strong>否</p>
+                    #end	
+                  </dd>
+                </dl>
+                <dl>
+                	<dt>商品清单</dt>
+                  <dd class="nopadding">
+                  	<table class="table table-text-center table-order">
+                    	<thead>
+			                  <tr>
+			                    <th class="text-left">商品</th>
+			                    <th>单价(元)</th>
+								<th>促销价</th>
+                                <th>数量</th>
+								<th>优惠</th>
+			                    <th>货源</th>
+			                    <th>实付款(元)</th>
+			                  </tr>
+			                </thead>
+                      <tbody>
+                      	<tr class="sep-row"><td colspan="4"></td></tr>
+                        <tr class="order-hd">
+                          <td class="text-left column">
+                            <span class="buyers">买家：$!{orderLine.order.consigneeName}</span>
+                            <span class="phone">手机：$!{orderLine.order.consigneePhone}</span>
+                          </td>
+                          <td colspan="5"></td>
+						  <td class="text-right">
+                              #if($!refundLine.refundWay && $!refundLine.refundWay == 1 &&
+                                  $refundLine.refundType == 1 && $refundLine.refundShiftStatus == 1 && $refundLine.status == 2)
+                                  <p>
+                                      <a class="label label-important" href="javascript:orderTransferConfirm();">收货确认</a>
+                                  </p>
+                              #end
+                          </td>
+                        </tr>
+                        <tr class="order-bd">
+                          <td class="text-left baobei">
+                            <a class="pic" href="javascript:;"><img src="$!{goodsImagePath}/$!{orderLine.picName}"></a>
+                            <div class="desc">
+                              <p><a class="baobei-name" href="javascript:;">$!{orderLine.itemName}</a></p>
+                              <small>$!{orderLine.spec}</small>
+                            </div>
+                          </td>
+                          <td class="price">
+                            <p class="special-num">#formatAmount($!{orderLine.payUnitPrice})</p>
+                          </td>
+						  <td class="price">
+                            <p class="special-num">#formatAmount($!{orderLine.payPmtPrice})</p>
+						  </td>
+						  <td><p><span class="special-num">$!{orderLine.allocatedCount}</span>件</p></td>
+						  <td>
+                              优惠券抵用金额：￥#formatAmount($!{orderLine.payCouponActPrice})</br>
+                              妈豆抵用金额：￥#formatAmount($!{orderLine.payMbeanPrice})</br>
+                              GB积分抵用金额：￥#formatAmount($!{orderLine.payGbPrice})</br>
+                              MC积分抵用金额：￥#formatAmount($!{orderLine.payMothercarePrice})</br>
+                              全场满减金额：￥#formatAmount($!{orderLine.pmtAllReducePrice})</br>
+                              部分满减金额：￥#formatAmount($!{orderLine.pmtPartReducePrice})</br>
+                              组合促销金额：￥#formatAmount($!{orderLine.pmtGroupPrice})</br>
+                              直降促销金额：￥#formatAmount($!{orderLine.pmtSalePrice})</br>
+                              VIP会员优惠：￥#formatAmount($!{orderLine.payVipReducePrice})</br>
+						  </td>
+                          <td class="source">
+                            <p>
+                              #if($orderLine.order.deliveryWay == 1)
+                                <span class="label label-success"><s class="icon-exclamation-sign"></s> 门店配送</span>
+                              #elseif($orderLine.order.deliveryWay == 2)
+                                <span class="label label-warning"><s class="icon-exclamation-sign"></s> 上门自提</span>
+                              #elseif($orderLine.order.deliveryWay == 3)
+                                <span class="label label-inverse"><s class="icon-exclamation-sign"></s> 快递配送</span>
+                              #end
+                            </p>
+							<p>
+								#if($orderLine.order.warehouseType == 0)
+        							$!orderLine.order.shopName
+        						#else
+        							$!orderLine.order.stockName
+        						#end
+                            </p>
+                          </td>
+                          <td class="amount">
+                            <p class="special-num"><strong>#formatAmount($!{orderLine.payPrice})</strong></p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </dd>
+                </dl>
+				#if($orderLine.order.rightHistories.size()!=0)
+                <dl>
+                	<dt>维权历史记录</dt>
+                  <dd>
+                  	#foreach($rightHistory in $orderLine.order.rightHistories)
+                    <p>$!date.format('yyyy-MM-dd HH:mm:ss',$!rightHistory.rightTime) $!{rightHistory.rightInfo}</p>
+                    #end
+                  </dd>
+                </dl>
+				#end
+              </div>
+            </div>
+            #if($refundLine.refundType==1)
+            <div class="widget-title"><a href="#order-3" data-toggle="collapse"><span class="icon"><i class="icon-plane"></i></span><h5>配送信息</h5></a>
+             #if($!{orderLine.order.relationType} == 4 && $!{refundLine.status} == 2)  #### 4为代拍订单
+                <a class="label label-important" style="float:none;" onclick="javascript:showConsumerTranUnit()">填写退货物流</a>
+             #end
+            </div>
+            <div id="order-3" class="collapse in">
+            	<div class="widget-content">
+              	#if($refundLine.deliveryWay == 1)
+                <dl>
+                	<dt>上门取件</dt>
+                  <dd>
+                  	<p><strong>配送人：</strong>$!{refundLine.pickUser}</p>
+                    <p><strong>联系电话：</strong>$!{refundLine.pickTel}</p>
+                    <p><strong>预计到达时间：</strong>$!date.format('yyyy-MM-dd HH:mm',$!refundLine.pickArriveTime)</p>
+                  </dd>
+                </dl>
+                #elseif($refundLine.deliveryWay == 3)
+                <dl>
+                	<dt>快递至妈妈好</dt>
+                  <dd>
+                  	<p><strong>物流公司：</strong>$!{refundLine.logisticsName}</p>
+                    <p><strong>货运单号：</strong>$!{refundLine.logisticsNumber}</p>
+                    <div>
+                    	<strong>订单跟踪：</strong>
+                    	<a href="javascript:;" onclick="InquireKD(this, '$!{refundLine.logisticsType}', '$!{refundLine.logisticsNumber}')" class="label label-warning">点击查看物流信息</a>
+                    	<ul id="kd-$!{refundLine.logisticsNumber}"></ul>
+                    </div>
+                  </dd>
+                </dl>
+                #elseif($refundLine.deliveryWay == 2)
+                <dl>
+                	<dt>送货至自提点</dt>
+                  <dd>
+                  	<p><strong>联系人姓名：</strong>$!{orderLine.order.consigneeName}</p>
+                    <p><strong>联系人地址：</strong>$!{orderLine.order.address}</p>
+                    <p><strong>联系人电话：</strong>$!{orderLine.order.consigneePhone}</p>
+                  </dd>
+                </dl>
+                #end
+              </div>
+            </div>
+			#end
+			#if($refundGoods.size()>0)
+			<div class="widget-title"><a href="#order-4" data-toggle="collapse"><span class="icon"><i class="icon-exclamation-sign"></i></span><h5>退款验货</h5></a></div>
+            <div id="order-4" class="collapse in">
+            	<div class="widget-content">
+              	<dl>
+                	<dt>退款验货明细</dt>
+                  <dd class="nopadding">
+                  	<table class="table table-text-center">
+                    	<thead>
+			                  <tr>
+			                    <th class="text-left">商品</th>
+			                    <th width="100">验货数量</th>
+			                    <th>备注</th>
+			                  </tr>
+			                </thead>
+                      <tbody>
+                      	#foreach($refundGood in $refundGoods)
+                        <tr>
+                          <td class="text-left"><a href="javascript:;">$!{itemName}</a></td>
+                          <td>$!{refundGood.qty}</td>
+                          <td>$!{refundGood.remark}</td>
+                        </tr>
+                        #end
+                      </tbody>
+                    </table>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+			#end
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- 客服介入退款 -->
+<div class="modal hide" id="refund-pop" aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>客服介入退款</h3></div>
+  <div class="modal-body nopadding">
+   	<div class="form-horizontal form-horizontal-inline">
+    	<div class="control-group">
+        <label class="control-label">退货商品：</label>
+        <div class="controls"><span class="notepad-inline">$!{itemName}</span></div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">退货数量：</label>
+        <div class="controls"><span class="notepad-inline">$!{goodsCount}</span></div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">退款金额：</label>
+        <div class="controls">
+          <input type="text" id="refundPrice" name="refundPrice" onkeyup="isForm.isMoney(this);" onblur="isForm.isZero(this);" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><a class="btn btn-success" href="javascript:getRefund();">确定</a> <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a> </div>
+</div>
+
+<!--填写退货物流 consumerTranUnits  2015.11.24 关闭-->
+<div class="modal hide in" id="refund-consumerTranUnit-pop" aria-hidden="false">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>填写退货物流</h3></div>
+  <div class="modal-body nopadding">
+   	<div class="form-horizontal form-horizontal-inline">
+    	<div class="control-group">
+        <label class="control-label">退货物流：</label>
+        <div class="controls">
+          <select name="logisticsType" id="logisticsType">
+            #if("$!{refundLine.logisticsName}"=="")
+              <option value="0">请选择</option>
+            #end
+            #foreach($ctranUnit in $!consumerTranUnits)
+               <option value="$!ctranUnit.tranSimNo">$!ctranUnit.tranSimName</option>
+            #end
+          </select>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">物流单号：</label>
+        <div class="controls">
+          <input type="text" id="logisticsNumber" name="logisticsNumber"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+   <a data-dismiss="modal" class="btn" href="javascript:;">取消</a> 
+   <a class="btn btn-success" href="javascript:addConsumerTranUnit();">提交</a>
+  </div>
+</div>
+
+<!--退运费功能 修改退运费-->
+<div class="js-tmp-modal modal modal-lg hide fade" id="compensateMailPriceId">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;收货确认明细</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form id="msg-form" class="form-horizontal">
+            <input name="cmId" type="hidden">
+            <input id="cProofPics" name="cProofPics" type="hidden"/>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>退运费金额：</label>
+                <div class="controls">
+                    <input type="text" name="cmPrice"/>
+                    单位为分,输入的赔付金额为正整数
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>姓名：</label>
+                <div class="controls">
+                    <input type="text" name="cmPayName"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>支付宝账号：</label>
+                <div class="controls">
+                    <input type="text" name="cmPayAccount"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="javascript:commitCompensateMailPrice();">确定</button>
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+
+<!--modal container 转单确认收货-->
+<div class="js-tmp-modal modal modal-lg hide fade" id="orderTransferId">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times; </button>
+        <h3>收货确认明细</h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label">退货商品：</label>
+            <div class="controls"><span class="notepad-inline">$!{itemName}</span></div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">退货数量：</label>
+            <div class="controls">
+                <input type="text" id="transferRefundCount"  value="$!{refundLine.refundGoodsCount}"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">退款金额(单位元)：</label>
+            <div class="controls">
+                <input type="text" id="transferRefundPrice" onkeyup="isForm.isMoney(this);" onblur="isForm.isZero(this);" value="#formatAmount($!{refundLine.refundAmount})"/>
+            </div>
+        </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="javascript:refundConfirm();">确认退款</button>
+        <button class="btn btn-primary" data-dismiss="modal" onclick="javascript:refusedRefund();">拒绝退款</button>
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var refundNo = '$!refundLine.refundLineNo' ;//退款退货单号
+    var refundShiftStatus = '$!refundLine.refundShiftStatus';//是否转单
+    var payStatus = '$!refundLine.payStatus';//打款状态
+	Matrix.Nav({"menu": 116, "cmenu": 144});
+	var orderStatus = "$refundLine.refundType", // 退款类型 1：退货退款 2：退款;
+	Status = "$refundLine.status";
+    if(Status == 12){
+        Status = 2;
+    }else if(Status == 13){
+        Status = 10;
+    }
+	progress = $(".order-progress"), lis = progress.find("li"), l = 0;
+	if(orderStatus == 1){
+		var w = 0, k = 100 / 6;
+		switch(Number(Status)){
+			case 1:
+				// 申请退款退货;
+				w = k * 1;
+				l = 1;
+				break;
+			case 2:
+				// 审核通过（等待买家退货）;
+				w = k * 2;
+				l = 2;
+				break;
+			case 3:
+				// 平台已收货;
+                if(refundShiftStatus == 1 && payStatus == 4){
+                    //转单
+                    w = k * 6;
+                    l = 6;
+                }else{
+                    //非转单
+                    w = k * 5;
+                    l = 5;
+                }
+				break;
+			case 4:
+				// 退款完成（同意退款）;
+				w = 100;
+				l = 6;
+				break;
+			case 5:
+				// 审核未通过（人工客服介入）;
+				//w = 100 / 3 * 2;
+				w = 100;
+				l = 3;
+				break;
+			case 8:
+				// 未通过审核的关闭（退款关闭）;
+				w = 100;
+				l = 3;
+				break;
+			case 6:
+				// 取消申请（退款关闭）;
+				w = 100;
+				l = 2;
+				break;
+			case 7:
+                // 平台收货;
+                w = k * 3;
+                l = 3;
+				break;
+			case 9:
+				// 部分退货中（平台已收货状态前一步骤）;
+				w = k * 5;
+				l = 5;
+				break;
+			case 10:
+				// 订单超时关闭;
+				w = 100;
+				l = 2;
+				break;
+			case 11:
+				// 等待客服介入（等待买家处理超过7天）;
+				w = k * 5;
+				l = 5;
+				break;
+		}
+		if(Status == 5 || Status == 8){
+			progress.addClass("order-refund-3");
+		}else if(Status != 10){
+			progress.addClass("order-refund-6");
+		}
+		progress.find(".bg s").width( w + "%" );
+	}else if(orderStatus == 2){
+		progress.addClass("order-refund-3");
+		switch(Number(Status)){
+			case 3:
+				progress.addClass("state-3"); // 申请退款退货;
+				l = 2;
+				break;
+			case 4:
+				progress.addClass("state-5"); // 退款完成;
+				l = 3;
+				break;
+			case 10:
+				progress.addClass("state-5"); // 退款失败;
+				l = 3;
+				break;
+		}
+	}
+	
+	for(var i = 0; i < l; i++){		
+		lis.eq(i).addClass("active");
+	}
+	
+	
+	
+	
+	var refundPOP = $("#refund-pop"), Price = $("#refundPrice"),
+	getVal = {
+		refundNo: '$!refundLine.refundLineNo'
+	};
+	function showRefund(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {refundNo: getVal.refundNo},
+			url: root + "/order/customerInter.do",
+			fun: function(msg){
+				//console.log(msg);
+				var pri = Number(Number(msg) * Number("$!{goodsCount}") / 100).toFixed(2);
+				Price.val(pri);
+				refundPOP.modal("show");
+			}
+		});
+	};
+	function getRefund(){
+		if(isForm.isTrim(Price.val())){
+			Toast.show("请填写金额");
+			Price.focus();
+			return;
+		}
+		getVal.price = Price.val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: getVal,
+			url: root + "/order/commitRefundPrice.do",
+			fun: function(msg){
+				if(msg){
+					Toast.show("提交成功");
+					window.location.reload();
+				}else{
+					Toast.show({template: "提交失败", auto: false});
+				}
+			}
+		});
+	};
+	
+	
+	// 快递信息查询;
+	function InquireKD(obj, name, id){
+		var elems = $("#kd-" + id);
+		obj.remove();
+		elems.html('<li class="label label-success">请稍后，我们正在为您加载数据…</li>');
+		new Matrix.JSON({
+			val: {platformCode: name, waybillNumber: id},
+			url: root + "/order/logisticsTracking4Refund.do",
+			fun: function(msg){
+				var arr = [];
+				if(Number(msg.status) == 0){
+					// 成功;
+					// var data = msg.data.sort(function(a,b){return a.time - b.time});
+          var data = msg.data;
+					for(var i = 0; i < data.length; i++){
+						arr.push('<li class="li-'+ i +'">' + data[i].time + ' ' + data[i].context + '</li>');
+					}
+				}else if(Number(msg.status) == 2){
+					// 接口出现异常;
+					arr.push('<li class="label">'+ msg.message +'</li>');
+				}else{
+					// 物流单暂无结果;
+					arr.push('<li class="label">该单号暂无物流进展，请稍后再试，或检查公司和单号是否有误。</li>');
+				}
+				elems.html(arr.join(''));
+			}
+		});
+	};
+	
+	//添加退货物流信息
+	function showConsumerTranUnit(){
+	    $("#logisticsNumber").val("$!{refundLine.logisticsNumber}");
+	    $("#logisticsType").val("$!{refundLine.logisticsType}")
+	    var consumerTranUnitPop=$("#refund-consumerTranUnit-pop");
+	    consumerTranUnitPop.modal("show");
+	}
+
+    //添加退货物流信息
+      function addConsumerTranUnit(){
+          var refundLineId=$!{refundLine.refundLineId};
+          var logisticsType=$("#logisticsType").val();
+          var logisticsName=$("#logisticsType").find("option:selected").text();
+          var logisticsNumber=$("#logisticsNumber").val();
+          var mememberId=$!{orderLine.order.memberId};
+         //alert("id:"+refundLineId+" type:"+logisticsType+"  name:"+logisticsName+"numbet:"+logisticsNumber);
+         Matrix.JSON({
+                showLoad: true,
+                type: "POST",
+                val: {refundLineId:refundLineId,logisticsType:logisticsType,logisticsName:logisticsName,logisticsNumber:logisticsNumber},
+                url: root + "/order/addLogisticsInfo.do",
+                fun: function(data){
+                    if(data.success==true){
+                        Toast.show("提交成功");
+
+                        window.location.reload();
+                    }else{
+                        Toast.show({template: "退款失败,"+data.msg, auto: false});
+                    }
+                }
+           });
+      }
+
+    //修改退运费信息
+    function editFreight(cmId){
+        $("input[name='cmId']").val("");
+        $("input[name='cmPrice']").val("");
+        $("input[name='cmPayName']").val("");
+        $("input[name='cmPayAccount']").val("");
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            val: {cmId:cmId},
+            url: root + "/compensateMailPrice/getCompensateMailPrice.do",
+            fun: function(data){
+                var info = {
+                    title: "退运费修改"
+                };
+                var self = $("#compensateMailPriceId");
+                self.find(".modal-header h3").text(info.title);
+                //设置数据
+                $("input[name='cmId']").val(data.cmId);
+                $("input[name='cmPrice']").val(data.cmPrice);
+                $("input[name='cmPayName']").val(data.cmPayName);
+                $("input[name='cmPayAccount']").val(data.cmPayAccount);
+                self.modal("show");
+            }
+        });
+    }
+
+    //提交退运费
+    function commitCompensateMailPrice(){
+        var cmId = $("input[name='cmId']").val();
+        var cmPrice = $("input[name='cmPrice']").val();
+        var cmPayName = $("input[name='cmPayName']").val();
+        var cmPayAccount = $("input[name='cmPayAccount']").val();
+
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            val: {cmId:cmId,cmPrice:cmPrice,cmPayName:cmPayName,cmPayAccount:cmPayAccount},
+            url: root + "/compensateMailPrice/updateCompensateMailPrice.do",
+            fun: function(data){
+               if(data==true){
+                   Toast.show("更新成功");
+                   window.location.reload();
+               }else{
+                   Toast.show("更新失败");
+               }
+            }
+        });
+    }
+
+    //转单 收货确认明细
+    function orderTransferConfirm(cmId){
+        var self = $("#orderTransferId");
+        self.modal("show");
+    }
+
+    //转单-确认退货
+    function refundConfirm(){
+        var price = $("#transferRefundPrice").val();
+        var goodCount = $("#transferRefundCount").val();
+        if(isForm.isTrim(refundNo)){
+            Toast.show("必要参数为空");
+            return;
+        }
+        if(isForm.isTrim(price)){
+            Toast.show("请填写退款金额");
+            return;
+        }
+        if(isForm.isTrim(goodCount)){
+            Toast.show("请填写退货数量");
+            return;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            val: {refundLineNo:refundNo,price:price,goodCount:goodCount},
+            url: root + "/orderTransfer/refundConfirm.do",
+            fun: function(data){
+                data = eval(data);
+                if(data.success==true){
+                    Toast.show("操作成功");
+                    window.location.reload();
+                }else{
+                    Toast.show("操作失败");
+                }
+            }
+        });
+    }
+
+    //转单-拒绝退货
+    function refusedRefund(){
+        if(isForm.isTrim(refundNo)){
+            Toast.show("必要参数为空");
+            return;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            val: {refundLineNo:refundNo},
+            url: root + "/orderTransfer/refusedRefund.do",
+            fun: function(data){
+                data = eval(data);
+                if(data.success==true){
+                    Toast.show("操作成功");
+                    window.location.reload();
+                }else{
+                    Toast.show("操作失败");
+                }
+            }
+        });
+    }
+</script>

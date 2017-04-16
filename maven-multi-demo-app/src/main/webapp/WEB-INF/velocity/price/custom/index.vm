@@ -1,0 +1,304 @@
+﻿##妈妈好自定义价格导入
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>
+        商品管理 | 自定义价格
+    </h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+ 				<div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>新增单条立即生效记录</h5>
+                </div>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="$!{request.getContextPath()}/custom/price/list.do">平台自定义价格</a></li>
+                    <li><a href="$!{request.getContextPath()}/wd/custom/price/list.do?searchType=0">微店自定义价格</a></li>
+                </ul>
+
+                <div class="widget-content nopadding">
+                    <form  id="frm" method="post" action="$!{request.getContextPath()}/custom/price/insert.do" class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="row-fluid">
+                            <div class="span5">
+                                <div class="control-group">
+                                    <label class="control-label">商品ID：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" name="styleNumId" value="" maxlength="10"><font color="red">$!{msgStyle}</font>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">价格：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5"  name="price" value="" maxlength="10"><font color="red">$!{msgPrice}</font>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">时间：</label>
+                                    <input id="startTime" class="span4" type="text" name="startTime" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+                                    <span class="notepad-inline">至</span>
+                                    <input id="endTime" class="span4" type="text" name="endTime" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}'})"/> <font color="red">$!{msgTime}</font>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="submit-btn" class="btn btn-success">添加</button>
+                            <button type="reset" class="btn btn-warning">重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>Excel操作</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form action="$!{request.getContextPath()}/custom/price/importCustomPrice.do" name="importForm" id="importForm" method="post" enctype="multipart/form-data">
+                        <div class="modal-body nopadding">
+                            <div class="form-horizontal">
+                                <div class="control-group">
+                                    <label class="control-label mustFill-label">
+                                        <i>*</i>请选择导入文件：
+                                    </label>
+
+                                    <div class="controls">
+                                        <input id="file" name="file" class="controll" type="file" accept=".xlsx">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <font color="red">$!{msgImport}</font><br/>
+                            <a id="xiazai" href="http://h4.mamahao.com/template/excel-demo.rar" class="btn btn-success">下载模板</a>
+                            <button id="submit" class="btn btn-success">导入数据</button>(Excel导入请操作后检查数据，避免数据导入错误，时间最小值为明天,且<font color="red">每个款式一条记录即可</font>)
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>缓存维护</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form  method="post" action="$!{request.getContextPath()}/custom/price/init.do" class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="form-actions">
+                            <font color="red">$!{msgInit}</font><br/>
+                            <button type="submit" class="btn btn-success">初始化款式缓存</button>(<font color="red">运营请勿操作！！！</font>)
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>查询条件</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form id="orderForm" name="orderForm" method="get" class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="row-fluid">
+                            <div class="span5">
+                                <div class="control-group">
+                                    <label class="control-label">商品ID：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span6" id="form-styleNumId" name="styleNumId" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">状态：</label>
+                                    <div class="controls">
+                                        <select name="tab" class="span12">
+                                            <option value="1"  #if ($tab == 1) selected #end>生效中</option>
+                                            <option value="2" #if ($tab == 2) selected #end>排期中</option>
+                                            <option value="3" #if ($tab == 3) selected #end>已过期</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button id="Choice" class="btn btn-success">筛选</button>
+                            <button type="reset" class="btn btn-warning">重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li  #if($tab == 1) class="active" #end>
+                                <a href="$!{request.getContextPath()}/custom/price/list.do?tab=1">生效中</a>
+                            </li>
+                            <li  #if($tab == 2) class="active" #end>
+                                <a  href="$!{request.getContextPath()}/custom/price/list.do?tab=2">排期中</a>
+                            </li>
+                            <li  #if($tab == 3) class="active" #end>
+                                <a  href="$!{request.getContextPath()}/custom/price/list.do?tab=3">已过期</a>
+                            </li>
+                        </ul>
+                        <div class="widget-content">
+                            <table class="table table-text-center table-order">
+                                <thead>
+                                <tr>
+								##<th class="text-left">ID</th>
+                                    <th>商品ID(STYLE_NUM_ID)</th>
+                                    <th>价格(元)</th>
+                                    <th>生效时间</th>
+                                    <th>过期时间</th>
+                                    <th>添加时间</th>
+                                    <th>添加者</th>
+                                    #if ($tab != 3)
+                                    <th>操作</th>
+                                    #end
+                                </tr>
+                                </thead>
+								#foreach($info in $list)
+                                    <tbody>
+                                    <!-- 商品行之间的间距行 end -->
+                                    <tr class="order-bd">
+									#*
+                                   <td class="text-left baobei">
+                                        <p>$!{info.id}</p>
+                                   </td>
+                                   *#
+                                        <td class="source">
+                                            <p>$!{info.styleNumId}</p>
+                                        </td>
+
+
+                                        <td class="amount">
+                                            <p class="special-num"><strong>$!{info.price}</strong></p>
+                                        </td>
+
+                                        <td class="source">
+                                            <p>$!{info.startTime}</p>
+                                        </td>
+                                        <td class="source">
+                                            <p>$!{info.endTime}</p>
+                                        </td>
+                                        <td class="source">
+                                            <p>$!{info.createTime}</p>
+                                        </td>
+                                        <td> <p>$!{info.createUser}</p></td>
+                                        #if ($tab != 3)
+                                            <td class="operate">
+                                                #if ($tab == 1) <p><a href="$!{request.getContextPath()}/custom/price/del.do?id=$!{info.id}&styleNumId=$!{info.styleNumId}&tab=$!{tab}&flushcache=201314" onclick="return confirm('是否确定删除？');">删除</a></p> #end
+                                                #if ($tab == 2) <p><a href="$!{request.getContextPath()}/custom/price/del.do?id=$!{info.id}&styleNumId=$!{info.styleNumId}&tab=$!{tab}" onclick="return confirm('是否确定删除？');">删除</a></p> #end
+                                            </td>
+                                        #end
+                                    </tr>
+                                    </tbody>
+								#end
+                            </table>
+                            <div class="pagination text-right">
+							##分页
+
+                                <div class="pagination alternate text-right" id="pagination">
+
+									#if($page.recordCount > 0)
+                                        <div class="count">
+                                            <span>$!page.recordCount </span>条记录 (第 <span>$!page.page</span> 页,共<span>$!page.pageCount</span>页)
+                                        </div>
+                                        <ul>
+											#if($page.page != 1)
+												#set($pre = $page.page - 1)
+                                                <li class=""><a href="$!{request.getContextPath()}/custom/price/list.do?page=$pre&tab=$!{tab}">上一页</a></li>
+											#else
+                                                <li class="disabled"><a href="javascript:;">上一页</a></li>
+											#end
+
+										##总页数小于10时页码全部显示
+											#if($page.pageCount <= 9)
+												#foreach( $p in [1..$page.pageCount])
+													#if($!page.page == $p)
+                                                        <li class="active"><a href="$!{request.getContextPath()}/custom/price/list.do?page=$p&tab=$!{tab}">$p</a></li>
+													#else
+                                                        <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=$p&tab=$!{tab}">$p</a></li>
+													#end
+												#end
+											#else
+											##中间段页面循环开始下标与结束下标
+												#set($start = 1)
+												#set($end = 9)
+												#if($page.page > 5)
+													#set($start = $page.page - 2)
+													#set($end = $page.page)
+													#set($end1 = $page.page + 1)
+													#set($end2 = $page.page + 2)
+
+													#if($end1 <= $page.pageCount)
+														#set($end = $page.page + 1)
+													#end
+													#if($end2 <= $page.pageCount)
+														#set($end = $page.page + 2)
+													#end
+                                                    <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=1">1</a></li>
+                                                    <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=2">2</a></li>
+                                                    <li><a href="javascript:;">...</a></li>
+												#end
+												#foreach($p in [$start .. $end])
+													#if($!page.page == $p)
+                                                        <li class="active"><a href="$!{request.getContextPath()}/custom/price/list.do?page=$p&tab=$!{tab}">$p</a></li>
+													#else
+                                                        <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=$p&tab=$!{tab}">$p</a></li>
+													#end
+												#end
+												#if($end < $page.pageCount)
+												##end页面小于显示最末页码
+                                                    <li><a href="javascript:;">...</a></li>
+													#set($last = $page.pageCount)
+                                                    <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=$last&tab=$!{tab}">$last</a></li>
+												#end
+											#end
+
+										##下一页
+											#if($page.page != $page.pageCount)
+												#set($next = $page.page + 1)
+                                                <li><a href="$!{request.getContextPath()}/custom/price/list.do?page=$next&tab=$!{tab}">下一页</a></li>
+											#else
+                                                <li class="disabled"><a href="javascript:;">下一页</a></li>
+											#end
+                                        </ul>
+									#else
+                                        <div class="null">暂无记录</div>
+									#end
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    Matrix.Nav({"menu": 107, "cmenu": 190});
+    //筛选按钮
+    $("#Choice").bind("click",function(){
+
+        var styleNumId = $("#form-styleNumId").val();
+
+        if (styleNumId != "") {
+            if (styleNumId.length > 20) {
+                Toast.show('商品ID(STYLE_NUM_ID)超长，请控制在20个字符以内！');
+                return false;
+            }
+            if(isNaN(styleNumId)){
+                Toast.show('商品ID(STYLE_NUM_ID)只能为数字！');
+                return false;
+            }
+        }
+
+        $("#orderForm").attr("action","$!{request.getContextPath()}/custom/price/list.do");
+        document.getElementById("orderForm").submit();
+    });
+    $("#submit-btn").on("click", function(){
+        if(confirm("确定添加该商品的平台自定义价格么？")){
+            $("#frm").submit();
+        }
+
+    });
+</script>

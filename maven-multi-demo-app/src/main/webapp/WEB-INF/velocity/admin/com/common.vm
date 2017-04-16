@@ -1,0 +1,127 @@
+##图片地址
+##后台其它图片地址
+#set($imgpath = "http://bgo.mamhao.cn/")
+##妈妈圈专用图片地址
+#set($topicImagePath="http://topic.mamhao.cn/")
+##商品图片
+#set($goodsImagePath="http://image.mamhao.cn/")
+##用户评价图片地址前缀 结构：前缀/memberId/文件名
+#set($member_evaluation_pic = "http://mmh-images.oss-cn-hangzhou.aliyuncs.com/comment-images/")
+##退款退货图片  结构：前缀/memberId/文件名
+#set($refund_goods_pic = "http://mmh-images.oss-cn-hangzhou.aliyuncs.com/refund-images/")
+
+
+##公共vm函数
+
+##订单模块  计算单价（需要除以数量）   计算金额  分--元
+##price 订单行价格   count 订单行数量
+#macro( converAmount $price $count)
+#set($temp = $math.div($price,$count))
+#set($result = $math.div($temp,"100"))
+$!number.format("#0.00",$result)
+#end
+
+##订单模块  格式化金额  分--元
+#macro( formatAmount $price )
+#set($result = $math.div($price,"100"))
+$!number.format("#0.00",$result)
+#end
+
+##订单模块 金额相减
+#macro( minusAmount $price1 $price2)
+#set($temp = $math.sub($price1,$price2))
+#set( $result = $math.div($temp,"100") )
+$!number.format("#0.00",$result)
+#end
+
+##众筹  格式化千分位 ，且将分转元
+#macro(formatThousands $price)
+    #set($result = $math.div($price,"100"))
+    #if($result gt 100)
+        $!number.format("#,000.00",$result)
+    #else
+        $!number.format("#0.00",$result)
+    #end
+#end
+
+##金额相加
+#macro( addAmount $price1 $price2)
+    #set($temp = $math.add($price1,$price2))
+    #set( $result = $math.div($temp,"100") )
+    $!number.format("#0.00",$result)
+#end
+
+##金额相加
+#macro( addMoreAmount $price1 $price2 $price3)
+    #set($temp = $math.add($price1,$price2))
+    #set($temp1 = $math.add($temp,$price3))
+    #set( $result = $math.div($temp1,"100") )
+    $!number.format("#0.00",$result)
+#end
+
+##判断是否有优惠
+#macro(exitDiscount $payTotalPrice $payPrice $payFreightPrice)
+#set($temp1 = $math.add($payTotalPrice,$payFreightPrice))
+#set($temp2 = $math.sub($temp1,$payPrice))
+#if($temp2 != 0)
+#set( $result = $math.div($temp2,"100") )
+<span class="label label-important">优惠 $!number.format("#0.00",$!result)元</span>
+#end
+#end
+
+##数量单位转换
+#macro(converCount $num $unit)
+    #set($unitStr = "")
+    #if(10000 <= $num && 10000 == $unit)
+        #set($unitStr="#0.0万")
+    #else
+        #set($unit = 1)
+        #set($unitStr="#0")
+    #end
+    #set($result = $math.div($num,$unit))
+    $!number.format("$unitStr",$result)
+#end
+
+
+##天化月，化年
+#macro(covertDay2Date $days)
+    #set($Y = $days / 365)
+    #set($M = $days % 365 /30)
+    #set($result= "")
+    #if($Y > 0)
+        #set( $result = $Y + "岁" )
+        #if($M > 0)
+            #set( $result = $result + $M + "月" )
+        #end
+    #else
+        #if($M > 0 )
+            #set( $result = $M + "月" )
+        #else
+            #set( $result = "0月" )
+        #end
+    #end
+    $result
+#end
+
+##化岁
+#macro(covertDay2Year $days)
+#set($Y =0)
+#if($days > 0)
+#set($Y =$days / 365)
+#elseif($days == -1)
+#set($Y ="")
+#end
+$Y
+#end
+
+
+##天化月
+#macro(covertDay2Month $days)
+#set($M =0)
+#if($days > 0)
+#set($M =$days % 365 /30)
+#elseif($days == -1)
+#set($M ="")
+#end
+$M
+#end

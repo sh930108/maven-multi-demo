@@ -1,0 +1,144 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 139});
+</script>
+
+<div id="content-header">
+    <h1>商品管理 | 添加品牌</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		
+		<div class="widget-box">
+			<div class="widget-title"> <span class="icon"> <i class="icon-arrow-right"></i> </span>
+				<h5>请选择品牌对应类目，输入对应的品牌</h5>
+			</div>
+
+			<div class="widget-content">
+				<form class="form-horizontal " action="$!{request.getContextPath()}/brand/addBrand.do" method="POST" onsubmit="return checkSubmit()">
+					<div class="control-group">
+						<label class="control-label">一级类目:</label>
+						<div class="controls">
+							<select id="t1" class="select_big" name="first" onchange="ch2(this.value)" onsubmit="return checkSubmit();">
+								<option value="0">请选择</option>
+								#foreach($g in $glist)
+								<option value="$g.gtId" #if($typeMap.gtId1 ==$g.gtId) selected #end>$g.gtName</option>
+								#end 
+							</select>
+						</div>
+
+						<label class="control-label">二级类目:</label>
+						<div class="controls">
+							<select id="t2" class="select_big" name="two" onchange="ch3(this.value)">
+								<option value="0">请选择</option>
+							</select>
+						</div>
+
+						<label class="control-label">三级类目:</label>
+						<div class="controls">
+							<select id="t3" class="select_big" name="three" >
+								<option value="0">请选择</option>
+							</select>
+						</div>
+
+						<label class="control-label">品牌:</label>
+						<div class="controls">
+							<input type="text" name="brandName" id="brandName" value="$!{brandMap.brandName}" class="input_small" placeHolder="请输入品牌名称" />
+						</div>
+					</div>
+					<div class="form-actions">
+						<button class="btn btn-success" type="submit">确定</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jQuery.js"></script>
+<!--页面弹出提示插件-->
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/alert.js"></script>
+<script>
+var gtId1 = '$!{typeMap.gtId1}';
+var gtId2 = '$!{typeMap.gtId2}';
+var gtId3 = '$!{typeMap.gtId3}';
+if(gtId1 != ""){
+	ch2(gtId1);
+	if(gtId2 != ""){
+		ch3(gtId2);
+	
+	}
+}
+function ch2(id){
+		if(id=="0"){
+			Toast.show("请选择一级类目！");
+			return ;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		}, function(data) {
+			var str = '<option value=\"0\">请选择</option>';
+		 	$.each(data, function(i, n) {
+				if(gtId2 != ""){
+					if(gtId2==n.gtId){
+						str += "<option value='"+n.gtId+"' selected >"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+			    
+    		});
+    		$('#t2').html(str);
+    		$('#t3').val(0);
+		});
+	}
+	function ch3(id){
+		if(id=="0"){
+			Toast.show("请选择二级类目！");
+			return ;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		}, function(data) {
+			var str = '<option value=\"0\">请选择</option>';
+			$.each(data, function(i, n) {
+			   if(gtId3 != ""){
+					if(gtId3==n.gtId){
+						str += "<option value='"+n.gtId+"' selected >"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+    		});
+			$('#t3').html(str);
+		});
+	}
+	
+	function checkSubmit(){
+		var t1 = $('#t1').val();
+		var t2 = $('#t2').val();
+		var t3 = $('#t3').val();
+		if(t1=="0" || t2 =="0" || t3 =="0"){
+			Toast.show("请选择商品类目！");
+			return false;
+		}
+		if($('#brandName').val()==""){
+			Toast.show("请输入品牌名称！");
+			$('#brandName').focus();
+			return false;
+		}
+		if($('#brandName').val().length > 20){
+			Toast.show("品牌名称过长！");
+			$('#brandName').focus();
+			return false;
+		}
+	}
+</script>

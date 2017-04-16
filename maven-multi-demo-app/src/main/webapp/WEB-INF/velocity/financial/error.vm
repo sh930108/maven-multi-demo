@@ -1,0 +1,2 @@
+#set ($layout ="/admin/layout/blank.vm")
+	<p>该退款单已经退款成功,不允许退款.</p>

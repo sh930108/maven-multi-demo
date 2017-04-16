@@ -1,0 +1,95 @@
+﻿#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 208, "cmenu": 213});
+</script>
+
+<div id="content-header">
+<h1>妈妈圈 | 评论管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
+                <h5>评论列表</h5>
+            </div>
+            <div class="widget-content">
+                <div class="widget-box widget-tabs-box">
+                    <ul class="nav nav-tabs">
+                        <li class="#if($searchVo.status == 0 || $searchVo.status == "")active#end"><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=0">被举报</a></li>
+                        <li class="#if($searchVo.status == 1)active#end"><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=1">被过滤</a></li>
+                        <li class="#if($searchVo.status == 2)active#end"><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=2">已通过</a></li>
+                        <li class="#if($searchVo.status == 3)active#end"><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=3">未通过</a></li>
+                        <li ><a href="$!{request.getContextPath()}/mmq/comment/queryTopicComments.do">搜索评论</a></li>
+                    </ul>
+                    <form method="get" id="listForm">
+                        <input type="hidden" id="status" name="status" value="$!{searchVo.status}">
+                        <input type="hidden" id="sort" name="sort" value>
+                    </form>
+                    <div class="widget-content">
+                        #if($searchVo.status != 2 && $searchVo.status !=3)
+                        <a class="btn btn-success" href="javascript:;" id="pass" data-opt=2>审核通过</a>
+                        #end
+                        #if($searchVo.status != 1 && $searchVo.status !=3)
+                        <a class="btn btn-warning" href="javascript:;" id="refuse" data-opt=3>审核不通过</a>
+                        #end
+#*
+                        <a class="btn btn-danger " href="javascript:;" id="delete" data-opt=4>删除</a>
+*#
+                    </div>
+                    <div class="widget-content tab-content">
+                        <div class="tab-pane active">
+                            <table class="table table-hover with-check table-text-center table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="checkAll"></th>
+                                        <th>评论内容</th>
+                                        <th>作者</th>
+                                        #set($sort = $searchVo.sort)
+                                        <th><a href="javascript:;" class="js-sort" data-sort-type=#if($sort == 0)1#else 0#end>被举报时间<span>#if($sort == 1)↓#else ↑#end</span></a></th>
+                                        <th>审核状态</th>
+                                        <th><a href="javascript:;" class="js-sort" data-sort-type=#if($sort == 2)3#else 2#end>举报次数<span>#if($sort == 2)↓#else ↑#end</span></a></th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    #foreach($data in $dataList)
+                                    <tr data-comment-id="$!data.commentId" data-topic-id="$!data.topic_id">
+                                        <td><input type="checkbox" class="js-checkbox"></td>
+                                        <td>$!{data.topicComment}</td>
+                                        <td>$!{data.memberName}</td>
+                                        <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.createTime})</td>
+                                        <td>
+                                            #if($data.status==2)
+                                            <span class="label label-success">已通过</span>
+                                            #elseif($data.status==3)
+                                            <span class="label label-important">未通过</span>
+                                            #else
+                                            <span class="label"> 未审核</span>
+                                            #end
+                                        </td>
+                                        <td>$!{data.complainNum}</td>
+                                        <td>
+                                            <a class="btn btn-success btn-mini js-detail" href="$!{request.getContextPath()}/mmq/comment/queryTopicDetail.do?topicId=$!{data.topic_id}&commentId=$!{data.commentId}">查看</a> 
+                                            #* <a class="btn btn-danger btn-mini js-option" data-opt=3 href="javascript:;">删除</a>  *#
+                                        </td>
+                                    </tr>
+                                    #end
+                                </tbody>
+                            </table>
+                            #parse("/pagination.vm")
+                        </div>
+                    </div>
+                    <!-- 内容框 END -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+var ROOTPATH = "$!{request.getContextPath()}";
+</script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/yy/js/comment_list.js"></script>

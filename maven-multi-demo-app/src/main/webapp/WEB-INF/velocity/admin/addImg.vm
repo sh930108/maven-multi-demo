@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <div>文件上传</div>
+        <form action="admin/upload.htm" method="post" enctype="multipart/form-data">
+            <label for="file">选择文件:</label>
+            <input type="file" name="file" id="file" />
+            <br />
+            <input type="submit" name="submit" value="确定" />
+        </form>
+    </body>
+</html>

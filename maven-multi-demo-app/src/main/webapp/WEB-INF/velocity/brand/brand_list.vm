@@ -1,0 +1,210 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 141});
+</script>
+<div id="content-header">
+    <h1>商品管理 | 品牌列表</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>品牌列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/brand/queryBrandList.do">
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">品牌名称：</label>
+									<div class="controls">
+										<input id="brandName" class="input_formheader" type="text" name="brandName" value="$!{brandName}" />
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<div class="row-fluid">	
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">商品类目：</label>
+									<div class="controls">
+										<select id="t1" name="styleCatelogFirst" onchange="ch2(this.value)" onsubmit="return checkSubmit();">
+											<option value="0">请选择</option>
+											#foreach($g in $glist)
+											<option value="$g.gtId" #if($first==$g.gtId) selected #end>$g.gtName</option>
+											#end  
+										</select>
+										<select id="t2" name="styleCatelogSec" onchange="ch3(this.value)">
+											<option value="0">请选择</option>
+										</select>
+										<select id="t3" name="styleCatelogThird" >
+											<option value="0">请选择</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<div class="form-actions">
+				              <button class="btn btn-success" type="submit">筛选</button>
+                      <button class="btn btn-warning" type="reset">重置</button>
+			            </div>
+					</form>
+				</div>
+				<div class="widget-content">
+					<table class="table table-hover with-check table-text-center">
+	              		<thead>
+	              			<tr>
+	              				<th>品牌ID</th>
+	              				<th>品牌名称</th>
+	              				<th>所属三级类目</th>
+	              				<th>三级类目ID</th>
+								<th>是否热门品牌</th>
+								<th>排序</th>
+								<th>操作</th>
+	              			</tr>
+	              		</thead>
+	              		<tbody>
+	              			#foreach($data in ${dataList})
+	              			#set($index = $loopCounter + 1)
+	              			<tr >
+	              				<td>$!data.brandId</td>
+	              				<td>$!data.brandName</td>
+	              				<td>$!data.thirdTypeName</td>
+	              				<td>$!{data.thirdTypeId}</td>
+								<td>
+									 <input type="checkbox" class="recomme" #if($data.isHot==1) checked #end value="$!data.brandId"/>
+								</td>
+								<td>$!{data.orderBy}</td>
+								<td>
+									#if($data.brandId==1)
+										
+									#else
+                                        <a href="$!{request.getContextPath()}/brand/locationEditBrand.do?brandId=$data.brandId&thirdId=$!{data.thirdTypeId}">编辑</a> 
+										| 
+                                        <a href="javascript:delBrand($data.brandId, $!{data.thirdTypeId});">删除</a>
+									#end
+								</td>
+	              			</tr>
+	              			#end
+	              		</tbody>
+              		</table>
+              		#parse("/pagination.vm")
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	var first = $first;
+	var second = $second;
+	var three = $three;
+	if(first!=0){
+		ch2(first);
+		if(second != 0){
+			ch3(second);
+		}
+	}
+	
+	$('#clearCondition').on('click',function(){
+		$('#t1').val(0);
+		$('#t2').val(0);
+		$('#t3').val(0);
+		$('#brandName').val("");
+	});
+});
+function ch2(id){
+		if(id=="0"){
+			Toast.show("请选择类目");
+			return ;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		  }, function(data) {
+			 var albumData = data;
+			  var str = '<option value=\"0\">请选择</option>';
+			  var second = $!second;
+			  $.each(albumData, function(i, n) {
+			  	if(second != 0 ){
+					if(second==n.gtId){
+						str += "<option value='"+n.gtId+"' selected>"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+			  	
+			  });
+			  $('#t2').html(str);
+			  $('#t3').val(0);
+		});
+}
+	function ch3(id){
+		if(id=="0"){
+			Toast.show("请选择类目");
+			return ;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		}, function(data) {
+			 var albumData = data;
+			  var str = '<option value=\"0\">请选择</option>';
+			  var three = $three;
+			  $.each(albumData, function(i, n) {
+			  	if(three != 0 ){
+					if(three==n.gtId){
+						str += "<option value='"+n.gtId+"' selected>"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+			  });
+			  $('#t3').html(str);
+		});
+	}
+	
+	$('.recomme').on("click", function () {
+        var checked = $(this).attr("checked");
+        if (checked) {
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/brand/updateBrandIsHot.do",
+                val: {brandId: $(this).val(), isHot: 1},
+                fun: function (data) {
+                    window.location.reload();
+                }
+            });
+        } else {
+
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/brand/updateBrandIsHot.do",
+                val: {brandId: $(this).val(), isHot: 0},
+                fun: function (data) {
+                    window.location.reload();
+                }
+            });
+        }
+    });
+	
+	function delBrand(bid, pid){
+		if(confirm("是否删除?")){
+			Matrix.JSON({
+					url: root + "/brand/deleteBrand.do",
+					val: {brandId: bid, typeId: pid},
+					fun: function(){
+						window.location.reload();
+					}
+			});
+		}
+	};
+	
+</script>

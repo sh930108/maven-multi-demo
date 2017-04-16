@@ -1,0 +1,247 @@
+﻿##众筹商品列表页（精选，全部）
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 216});
+</script>
+<style>
+    .table th, .table td{padding: 10px 2px}
+    .table td .desc,.table td .title{display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp:1;-webkit-box-orient: vertical;word-break: break-word;}
+</style>
+<div id="content-header">
+    <h1>会员购商品管理 | 添加众筹商品  <a href="$!{request.getContextPath()}/purchase/goods/plan.do?type=1" class="btn btn-danger">返回</a></h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>众筹商品列表</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form id="searchFrm" class="form-horizontal form-horizontal-inline" method="get" >
+                        <input name="planStatus" type="hidden" value="$!planSearch.planStatus"/>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">商品ID：</label>
+                                    <div class="controls">
+                                        <input id="formplanId" type="text" name="planId" value="$!planSearch.planId" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">商品标题：</label>
+                                    <div class="controls">
+                                        <input id="formplanGoodsTitle" type="text" name="planGoodsTitle" value="$!planSearch.planGoodsTitle" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        #*排序order-hidden*#
+                        <input type="hidden" name="orderByField"/>
+                        <input type="hidden" name="orderByWay"/>
+                        <div class="form-actions">
+                            <button class="btn btn-success" id="submitfrom">筛选</button>
+                            <button class="btn btn-warning" type="reset" id="reset">重置</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li class="#if(!$planSearch.choiceForBoolean) active #end"><a href="$!{request.getContextPath()}/plan/goods/index.do" >全部商品</a></li>
+                        </ul>
+
+                        <div class="widget-content tab-content">
+                            <!-- 选项卡 -->
+                            <div id="tab1" class="tab-pane active">
+                                <table class="table table-hover table-text-center">
+                                    <thead>
+                                    <tr>
+                                        <th>商品ID</th>
+                                        <th width="15%" class="text-left">商品标题</th>
+                                        <th width="25%" class="text-left">商品简介</th>
+                                        <th>上传时间</th>
+                                        <th>专属定制</th>
+                                        <th>众筹状态</th>
+                                        <th>已筹款</th>
+                                        <th>已支持</th>
+                                        <th>剩余天数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        #foreach($!data in $!list)
+                                        <tr>
+                                            <td>$!data.planId</td>
+                                            <td class="text-left"><div class="title" title="$!data.planGoodsTitle">$!data.planGoodsTitle</div></td>
+                                            <td class="text-left"><div class="desc" title="$!data.planGoodsDesc">$!data.planGoodsDesc</div></td>
+                                            <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$data.planCreateTime)</td>
+                                            <td>
+                                                #if($!data.customForBoolean)
+                                                   是
+                                                #else
+                                                    否
+                                                #end
+                                            </td>
+                                            <td>
+                                                #if($!data.planStatus == 0)
+                                                    <span class="label label-info">未开始</span>
+                                                #elseif($!data.planStatus == 1)
+                                                    <span class="label label-info">众筹中</span>
+                                                #elseif($!data.planStatus == 2)
+                                                    <span class="label label-success">众筹成功</span>
+                                                #elseif($!data.planStatus == 3)
+                                                    <span class="label ">众筹失败</span>
+                                                #elseif($!data.planStatus == 4)
+                                                    <span class="label label-warning">众筹取消</span>
+                                                #elseif($!data.planStatus == 5)
+                                                    <span class="label label-warning">众筹暂停</span>
+                                                #end
+                                                <br/>
+                                                #set($perV_ = $!data.planMoneyTotal  * 100 / $!data.planAllPrice)
+                                                <small>(#if($!perV_)$!perV_ #else 0#end%)</small>
+                                            </td>
+                                            <td>
+                                                #formatThousands($!data.planMoneyTotal)元<br/>
+                                                <small>(#formatThousands($!data.planAllPrice)元)</small>
+                                            </td>
+                                            <td>
+                                                #if($!data.planPeoPleTotal)
+                                                    $!data.planPeoPleTotal
+                                                #else
+                                                    0
+                                                #end
+                                                人
+                                            </td>
+                                            <td>
+                                                #if($!data.remainDays > 0)
+                                                    $!data.remainDays天
+                                                #else
+                                                    已到期
+                                                #end
+                                            </td>
+                                            <td>
+                                                <div class="commodity_operat">
+                                                    <a class="btn btn-danger btn-mini" href="$!{request.getContextPath()}/purchase/goods/planInput.do?planId=$!data.planId&pgType=1">添加</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        #end
+                                    </tbody>
+
+                                </table>
+                                #parse("/pagination.vm")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+//筛选按钮
+	$("#submitfrom").bind("click",function(){
+		
+		var planGoodsTitle = $("#formplanGoodsTitle").val();
+		var planId = $("#formplanId").val();
+		if (planGoodsTitle != "") {
+			if (planGoodsTitle.length > 20) {
+				Toast.show('众筹标题超长，请控制在30个字符以内！');
+				return false;
+			}
+			
+		}
+		
+		if (planId != "") {
+			if (planId.length > 20) {
+				Toast.show('众筹商品ID超长，请控制在20个字符以内！');
+				return false;
+			}
+			if(isNaN(planId)){
+				Toast.show('众筹商品ID只能为数字！');
+				return false;
+			}
+		}
+	
+		$("#searchFrm").attr("action","$!{request.getContextPath()}/purchase/goods/toAddPlanGoods.do");
+		document.getElementById("searchFrm").submit();
+	});
+
+    $(function () {
+        //设置排序
+        $.each($("input[name='priority']"), function () {
+            var self = $(this);
+            self.data('id', self.val());
+        });
+        $("input[name='priority']").on("blur", function () {
+            var self = $(this);
+            if (self.data('id') !== self.val()) {
+                updateProperty("priority", self.val(), self.attr("planId"));
+            }
+        });
+
+        /*设置、取消精选*/
+        $('.js-cancel-choice').on('click', function () {
+            if (confirm('确认取消该商品的精选设置?')) {
+                updateProperty('is_choice', false, $(this).data('id'));
+            }
+        });
+        $('.js-set-choice').on('click', function () {
+            if (confirm('确认将该商品设为精选商品?')) {
+                updateProperty('is_choice', true, $(this).data('id'));
+            }
+        });
+    });
+
+    function updateProperty(name, value, id) {
+        Matrix.JSON({
+            val: {"fieldName": name, "fieldValue": value, "planId": id},
+            url: root + "/plan/goods/updateProperty.do",
+            fun: function (msg) {
+                if (msg && msg.success) {
+                    Toast.show('设置成功');
+                    window.location.reload();
+                } else {
+                    Toast.show('设置失败');
+                }
+            }
+        });
+    }
+
+    //排序
+    function doOrder(obj) {
+        $("input[name='orderByField']").val($(obj).attr("orderField"));
+        $("input[name='orderByWay']").val($(obj).attr("orderType"));
+        $("#searchFrm").submit();
+    }
+
+    //加载排序方式显示排序箭头
+    function showOrder() {
+        var orderType = "$!planSearch.orderByWay";
+        var orderField = "$!planSearch.orderByField";
+        if (orderField != "" && orderType != "") {
+            if (orderType === "0") {
+                var _obj = $(".order[orderField = " + orderField + "]");
+                _obj.children("span").text("↓");
+                _obj.attr("orderType",1);
+            } else {
+                var _obj = $(".order[orderField = " + orderField + "]");
+                _obj.children("span").text("↑");
+                _obj.attr("orderType",0);
+            }
+
+        }
+    }
+
+    showOrder();
+
+</script>

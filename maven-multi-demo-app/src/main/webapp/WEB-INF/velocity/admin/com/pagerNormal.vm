@@ -1,0 +1,27 @@
+#if($!{p.idx}==1 && $!{p.count}<$!{p.size})#else
+<div class="pager">
+#set($last = $!{p.idx} + 1)
+#set($pre  = $!{p.idx} - 1)
+<span>
+#if($!{p.idx})
+#if($!{p.idx}>1)<a href="javascript:goto(1);">第一页</a><a href="javascript:goto($pre);">上一页</a>#end
+#end
+#if($!{p.count})
+#if($!{p.count}>=$!{p.size})<a href="javascript:goto($last);">下一页</a>#end</span>
+#end
+</div>
+#if($!{pagerGoto}!=1)
+<script type="text/javascript">
+function goto(idx){
+	$("#pn").val(idx);
+	if ($("#queryForm").get(0)) {
+		$("#queryForm").submit();
+	} else {
+		gotoPage(idx);
+	}
+	
+}
+</script>
+#set($pagerGoto = 1)
+#end
+#end

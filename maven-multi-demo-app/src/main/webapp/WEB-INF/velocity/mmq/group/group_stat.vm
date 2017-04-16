@@ -1,0 +1,71 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 208, "cmenu": 212});
+</script>
+#set($groupId=$request.getParameter('groupId'))
+<div id="content-header">
+    <h1>群管理 | 群统计</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"> <i class="icon-align-justify"></i> </span>
+                <h5>$!groupName</h5>
+            </div>
+            <div class="widget-content nopadding">
+                <form class="form-horizontal form-horizontal-inline" action="queryExpertGroupStatInfo.do" method="get">
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <div class="control-group">
+                                <label class="control-label">选择日期：</label>
+                                <div class="controls">
+                                    <input type="hidden" name="groupId" value="$!{groupId}"/>
+                                    <input type="hidden" name="groupName" value="$!{groupName}"/>
+                                    <input id="date" class="Wdate span3" readonly type="text" name="date" value="$!date.format('yyyy-MM-dd',$!selectDate)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                                    <button class="btn btn-success js-join-group" type="submit">查询</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="widget-content">
+
+                <table class="table table-hover table-text-center">
+                    <tr>
+                        <th>时间</th>
+                        <th>全部用户数</th>
+                        <th>全部活跃用户</th>
+                        <th>妈妈好用户数</th>
+                        <th>妈妈好活跃用户数</th>
+                        <th>外部用户数</th>
+                        <th>外部活跃用户数</th>
+                    </tr>
+                    #foreach($data in $list)
+                        <tr >
+                            <td>$!date.format('yyyy-MM-dd',$!data.statDate)</td>
+                            <td>$!data.memberCnt</td>
+                            <td>$!data.memberActiveCnt</td>
+                            <td>$!data.mmhCnt</td>
+                            <td>$!data.mmhActiveCnt</td>
+                            <td>$!data.outCnt</td>
+                            <td>$!data.outActiveCnt</td>
+                        </tr>
+                    #end
+                </table>
+                #parse("pagination.vm")
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var VM = {
+        "rootPath": '$!{request.getContextPath()}',
+        "goodsImagePath": '$!{goodsImagePath}',
+        "imgpath": '$!{imgpath}',
+        "groupId": '$!{groupId}',
+    }
+</script>

@@ -1,0 +1,460 @@
+##平台妈豆配置管理
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 117, "cmenu": 123});
+</script>
+<style type="text/css">
+	.form-horizontal .control-label{ width:230px;}
+	.form-horizontal .controls{ margin-left:240px;}
+</style>
+<div id="content-header">
+    <h1>APP管理 | 妈豆管理</h1>
+</div>
+
+<div class="container-fluid">
+
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+    	<div class="widget-box widget-tabs-box">
+	      <ul class="nav nav-tabs">
+	        <li class="active"><a data-toggle="tab" href="#tab1">妈豆管理</a></li>
+	        <li><a data-toggle="tab" href="#tab2">优惠抵扣管理</a></li>
+	      </ul>
+        <div class="widget-content tab-content">
+        	<div class="tab-pane active" id="tab1">
+          	<div class="widget-box nomargin">
+							<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+								<h5>妈豆发放数据(单位:个)</h5>
+							</div>
+							<div class="widget-content">
+								<table class="table table-hover with-check table-text-center">
+									<thead>
+										<th>日期</th><th>总发放数量</th><th>摇妈豆发放数量</th><th>购物发放数量</th><th>评价发放数量</th>
+									</thead>
+									<tbody>
+										<tr>
+											<td>最近一天</td>
+											<td>$!statMap.proDayNum</td>
+											<td>$!statMap.proGameDayNum</td>
+											<td>$!statMap.proShopingDayNum</td>
+											<td>$!statMap.proCommentDayNum</td>
+										</tr>
+										<tr>
+											<td>最近30天</td>
+											<td>$!statMap.proMonthNum</td>
+											<td>$!statMap.proGameMonthNum</td>
+											<td>$!statMap.proShopingMonthNum</td>
+											<td>$!statMap.proCommentMonthNum</td>
+										</tr>
+										<tr>
+											<td>累积</td>
+											<td>$!statMap.proAllNum</td>
+											<td>$!statMap.proGameAllNum</td>
+											<td>$!statMap.proShopingAllNum</td>
+											<td>$!statMap.proCommentAllNum</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+	          
+	          <div class="widget-box">
+							<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+								<h5>妈豆使用数据(单位:个)</h5>
+							</div>
+							<div class="widget-content">
+								<table class="table table-hover with-check table-text-center">
+									<thead>
+										<tr><th>日期</th><th>已使用数量</th><th>未使用数量</th><th>失效数量</th></tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>最近一天</td>
+											<td>$!statMap.useDdayNum</td>
+											<td>/</td>
+											<td>/</td>
+										</tr>
+										<tr>
+											<td>最近30天</td>
+											<td>$!statMap.useMonthNum</td>
+											<td>/</td>
+											<td>/</td>
+										</tr>
+										<tr>
+											<td>累积</td>
+											<td>$!statMap.useAllNum</td>
+											<td>$!statMap.unUseNum</td>
+											<td>$!statMap.invalidNum</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+	          <div class="widget-box nomargin">
+							<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+								<h5>妈豆使用配置</h5>
+							</div>
+							<div class="widget-content nopadding">
+								<form class="form-horizontal" id="frm">
+									<input id="_id" type="hidden" name="id" value="0"/>
+									<div class="row-fluid">
+					              		<div class="span6">
+					              			<div class="control-group">
+							            		<label class="control-label">妈豆兑换价值：</label>
+							            		<div class="controls">
+							            			1元 = <input type="text" class="span4" name="mbeanWorth" value="$!mbJson.mbeanWorth"> 妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							            #*
+										<div class="span6">
+							            	<label class="control-label">可使用妈豆抵用金额为订单金额的：</label>
+							            	<div class="controls">
+					            				<input type="text" class="span4" name="useRate" value="$!mbJson.useRate"> %
+					            			</div>
+							            </div>
+										*#
+							            <div class="span6">
+							            	<div class="control-group">
+							            		<label class="control-label">摇妈豆获得妈豆数量：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" name="rockMinNum" value="$!mbJson.rockMinNum"> ~
+							            			<input type="text" class="span4" name="rockMaxNum" value="$!mbJson.rockMaxNum"> 个
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+			
+							        <div class="row-fluid">
+							            <div class="span5">
+							            	<div class="control-group">
+							            		<label class="control-label">购物评价商品获取妈豆数量：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" name="commentObtainNum" value="$!mbJson.commentObtainNum"> 个
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+			
+							     #*   
+								 <div class="row-fluid">
+							            <div class="span5">
+							            	<div class="control-group">
+							            		<label class="control-label">充值赠送比例：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" name="payPresentRate" value="$!mbJson.payPresentRate"> %
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+									*#
+							        <div class="row-fluid">
+							            <div class="span5">
+							            	<div class="control-group">
+							            		<label class="control-label">不享受妈豆抵扣的商品：</label>
+							            		<div class="controls">
+							            			<textarea name="unEnjoyItemIds" placeholder="请输入不享受活动的商品ID，多个以逗号分隔">$!mbJson.unEnjoyItemIds</textarea>
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+							        ## add by zhangzk@2015/12/23 每月购妈豆赠送配置
+							        <div class="mt-20 alert alert-info">每月购节日送礼</div>
+							        <div class="row-fluid">
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">宝宝出生送：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="birthMbeanCount" value="$!monthlyJson.birthMbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">宝宝满月送：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="oneMonthMbeanCount" value="$!monthlyJson.oneMonthMbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+							        <div class="row-fluid">
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">宝宝百天送：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="dayFor100MbeanCount" value="$!monthlyJson.dayFor100MbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">宝宝一周岁送：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="oneAgeMbeanCount" value="$!monthlyJson.oneAgeMbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+							        <div class="row-fluid">
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">2岁-14岁生天送：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="ageFor2To14MbeanCount" value="$!monthlyJson.ageFor2To14MbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							            <div class="span4">
+							            	<div class="control-group">
+							            		<label class="control-label">会员邀请码注册会员成功，分享人可获得：</label>
+							            		<div class="controls">
+							            			<input type="text" class="span4" canbezero="1" name="shareMemberMbeanCount" value="$!monthlyJson.shareMemberMbeanCount"> 个妈豆
+							            		</div>
+							            	</div>
+							            </div>
+							        </div>
+							        ## add by zhangzk end
+							        <div class="mt-20 alert alert-info">购物获得妈豆数量配置</div>
+							        <div id="_mbul">
+							        #if($!mbJson.shopingObtainRate.size() > 0)
+								        #foreach($obj in ${mbJson.shopingObtainRate})
+								        #set($index = $loopCounter + 1)
+								        <div class="row-fluid config-detail ml-16">
+									        <div class="span8">
+									        	<div class="widget-box">
+									        		<div class="widget-title"> 
+									        			<h5>配置详情</h5>
+														#if($index != 1)
+			    						        			<a class="label label-important" onclick="$(this).parent().parent().parent().parent().remove()">删除</a>
+														#end	
+									        		</div>
+									        		<div class="widget-content nopadding">
+			
+									        			<div class="row-fluid">
+									        				<div class="control-group">
+									        					<label class="control-label">购物获得妈豆的数量为商品金额的</label>
+									        					<div class="controls">
+									        						<input type="text" class="span4" name="rate" value="$!{obj.rate}"> %
+									        					</div>
+									        				</div>
+									        			</div>
+									        			<div class="row-fluid">
+									        				<div class="control-group">
+									        					<label class="control-label">适用对象：</label>
+									        					<div class="controls">
+									        						<select name="type">
+									        							<option value="0" #if(${obj.type} == '0') selected #end>商品</option>
+									        							<option value="1" #if(${obj.type} == '1') selected #end>品牌</option>
+									        						</select><br/><br/>
+									        						<textarea name="ids" placeholder="请输入ID，多个以逗号分隔">$!{obj.ids}</textarea>
+									        					</div>
+									        				</div>
+									        			</div>
+			
+									        		</div>
+									        	</div>
+									        </div>
+								    	</div>
+								        #end
+							        #else
+							        	<div class="row-fluid config-detail ml-16">
+								        	<div class="span8">
+								        		<div class="widget-box">
+								        			<div class="widget-title"> 
+							        					<h5>配置详情</h5>
+								        			</div>
+								        			<div class="widget-content nopadding">
+								        				
+								        				<div class="row-fluid">
+								        					<div class="control-group">
+								        						<label class="control-label">购物获得妈豆的数量为商品金额的</label>
+								        						<div class="controls">
+								        							<input type="text" class="span4" name="rate" value=""> %
+								        						</div>
+								        					</div>
+								        				</div>
+								        				<div class="row-fluid">
+								        					<div class="control-group">
+								        						<label class="control-label">适用对象：</label>
+								        						<div class="controls">
+								        							<select name="type">
+								        								<option value="0" selected >商品</option>
+								        								<option value="1">品牌</option>
+								        							</select><br/><br/>
+								        							<textarea name="ids" placeholder="请输入ID，多个以逗号分隔"></textarea>
+								        						</div>
+								        					</div>
+								        				</div>
+								        				
+								        			</div>
+								        		</div>
+								        	</div>
+								        </div>
+							        #end
+							    	</div>
+							        
+			           <div class="form-actions">
+			           <button class="btn btn-primary" type="button" id="addConfig">添加</button>
+										<button class="btn btn-success" type="submit" id="save_btn">保存</button>
+								</div>
+								</form>
+							</div>
+						</div>
+          </div>
+          <div class="tab-pane" id="tab2">
+				<div class="widget-box nomargin ">
+					<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+						<h5>配置信息</h5>
+					</div>
+					<div class="widget-content nopadding">
+						<div class="form-horizontal">
+                            <div class="widget-null">
+								可使用优惠为订单实付金额的
+								<input type="text" id="canUseCoupRate" class="span2" name="canUseCoupRate" value="$!canUseCoupRate"/> %
+								<span class="label label-important">请勿设置100%</span> (该优惠包括妈豆抵扣、GB积分抵扣、MC积分抵扣）
+							</div>
+                            <div class="form-actions">
+								<button class="btn btn-success rateBtn" type="buttion">保存</button>
+							</div>
+						</div>
+					</div>
+				</div>
+          </div>
+        </div>
+      </div>
+      
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$(function(){
+		// 添加配置
+		$("#addConfig").on("click",function(){
+			var newEle = $($(".config-detail")[0]).clone();
+			newEle.find(".widget-title").append('<a class="label label-important" onclick="$(this).parent().parent().parent().parent().remove()">删除</a>');
+			newEle.find("input[name='rate']").val("");
+			newEle.find("input[name='type']").val("0");
+			newEle.find("textarea[name='ids']").text("");
+			newEle.appendTo($("#_mbul"));
+		});
+		
+		//保存配置
+		$("#save_btn").on("click",function(){
+			var data = {
+					"_id":$("#_id").val(),
+					"mbeanWorth":Number($.trim($("input[name='mbeanWorth']").val())),
+					//"useRate":Number($.trim($("input[name='useRate']").val())),
+					"commentObtainNum":Number($.trim($("input[name='commentObtainNum']").val())),
+					"rockMinNum":Number($.trim($("input[name='rockMinNum']").val())),
+					"rockMaxNum":Number($.trim($("input[name='rockMaxNum']").val())),
+					"payPresentRate":Number($.trim($("input[name='payPresentRate']").val())),
+					"unEnjoyItemIds":$.trim($("textarea[name='unEnjoyItemIds']").val()),
+					"shopingObtainRate":[]
+			};
+			
+			//add by zhangzk@2015/12/13 每月购妈豆赠送配置
+			var monthlyData = {
+					"birthMbeanCount":Number($.trim($("input[name='birthMbeanCount']").val())),
+					"oneMonthMbeanCount":Number($.trim($("input[name='oneMonthMbeanCount']").val())),
+					"dayFor100MbeanCount":Number($.trim($("input[name='dayFor100MbeanCount']").val())),
+					"oneAgeMbeanCount":Number($.trim($("input[name='oneAgeMbeanCount']").val())),
+					"ageFor2To14MbeanCount":Number($.trim($("input[name='ageFor2To14MbeanCount']").val())),
+					"shareMemberMbeanCount":Number($.trim($("input[name='shareMemberMbeanCount']").val()))
+			};
+			//add end
+
+			/* validate */
+			var access = true;
+			$.each($("form").find(":input:text:visible"),function(){
+				var _this = $(this);
+				//每月购节日送礼输入框可以为0
+				if((!isForm.isImp($.trim(_this.val())) || $.trim(_this.val()) <= 0) &&  _this.attr("canbezero") != 1){
+					Toast.show("输入必须为正整数！");
+					_this.focus();
+					access = false;
+					return false;
+				}
+			});
+			if(!access) return false;
+
+			/*$.each($("form").find("textarea[name='ids']").add("textarea[name='unEnjoyItemIds']"), function () {
+				var _this = $(this);
+				if(!/^(\d+\,{0,})+\d+$/.test($.trim(_this.val()))){
+					Toast.show("输入格式不正确，产品id必须为数字！");
+					_this.focus();
+					access = false;
+					return false;
+				}
+			});
+			if(!access) return false;*/
+
+
+			$("#_mbul > .row-fluid").each(function(){
+				data.shopingObtainRate.push({
+					"type":Number($(this).find("select[name='type']").val()),
+					"rate":Number($(this).find("input[name='rate']").val()),
+					"ids":$(this).find("textarea[name='ids']").val()
+				});
+			});
+			
+			//console.log(data);
+			$.ajax({
+    			url: root + '/mb/saveJson.do',
+    			type:'post',
+    			dataType:'json',
+    			data:
+    				{"jsonStr":JSON.stringify(data),
+    				 "monthlyJsonStr":JSON.stringify(monthlyData)
+    				},
+    			success:function(ret){
+					Toast.show(ret.msg);
+    			},
+        		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                }
+    		});
+			
+		});	
+		//save end.
+		
+		//保存优惠配置 begin
+		$(".rateBtn").on("click",function(){
+			var canUseCoupRate_ = Number($.trim($("#canUseCoupRate").val()));
+			if(isForm.isTrim(canUseCoupRate_)){
+				Toast.show("优惠配置比率不能为空！");
+				$("input[name='canUseCoupRate']").focus();
+				return;
+			}
+			if(canUseCoupRate_ >= 100){
+				Toast.show("优惠配置比率不能大于100！");
+				$("input[name='canUseCoupRate']").focus();
+				return;
+			}
+			if(!isForm.isImp(canUseCoupRate_)){
+				Toast.show("优惠配置比例为不能大于或等于100的整数！");
+				$("input[name='canUseCoupRate']").focus();
+				return;
+			}
+			$.ajax({
+    			url: root + '/mb/saveCanUseCoupRate.do',
+    			type:'post',
+    			dataType:'json',
+    			data:{"canUseCoupRate":canUseCoupRate_},
+    			success:function(ret){
+					Toast.show(ret.msg);
+    			},
+        		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                }
+    		});
+		})
+		//save end
+		
+	
+	});
+
+</script>

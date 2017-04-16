@@ -1,0 +1,227 @@
+##门店管理列表
+<div class="content">
+	<div class="title">
+		<title_1>门店管理</title_1>
+	</div>
+	<article>
+        <form accept="$!{request.getContextPath()}/shop/list.do" method="get">
+          <input type="hidden" name="shopStatus" value="$!shopStatus" id="shopStatus"/>
+    	  <div class="form">
+    		<div class="form_content" style="width:100%">
+    		<div class="form_row">
+    			<div class="form_group_left">所在区域</div>
+    			<div class="form_group_right">
+    				 <select id="loc_province"  class="select_formheader"></select> 	
+    		         <select id="loc_city" class="select_formheader"></select> 
+    		         <select id="loc_town"  class="select_formheader"></select>
+    				 <select id="companyID" name="companyId" class="select_formheader" onchange="javascript:showShops();">
+    				   <option value="">分公司名称</option>
+    				 </select>
+    				 <select id="shopID" name="shopId" class="select_formheader">
+    				   <option value="">门店名称</option>
+    				 </select>
+        			
+    			</div>
+    		</div>
+    				<div class="form_row">
+    					<div class="form_group">
+    						<div class="form_group_left">手机号码</div>
+    						<div class="form_group_right">
+    							<input id="" class="input_formheader" type="text" name="shopContactPhone"/>
+    						</div>
+    					</div>
+    					<div class="form_group">
+    						<div class="form_group_left">门店类型</div>
+    						<div class="form_group_right">
+    							<select name="shopType" class="select_formheader" id="shop_type"></select>
+    						</div>
+    					</div>
+						<div class="form_group">
+    						<div class="form_group_left">门店名称</div>
+    						<div class="form_group_right">
+    							<input id="" class="input_formheader" type="text" name="shopName" value="" />
+    						</div>
+    					</div>
+    				</div>
+    				
+    			</div>
+    
+    			<div class=" line_end">
+    				<button type="submit"  class="btn_saixuan ">筛选</button>
+    			</div>
+    		</div>
+		</form>	
+	</article>
+		
+	<article>
+	<div class="menu_commodity">
+			<ul>
+				<li id="one1"><a href="$!{request.getContextPath()}/shop/list.do">全部</a></li>
+				<li id="one2"><a href="$!{request.getContextPath()}/shop/list.do?shopStatus=0">待审核</a></li>
+				<li id="one3"><a href="$!{request.getContextPath()}/shop/list.do?shopStatus=2">已通过</a></li>
+				<li id="one3"><a href="$!{request.getContextPath()}/shop/list.do?shopStatus=1">已拒绝</a></li>
+				<li id="one3"><a href="$!{request.getContextPath()}/shop/list.do?shopStatus=4">已拉黑</a></li>
+			</ul>
+   </div>
+		<table class="table_normal" width=100%;>
+			<tr>
+				<th width="180px">
+					<p class="commodity_titleth">门店名称</p>
+				</th>
+				<th width="180px">区域</th>
+				<th width="180px">店长姓名</th>
+				<th width="80px">联系方式</th>
+				<th width="150px">门店类型</th>
+				<th width="180px">所属分公司</th>
+				<th width="100px">状态</th>
+				<th width="220px">操作</th>
+			</tr>
+			#foreach($!data in ${shoplist})
+		             #set($index = $loopCounter + 1)
+					  <tr>
+						<td><a href="">$!data.get('shop_name')</a></td>
+						<td>$!data.get('province')/$!data.get('city')/$!data.get('name')</td>
+						<td>$!data.get('shop_contact_name')</td>
+						<td>$!data.get('shop_contact_phone')</td>
+						<td>
+						   #if($!data.get('shop_type') == 0)
+				              GB
+			               #elseif($!data.get('shop_type')== 1)
+				              MotherCare
+			               #elseif($!data.get('shop_type')== 2)
+				                                          星站
+			               #end
+						</td>
+						<td>$!data.get('company_name')</td>
+						<td>
+							 #if($!data.get('shop_status')== 0)
+					                                       审核中
+				             #elseif($!data.get('shop_status')== 1)
+					                                      审核未通过
+				             #elseif($!data.get('shop_status')== 2)
+				               #if($!data.get('available')==0)
+				                                                                 拉黑
+				               #else
+				                                                                审核通过                                                 
+				               #end
+					                                      
+				             #end
+						</td>
+						</td>
+						<td>
+							<div class="commodity_operat">	
+								<a class="btn_p" href="$!{request.getContextPath()}/shop/view.do?shopId=$data.shop_id">查看门店信息</a>&nbsp;&nbsp;	
+								<a class="btn_p" href="#">查看</a>&nbsp;&nbsp;	
+								 #if($data.shop_status ==2)
+					                #if($data.available==1)
+					                   <a class="btn_p" href="javascript:frozenOrthawShop($data.user_id,0);">拉黑</a>
+				                    #elseif($data.available==0)
+					                   <a class="btn_p" href="javascript:frozenOrthawShop($data.user_id,1);">恢复</a>
+				                    #end
+				                 #end
+							</div>
+						</td>
+					</tr>
+					#end
+			
+		</table>
+		
+		##分页
+		#parse("pagination.vm")
+	</article>
+</div>
+<script type="text/javascript">
+$(function(){
+		showLocation(); //省市区
+		//获取地市下分公司数据	
+		$("#loc_town").on("change",function(){
+			var district_ = $(this).val();
+			$.getJSON("$!{request.getContextPath()}/company/getCompanyNoPage.do?jsoncallback=?",
+				{
+					companyAddrDistrict : district_
+				},
+				function(ret){
+    				if(!ret.success || ret.total ==0){
+						Toast.show(ret.msg);
+						$("#companyID").html("<option>分公司名称</option>");
+    				}else{
+    					var data = ret.data;
+    					var opts = "<option>分公司名称</option>";
+    					$.each(data,function(i,o){
+    						opts += "<option value="+o.companyId+">"+o.companyName+"</option>";
+    					});
+    					$("#companyID").html(opts);
+    				}
+			});
+		});	
+			
+//获取门店类型 
+		$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",
+			{
+				'fdName':'shop_type',
+				'tbName':'t_shop'
+			},function(ret){
+				if(ret.success){
+					var opt = "<option value>全部</option>";
+					var data = ret.data;
+					$.each(data,function(i,o){
+						opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+					});
+					$("#shop_type").append(opt);
+				}else{
+					$("#shop_type").append("<option>全部</option>");
+				}
+			});		
+		
+});
+</script>
+<script>
+  function showShops(){
+			var companyId = $("#companyID").val();
+			var verifyStatus=$("#shopStatus").val();
+			//Toast.show("compayid:"+companyId+" status:"+verifyStatus);
+			$.getJSON("$!{request.getContextPath()}/shop/queryAllNoPage4Select.do?jsoncallback=?",
+				{
+					companyId:companyId,
+					shopStatus:verifyStatus
+				},
+				function(ret){
+    				if(!ret.success || ret.total == 0){
+						Toast.show(ret.msg);
+						$("#shopID").html("<option value='0'>门店名称</option>");
+    				}else{
+    					var data = ret.data;
+    					var opts = "<option value='0'>门店名称</option>";
+    					$.each(data,function(i,o){
+    						opts += "<option value="+o.shopId+">"+o.shopName+"</option>";
+    					});
+    					$("#shopID").html(opts);
+    				}
+			});
+  }
+  
+   ///冻结/解冻 
+ function frozenOrthawShop(userId,available){
+      $.ajax( {    
+               url:'$!{request.getContextPath()}/shop/frozenOrthawShop.do',// 跳转到 action    
+              data:{userId :userId,available:available},    
+              type:'post',    
+             cache:false,    
+           success:function(data) { 
+              if(data=="sucess" ){ 
+                 if(available==0){
+                    Toast.show("拉黑成功！！！");
+                 }else{
+                    Toast.show("恢复成功！！！");
+                 }   
+                 window.location.reload();    
+              }else{    
+              }    
+            },    
+           error : function() {    
+              Toast.show("系统异常！");
+            }    
+	  });
+	
+   } 
+</script>

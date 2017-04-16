@@ -1,0 +1,617 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 154,
+		"cmenu" : 104
+	});
+	</script>
+	<div id="content-header">
+		<h1>微分销管理 | 第三方店铺</h1>
+	</div>
+	<div class="container-fluid">
+		<hr>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="widget-box">
+					<div class="widget-title">
+						<span class="icon"> <i class="icon-align-justify"></i></span>
+						<h5>商家列表</h5>
+					</div>
+					<!-- 筛选条件 -->
+					<div class="widget-content nopadding">
+						<form class="form-horizontal" action="$!{request.getContextPath()}/cloud/third/cloudThirdShop/list.do" method="get" id="form">
+							<input type="hidden" name="available" value="$!{available}" id="third_shop_available"/>
+							
+							<div class="row-fluid">
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">线上店铺名：</label>
+										<div class="controls">
+											<input type="text" class="span11" placeholder="" maxlength="50" name="shopName" value="$!{shopName}" id="search_shopName">
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">联系人：</label>
+										<div class="controls">
+											<input type="text" class="span11" placeholder="" maxlength="10" name="contactPerson" value="$!{contactPerson}" id="search_contactPerson">
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">联系电话：</label>
+										<div class="controls">
+											<input type="text" class="span11" placeholder="例:0571-85250100" maxlength="13" name="contactPhone" value="$!{contactPhone}" id="search_contactPhone">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-actions">
+								<button type="submit" id="btn_search" class="btn btn-success">筛选</button>
+								<button class="btn btn-warning" type="reset">重置</button>
+								<a class="btn btn-primary" href="javascript:;" id="add_shop">新增</a>
+							</div>
+						</form>
+						<!-- 新增/修改 弹窗 -->
+						<div aria-hidden="false" id="new_shop_modal" class="modal hide in">
+							<div class="modal-header">
+								<button data-dismiss="modal" class="close" type="button">×</button>
+								<h3>新增商家</h3>
+							</div>
+							<form method="post" action="" id="frm_add_shop">
+								<div class="modal-body">
+									<div class="form-horizontal">
+										<div class="row-fluid">
+											<div class="control-group">
+												<div id="shopStatus">
+													<label class="control-label"><font color="red">*</font>店铺账号状态：</label>
+													<div class="controls">
+														<span class="notepad-inline" name="" id="_shopStatus">xxxxxx</span>
+													</div>
+												</div>
+											</div>
+											<div class="control-group">	
+												<label class="control-label"><font color="red">*</font>线上店铺名：</label>
+												<div class="controls">
+                          <input type="text" placeholder="请输入店铺名称" name="_shopName" id="_shopName" maxlength="50">
+												</div>
+											</div>
+											<div class="control-group" id="shopAccount">
+												<label class="control-label"><font color="red">*</font>店铺系统登录账号：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入店铺系统登录账号" name="_shopAccount" id="_shopAccount" maxlength="20">
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>店铺系统登录密码：</label>
+												<div class="controls">
+													<span class="notepad-inline">默认密码 “m123456”</span>
+												</div>
+											</div>
+
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>绑定妈妈好账户：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入妈妈好注册账户" name="appBindingPhone" id="_appBindingPhone" maxlength="11">
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>提现收款支付宝账号：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入提现收款支付宝账号" name="alipayAccount" id="_alipayAccount" maxlength="64">
+													<br/><span id="_alipayAccountSpan" class="label label-important"></span>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>提现收款支付宝实名：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入提现收款支付宝实名" name="alipayRealname" id="_alipayRealname" maxlength="20">
+													<br/><span id="_alipayRealnameSpan" class="label label-important"></span>
+												</div>
+											</div>
+
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>联系人：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入联系人姓名" name="_contact" id="_contact" maxlength="10">
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>联系电话：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入联系人电话" name="_contactMobile" id="_contactMobile" maxlength="13">
+												</div>
+											</div>
+                      <div class="control-group">
+												<label class="control-label"><font color="red">*</font>所在区域：</label>
+												<div class="controls">
+													<select id="prv" name="province" class="span4" onchange="showCity(this.value)"><option value="">全部</option></select> 	
+                          <select id="city" name="city" class="span4" onchange="showArea(this.value)"><option value="">全部</option></select> 
+                          <select id="area" name="district" class="span4" onchange="showShop(this.value)"><option value="">全部</option></select>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"><font color="red">*</font>联系地址：</label>
+												<div class="controls">
+													<textarea class="span11" name="_contactAddress" id="_contactAddress" maxlength="50"></textarea>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button class="btn btn-success" type="button" id="add_commit">确定</button>
+									<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+								</div>
+							</form>
+						</div>
+						<!-- 删除弹窗 -->
+						<div aria-hidden="false" id="simple_modal" class="modal hide in">
+							<div class="modal-header">
+								<button data-dismiss="modal" class="close" type="button">×</button>
+								<h3></h3>
+							</div>
+							<div class="modal-body"><p class="text-center text-error"></p></div>
+							<div class="modal-footer">
+								<button class="btn btn-success" type="button" id="commit">确定</button>
+								<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+							</div>
+						</div>
+					</div>
+					<!-- 云库商品表 -->
+					<div class="widget-content">
+						<div class="widget-box widget-tabs-box">
+							<ul class="nav nav-tabs">
+								
+								<li class="#if($!available!=0) active #end"><a  href="$!{request.getContextPath()}/cloud/third/cloudThirdShop/list.do?available=1" class="link-change-query">正常</a></li>
+								<li class="#if($!available==0) active #end"><a href="$!{request.getContextPath()}/cloud/third/cloudThirdShop/list.do?available=0" class="link-change-query">已冻结</a></li>
+								
+								
+							</ul>
+							<div class="widget-content tab-content">
+
+								<table class="table table-hover table-bordered table-text-center">
+									<thead>
+										<tr>
+											<th>线上店铺名</th>
+											<th>登录系统账号</th>
+											<th>绑定妈妈好账号</th>
+											<th>联系人</th>
+											<th>联系电话</th>
+											<th>联系地址</th>
+											<th width="148">操作</th>
+										</tr>
+									</thead>
+									<tbody>
+
+										
+#foreach($data in ${datas})
+										
+										<tr id="$!{data.accountName}" data-prov="$!{data.province}" data-city="$!{data.city}" data-area="$!{data.district}">
+											<td>$!{data.shopName}</td>
+											<td>$!{data.accountName}</td>
+											<td>$!{data.appBindingPhone}</td>
+											<td>$!{data.contactPerson}</td>
+											<td>$!{data.contactPhone}</td>
+											<td>$!{data.shopAddress}</td>
+											<td>
+												<a class="btn btn-mini btn-primary js_modify" href="javascript:;" status="${data.available}" alipayAccount="$!{data.alipayAccount}",
+												   alipayRealname="$!{data.alipayRealname}" shopId="$!{data.baseShopId}">修改</a>
+
+											#if(1 == ${data.available})
+												<a class="btn btn-mini btn-danger js_account_frozen" href="javascript:;" >冻结</a>
+											#else
+												<a class="btn btn-mini btn-success js_account_unfreeze" href="javascript:;">解冻</a>
+											#end
+												<a class="btn btn-mini btn-warning js_pwd_reset" href="javascript:;" >重置密码</a>
+											</td>
+										</tr>
+#end					
+									</tbody>
+								</table>
+								##分页 
+								#parse("pagination.vm")
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+	<script type="text/javascript">
+	getPrv(); // 输出省市区;
+	
+	// 服务端错误信息返回;
+	if("${result}" == 0){
+		Toast.show("${msg}");
+	}
+	
+	/*
+	function validate_search(){
+		var phone = $("#search_contactPhone").val();
+		if(phone!="" && !isForm.isTel(phone)){
+			Toast.show("请填写正确的联系电话再筛选")
+			return false;
+		}
+		return true;
+	}*/
+	
+	
+	
+	
+$("#btn_search").on("click", function(){
+	$("input[type=text]").delBlank(); // 删除前后空格;
+	if(isForm.isCheck($("input[name=shopName]").val())){
+		$("input[name=shopName]").focus();
+		Toast.show("请输入正确格式的内容");
+		return false;
+	}else if($("input[name=contactPerson]").val() && !isForm.isCN($("input[name=contactPerson]").val())){
+		$("input[name=contactPerson]").focus();
+		//console.log();
+		Toast.show("只允许输入中文");
+		return false;
+	}else if($("input[name=contactPhone]").val() && (!isForm.isPhone($("input[name=contactPhone]").val()))){
+		$("input[name=contactPhone]").focus();
+		Toast.show("联系电话只能输入数字或“-”");
+		return false;
+	}
+	$('#frm').submit();
+});
+
+
+	$(function(){
+		//--新增弹窗
+		$("#add_shop").bind("click",function() {
+		    $("#_alipayAccount").removeAttr("readonly");
+			$("#_alipayRealname").removeAttr("readonly");
+			$("#_alipayAccountSpan").text("");
+			$("#_alipayRealnameSpan").text("");
+							
+			$("#shopStatus").hide();
+			$("#new_shop_modal h3").html("新增第三方店铺");
+			$("#_shopAccount").removeAttr("readonly");
+			$.each($("#frm_add_shop input"),function(){
+				$(this).val("");
+			})
+			$('#prv').val("");
+			$('#city').val("");
+			$('#area').val("");
+			$("#_contactAddress").val("");
+			$("#frm_add_shop textarea").text("");
+			$("#add_commit").unbind("click");
+			$("#add_commit").bind("click",function(){
+				$("input[type=text]").delBlank(); // 删除前后空格;
+				var shopName = $("#_shopName").val();
+				var shopAccount = $("#_shopAccount").val();
+				var contact = $("#_contact").val();
+				var contactMobile = $("#_contactMobile").val();
+				var contactAddress = $("#_contactAddress").val();
+				var accountName = $("#_shopAccount").val();
+				var appBindingPhone = $("#_appBindingPhone").val();
+				var prov = $('#prv').val();
+				var city = $('#city').val();
+				var district = $('#area').val();
+				var alipayAccount=$('#_alipayAccount').val();
+				var alipayRealname=$('#_alipayRealname').val();
+				
+				// console.log(isForm.isCheck(shopName));
+				if(isForm.isTrim(shopName) || isForm.isCheck(shopName)){
+					Toast.show("店铺名称不能为空并且不能包含特殊字符");
+					$("#_shopName").focus();
+					return false;
+				}
+				
+				if (!isForm.isAccount(shopAccount) || shopAccount.length < 6 || shopAccount.length > 20) {
+					Toast.show("店铺系统登录账号只能为字母、数字或下划线，6-20位");
+					 $("#_shopAccount").focus();
+					return false;
+				}
+
+				if(!isForm.isMobile(appBindingPhone)){
+					Toast.show("请输入正确的手机号");
+					 $("#_appBindingPhone").focus();
+					return false;
+				}
+
+				if( !(isForm.isMobile(alipayAccount) || isForm.isMail(alipayAccount))){
+					Toast.show("请输入邮箱或者手机号");
+					$("#_alipayAccount").focus();
+					return ;
+				}
+
+				if( !isForm.isCN(alipayRealname) ){
+					Toast.show("请输入真实姓名");
+					$("#_alipayRealname").focus();
+					return ;
+				}
+
+				if(!isForm.isCN(contact)){
+					Toast.show("联系人姓名不能为空并且只允许输入中文");
+					 $("#_contact").focus();
+					return false;
+				}
+				
+				if(!isForm.isMobile(contactMobile) && !isForm.isTel(contactMobile)){
+					Toast.show("请输入正确的联系电话");
+					$("#_contactMobile").focus();
+					return false;
+				}
+				
+				if(!prov || !city || !district){
+					Toast.show("请选择所在区域"); 	
+					return false;
+				}
+				
+				if(isForm.isTrim(contactAddress) || isForm.isCheck(contactAddress)){
+					Toast.show("联系地址不能为空并且不能包含特殊字符"); 	
+					$("#_contactAddress").focus();
+					return false;
+				}
+				
+
+				var arguments = {};
+				arguments.shopName = shopName;//线上店铺名
+				arguments.contactPerson = contact;//联系人
+				arguments.contactPhone = contactMobile;//联系电话
+				arguments.shopAddress = contactAddress;//联系地址
+				arguments.appBindingPhone = appBindingPhone;//妈妈好绑定账号
+				arguments.accountName = shopAccount;//登录账号
+				arguments.province = prov;
+				arguments.city = city;
+				arguments.district = district;
+				arguments.alipayAccount = alipayAccount;
+				arguments.alipayRealname = alipayRealname;
+				
+				$.ajax({
+					type:"POST",
+					data:arguments,
+					url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/add.do',//新增店铺action
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result == 0) {
+							Toast.show(data.msg);
+						} else {
+							Toast.show("新增店铺成功");
+							document.location.reload();
+						}
+					}
+				})
+			})
+			$("#new_shop_modal").modal("show");
+		});
+		
+		//--修改弹窗 
+	$(".js_modify").bind("click",function(){
+			var shopId=$(this).attr("shopId");
+			$.ajax({
+					type:"POST",
+					data:{shopId:shopId,shopResource:2},
+					url : '$!{request.getContextPath()}/cloud/third/getAlipayInfoCount.do',//修改店铺action
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result >=1) {//有记录，不可以修改
+							$("#_alipayAccount").attr("readonly","readonly");
+							$("#_alipayRealname").attr("readonly","readonly");
+							$("#_alipayAccountSpan").text("提现中，不可修改");
+							$("#_alipayRealnameSpan").text("提现中，不可修改");
+						} else {
+						    $("#_alipayAccount").removeAttr("readonly");
+							$("#_alipayRealname").removeAttr("readonly");
+							$("#_alipayAccountSpan").text("");
+							$("#_alipayRealnameSpan").text("");
+						}
+					}
+			})
+			
+			/*选中当前省市*/
+			var _parent = $(this).closest('tr');
+			var prov = _parent.data('prov');
+			var city = _parent.data('city');
+			var area = _parent.data('area');
+			prov && getPrv(prov);
+			prov && city && showCity(prov, city);
+			city && area && showArea(city, area);
+			
+			$("#new_shop_modal h3").html("修改店铺信息");
+
+			var shopTDs = $(this).parent().parent().find("td");
+			var shopName = $(shopTDs[0]).text();
+			var shopAccount = $(shopTDs[1]).text();
+			var appBindingPhone = $(shopTDs[2]).text();
+			var contact = $(shopTDs[3]).text();
+			var contactMobile = $(shopTDs[4]).text();
+			var contactAddress = $(shopTDs[5]).text();
+			var shopStatus = $(this).attr("status");
+            var alipayAccount = $(this).attr("alipayAccount");
+            var alipayRealname = $(this).attr("alipayRealname");
+           
+           
+			$("#shopStatus").show();
+			if(1 == shopStatus){
+				$("#_shopStatus").html("<span class=\"badge badge-success\">正常</span>");
+			}else{
+				$("#_shopStatus").html("<span class=\"badge badge-important\">已冻结</span>");
+			}
+			$("#_shopName").val(shopName);
+			$("#_shopAccount").attr("readonly","readonly").val(shopAccount);
+			$("#_appBindingPhone").val(appBindingPhone);
+			$("#_alipayAccount").val(alipayAccount);
+			$("#_alipayRealname").val(alipayRealname);
+			$("#_contact").val(contact);
+			$("#_contactMobile").val(contactMobile);
+			$("#_contactAddress").val(contactAddress);
+			$("#add_commit").unbind("click");
+			$("#add_commit").bind("click",function(e){
+				//表单提交校验
+				$("input[type=text]").delBlank(); // 删除前后空格;
+				if(isForm.isTrim($("#_shopName").val()) || isForm.isCheck($("#_shopName").val())){
+					Toast.show("店铺名称不能为空并且不能包含特殊字符");
+					$("#_shopName").focus();
+					return false;
+				}
+				
+				if(!isForm.isMobile($("#_appBindingPhone").val())){
+					Toast.show("请输入正确的妈妈好绑定账号");
+					 $("#_appBindingPhone").focus();
+					return false;
+				}
+				if( !(isForm.isMobile($("#_alipayAccount").val()) || isForm.isMail($("#_alipayAccount").val()))){
+					Toast.show("请输入邮箱或者手机号");
+					$("#_alipayAccount").focus();
+					return ;
+				}
+
+				if( !isForm.isCN($("#_alipayRealname").val()) ){
+					Toast.show("请输入真实姓名");
+					$("#_alipayRealname").focus();
+					return ;
+				}
+				if(!isForm.isCN($("#_contact").val())){
+					Toast.show("联系人姓名不能为空并且只允许输入中文");
+					 $("#_contact").focus();
+					return false;
+				}
+				
+				if(!isForm.isMobile($("#_contactMobile").val()) && !isForm.isTel($("#_contactMobile").val())){
+					Toast.show("请输入正确的联系电话");
+					 $("#_contactMobile").focus();
+					return false;
+				}
+				var prov = $('#prv').val();
+				var city = $('#city').val();
+				var area = $('#area').val();
+				if(!prov || !city || !area){
+					Toast.show("请选择所在区域"); 	
+					return false;
+				}
+				if(isForm.isTrim($("#_contactAddress").val()) || isForm.isCheck($("#_contactAddress").val())){
+					Toast.show("请输入正确格式的内容");
+					$("#_contactAddress").focus();
+					return false;
+				}
+				var arguments = {};
+				arguments.shopName = $("#_shopName").val();;
+				arguments.accountName = shopAccount;
+				arguments.contactPerson = $("#_contact").val();;
+				arguments.contactPhone = $("#_contactMobile").val();
+				arguments.appBindingPhone = $("#_appBindingPhone").val();
+				arguments.shopAddress = $("#_contactAddress").val();
+				arguments.province = prov;
+				arguments.city = city;
+				arguments.district = area;
+				arguments.alipayAccount = $("#_alipayAccount").val();
+				arguments.alipayRealname =$("#_alipayRealname").val();
+				arguments.shopId=shopId;
+				$.ajax({
+					type:"POST",
+					data:arguments,
+					url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/modifyCloudThirdShop.do',//修改店铺action
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result == 0) {
+							Toast.show(data.msg);
+						} else {
+						    if(data.msg){
+						       Toast.show(data.msg); 
+						    }else{
+						       Toast.show("修改店铺成功");
+						    }
+							document.location.reload();
+						}
+					}
+				})
+			})
+
+			$("#new_shop_modal").modal("show");
+		});
+		
+		//--密码重置弹窗
+		$(".js_pwd_reset").bind("click",function(){
+			$("#simple_modal .modal-header h3").text("重置密码");
+			$("#simple_modal .modal-body p").text("确定重置该第三方店铺密码吗？");
+			var shopTDs = $(this).parent().parent().find("td");
+			var accountName = $(shopTDs[1]).text();
+			$("#commit").unbind("click");
+			$("#commit").bind("click",function(){
+				$.ajax({
+					type:"POST",
+					data:{accountName:accountName},
+					url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/resetPwd.do',//账号重置action
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result == 0) {
+							Toast.show(data.msg);
+						} else {
+							Toast.show("重置密码成功");
+							document.location.reload();
+						}
+					}
+				})
+			})
+
+			$("#simple_modal").modal("show");
+		});
+
+		//--账号冻结弹窗
+		$(".js_account_frozen").bind("click",function(){
+			$("#simple_modal .modal-header h3").text("账号冻结");
+			$("#simple_modal .modal-body p").text("确定冻结该第三方店铺账号吗？");
+			var shopTDs = $(this).parent().parent().find("td");
+			var accountName = $(shopTDs[1]).text();
+			$("#commit").unbind("click");
+			$("#commit").bind("click",function(e){
+				$.ajax({
+					type:"POST",
+					data:{accountName:accountName,available:0},
+					url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/modifyFreezeStatus.do',
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result == 0) {
+							Toast.show(data.msg);
+						} else {
+							Toast.show("账号冻结成功");
+							document.location.reload();
+						}
+					}
+				})
+				
+			})
+			
+			$("#simple_modal").modal("show");
+		})
+
+		//--账号解冻弹窗
+		$(".js_account_unfreeze").bind("click",function(){
+			$("#simple_modal .modal-header h3").text("账号解冻");
+			$("#simple_modal .modal-body p").text("确定解冻该第三方店铺账号吗？")
+			var shopTDs = $(this).parent().parent().find("td");
+			var accountName = $(shopTDs[1]).text();
+			$("#commit").unbind("click");
+			$("#commit").bind("click",function(){
+				$.ajax({
+					type:"POST",
+					data:{accountName:accountName,available:1},
+					url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/modifyFreezeStatus.do',
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result == 0) {
+							Toast.show(data.msg);
+						} else {
+							Toast.show("账号解冻成功");
+							document.location.reload();
+						}
+					}
+				})
+			})
+
+			$("#simple_modal").modal("show");
+		})
+	})
+	
+	
+	
+	
+	</script>

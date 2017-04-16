@@ -1,0 +1,14 @@
+<div id="sidebar"> <a href="javascript:;" class="visible-phone"><i class="icon icon-inbox"></i> Widgets</a>
+	  <ul id="matrix-nav">
+    	#foreach( $menu in $account.menus)
+    	<li class="submenu" data-id="nav-menu-$!{menu.menuId}">
+      	<a href="javascript:;"><span class="icon icon-chevron-left"></span>$menu.menuName</a>
+        <ul>
+        	#foreach($cmenu in $menu.childMenus)
+	        <li  data-id="nav-cmenu-$!{cmenu.menuId}"><a href="$!{request.getContextPath()}$!{cmenu.menuUrl}" #if($cmenu.menuId == 130) target="blank" #end>$cmenu.menuName</a></li>
+          #end
+	      </ul>
+      </li>
+      #end
+    </ul>
+	</div>

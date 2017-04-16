@@ -1,0 +1,70 @@
+##促销价格导入
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 107, "cmenu": 189});
+    #if($!data)
+        var msg = '';
+        #if($!data ==  -1)
+            msg = '款式编码、开始时间、结束时间、促销价其中包含空值！';
+        #elseif($!data == 1)
+            msg = '导入成功';
+        #elseif($!data == 0)
+            msg = '文件内容为空，或格式错误';
+        #elseif($!data == -2)
+            msg = '导入失败,服务器异常';
+        #end
+        Toast.show({template: msg, auto: false});
+    #end
+</script>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="control-group">
+                    <a id="xiazai" href="http://h4.mamahao.com/template/pmt_price_template.rar" class="btn btn-success">下载模板</a>
+                    <span class="label label-important">请严格按照模版格式导入！</span>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span3">
+                <div class="control-group">
+                    <a id="xiazai" href="$!{request.getContextPath()}/gb/pmtPrice/initTodayPmtPrice.do" class="btn btn-danger" onclick="return confirm('确定要初始化整站今天价格?')">初始化整站今天价格</a>
+                    <span class="label label-important">运营慎点！</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--导入数据-->
+<div class="modal" id="importPlanOrder">
+    <div class="modal-header">
+        <h3>促销价格导入</h3>
+    </div>
+
+
+    <form action="$!{request.getContextPath()}/gb/pmtPrice/importPmtPrice.do" name="importForm" id="importForm" method="post" enctype="multipart/form-data">
+        <div class="modal-body nopadding">
+            <div class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label mustFill-label">
+                        <i>*</i>请选择导入文件：
+                    </label>
+
+                    <div class="controls">
+                        <input id="file" name="file" class="controll" type="file" accept=".xlsx">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" id="importLogistics">确定</button>
+        </div>
+    </form>
+</div>
+
+

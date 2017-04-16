@@ -1,0 +1,279 @@
+##资金查询
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+    Matrix.Nav({
+        "menu": 124,
+        "cmenu": 193
+    });
+</script>
+<div id="content-header">
+    <h1>财务管理 | 财务报表查询</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <div class="widget-title">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a
+                                href="$!{request.getContextPath()}/finacialreport/companylist.do?fstatement.platformSource=1">分公司/总仓</a>
+                        </li>
+                        <li><a href="$!{request.getContextPath()}/finacialreport/mmhlist.do">妈妈好平台</a></li>
+                    </ul>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form class="form-horizontal form-horizontal-inline" method="get" id="form"
+                          action="$!{request.getContextPath()}/finacialreport/companylist.do">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label">日期：</label>
+
+                                    <div class="controls">
+                                        <input id="startTime" name="start" value="$!{request.getParameter('start')}"
+                                               class="Wdate" type="text" size="20"
+                                               onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')}',dateFmt:'yyyy-MM-dd'})"/>
+                                        <span>至</span>
+                                        <input id="endTime" name="end" value="$!{request.getParameter('end')}"
+                                               class="Wdate" type="text" size="20"
+                                               onfocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',dateFmt:'yyyy-MM-dd'})"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row-fluid">
+                                <div class="span12">
+                                    <div class="control-group">
+                                        <label class="control-label">对象：</label>
+
+                                        <div class="controls">
+                                            <select id="t1" name="type" onchange="showType(this.value)">
+                                                <option value="-1">全部</option>
+                                                <option #if($!{request.getParameter('type')}==1) selected #end
+                                                                                                 value="1">分公司
+                                                </option>
+                                                <option #if($!{request.getParameter('type')}==2) selected #end
+                                                                                                 value="2">总仓
+                                                </option>
+                                            </select>
+                                            <select id="t2" name="typeId">
+                                                <option value="-1">全部</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span5">
+                                <div class="control-group">
+                                    <label class="control-label">金额：</label>
+
+                                    <div class="controls">
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="1"/>商品金额</label>
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="2"/>促销金额</label>
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="3"/>优惠金额</label>
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="4"/>实付金额</label>
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="5"/>退款</label>
+                                        <label class="notepad-inline"><input type="checkbox" name="payPriceIds"
+                                                                             value="6"/>与分公司/总仓对账</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit" id="commit">筛选</button>
+                            <button class="btn btn-primary" type="reset" id="clearCondition">重置</button>
+                            #if($finacialIncomeStats.size()==0)
+                                <a class="btn btn-danger" href="javascript:Toast.show('暂时没有数据可以导出')">导出</a>
+                            #else
+                                <a class="btn btn-danger" href="javascript:void(0);)" id="export">导出</a>
+                            #end
+                        </div>
+                        <input type="hidden" name="platformSource" value="$!{request.getParameter('platformSource')}"/>
+                    </form>
+                </div>
+
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li class="#if($!{request.getParameter('platformSource')}==1)active#end">
+                                <a href="$!{request.getContextPath()}/finacialreport/companylist.do?platformSource=1">APP收入/元</a>
+                            </li>
+                            <li class="#if($!{request.getParameter('platformSource')}==2)active#end">
+                                <a href="$!{request.getContextPath()}/finacialreport/companylist.do?platformSource=2">微分销收入/元</a>
+                            </li>
+                        </ul>
+                        <table class="table table-text-center">
+                            <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>分公司/总仓</th>
+                                <th class="delete1">商品金额</th>
+                                <th class="delete2">促销类型</th>
+                                <th class="delete2">促销金额</th>
+                                <th class="delete3">优惠类型</th>
+                                <th class="delete3">优惠金额</th>
+                                <th class="delete4">实付金额(用户)</th>
+                                <th class="delete5">退款</th>
+                                <th>实际收入</th>
+                                <th class="delete6">对账(分公司/总仓)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                #foreach($data in $finacialIncomeStats)
+                                <tr>
+                                    <td>
+                                            $!{request.getParameter('start')}</br>
+                                        -</br>
+                                        $!{request.getParameter('end')}
+                                    </td>
+                                    <td>$!{data.typeName}</td>
+                                    <td class="delete1">#formatAmount($!{data.goodsPrice})</td>
+                                    <td class="delete2">
+                                        全场满减</br>
+                                        单品满减</br>
+                                        组合促销</br>
+                                    </td>
+                                    <td class="delete2">
+                                            #formatAmount($!{data.pmtAllReducePrice})</br>
+                                            #formatAmount($!{data.pmtPartReducePrice})</br>
+                                            #formatAmount($!{data.pmtGroupPrice})</br>
+                                    </td>
+                                    <td class="delete3">
+                                        优惠券（集团）</br>
+                                        GB积分</br>
+                                        MC积分</br>
+                                    </td>
+                                    <td class="delete3">
+                                            #formatAmount($!{data.payCouponGroupPrice})</br>
+                                            #formatAmount($!{data.payGbPrice})</br>
+                                            #formatAmount($!{data.payMothercarePrice})</br>
+                                    </td>
+                                    <td class="delete4">#formatAmount($!{data.payPrice})</td>
+                                    <td class="delete5">#formatAmount($!{data.refundPrice})</td>
+                                    <td>#minusAmount($!{data.payPrice},$!{data.refundPrice})</td>
+                                    <td class="delete6">#addMoreAmount($!{data.payPrice},$!{data.payCouPonMmhPrice},$!{data.payMadouPrice})</td>
+                                </tr>
+                                #end
+                            </tbody>
+                        </table>
+                        <!-- 分页 -->
+                        #parse("pagination.vm")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="payPriceIdsTemp" value=$!{fstatement.payPriceIds}/>
+
+<script type="text/javascript">
+    $(function () {
+        //初始化方法
+        var payPriceIds = [1, 2, 3, 4, 5, 6];
+        #foreach ($payPriceId in $fstatement.payPriceIds)
+            $("input[name=payPriceIds][value="+$payPriceId+
+            "]"
+            ).
+            attr("checked", 'checked');//选择复选框
+            arrayDelete(payPriceIds,$payPriceId);
+        #end
+
+        if (payPriceIds.length != 6) {
+            //需要删除的列
+            for (var i = 0; i < payPriceIds.length; i++) {
+                var deleteLe = payPriceIds[i];
+                $(".delete" + deleteLe).remove();
+            }
+        }
+
+        var type = $fstatement.type;
+        var typeId = $fstatement.typeId;
+        if (type == null || type == "" || type == undefined) {
+            console.log("第一次跳转");
+        } else {
+            showType(type, typeId);
+        }
+
+    });
+
+    /**
+     * 从数组删除某个值
+     * @param array 数组
+     * @param str 要删的值
+     * @returns {*}
+     */
+    function arrayDelete(array, str) {
+        for (var index = 0; index < array.length; index++) {
+            if (array[index] === str) {
+                array.splice(index, 1); //从下标为i的元素开始，连续删除1个元素
+                index--; //因为删除下标为i的元素后，该位置又被新的元素所占据，所以要重新检测该位置
+            }
+        }
+        return array; //去重复
+    }
+
+    //显示对象数据
+    function showType(type, typeId) {
+        if (type == 1) {
+            //获取分公司列表
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showCompanyList.do",
+                val: {},
+                fun: function (data) {
+                    var str = '<option value=\"-1\">全部</option>';
+                    $.each(data, function (i, n) {
+                        //console.log(n.divNumId);
+                        if (typeId != null) {
+                            var t = Number(typeId);
+                            if (n.divNumId == t) {
+                                str += "<option value='" + n.divNumId + "' selected>" + n.divName + "</option>";
+                            } else {
+                                str += "<option value='" + n.divNumId + "'>" + n.divName + "</option>";
+                            }
+                        } else {
+                            str += "<option value='" + n.divNumId + "'>" + n.divName + "</option>";
+                        }
+
+                    });
+                    $("#t2").html(str);
+                }
+            });
+        } else {
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showStorageList.do",
+                val: {},
+                fun: function (data) {
+                    var str = '<option value=\"-1\">全部</option>';
+                    $.each(data, function (i, n) {
+                        if (typeId != null && typeId != "") {
+                            var t = Number(typeId);
+                            if (n.storageNumId == t) {
+                                str += "<option value='" + n.storageNumId + "' selected >" + n.storageName + "</option>";
+                            } else {
+                                str += "<option value='" + n.storageNumId + "'>" + n.storageName + "</option>";
+                            }
+                        } else {
+                            str += "<option value='" + n.storageNumId + "'>" + n.storageName + "</option>";
+                        }
+                    });
+                    $("#t2").html(str);
+                }
+            });
+        }
+    }
+
+    $("#export").bind("click", function () {
+        $("#form").attr("action", "$!{request.getContextPath()}/finacialreport/exportCompanylist.do");
+        document.getElementById("form").submit();
+    });
+</script>

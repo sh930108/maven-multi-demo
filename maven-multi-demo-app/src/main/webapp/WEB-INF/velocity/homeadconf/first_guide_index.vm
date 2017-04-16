@@ -1,0 +1,18 @@
+##一级导航首页
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 231});
+</script>
+<div id="content-header">
+    <h1>一级导航</h1>
+</div>
+<hr>
+<div class="MA-have-first">
+	<ul>
+		#foreach($groups in ${data.groups})
+		<li><a href="$!{request.getContextPath()}/homeAdConf/firstGuideConf.do?bannerId=${groups.bannerId}&bannerName=${groups.bannerName}">${groups.bannerName}</a></li>
+		#end
+	</ul>
+</div>
+

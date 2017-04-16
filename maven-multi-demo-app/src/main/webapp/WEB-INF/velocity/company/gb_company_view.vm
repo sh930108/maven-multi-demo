@@ -1,0 +1,169 @@
+##分公司基本信息
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 100, "cmenu": 101});
+	$(function(){
+		 getPrv(); //省
+	});
+</script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<div id="content-header">
+    <h1>分公司信息 
+		#if($!gbDiv.status == 0)
+			<button class="btn btn-warning">待编辑</button>
+		#elseif($!gbDiv.status == 1)	
+			<button class="btn btn-warning">待审核</button>
+		#elseif($!gbDiv.status == 2)
+			<button class="btn btn-danger">已拒绝</button>
+		#elseif($!gbDiv.status == 3)	
+			<button class="btn btn-success">审核通过</button>
+		#elseif($!gbDiv.status == 4)	
+			已编辑
+		#elseif($!gbDiv.status == 5)	
+			已删除
+		#end
+	
+		<span class="muted">
+			#if($!gbDiv.verifyDate)
+		    	通过时间：$!date.format('yyyy-MM-dd HH:mm:ss ',$!gbDiv.verifyDate)
+			#end
+		</span>
+	</h1>
+</div>
+<div class="container-fluid">
+
+   	<hr>
+	<div class="row-fluid">
+      	<div class="span12">
+        	<div class="widget-box">
+		        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          <h5>分公司信息</h5>
+		        </div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal" method="get" action="$!{request.getContextPath()}/gb/company/save.do">
+					<input type="hidden" name="divNumId" value="$!gbDiv.divNumId"/>
+						<div class="control-group">
+							<label class="control-label">公司编码：</label>
+							<div class="controls">
+								<span class="notepad-inline">$!gbDiv.divNumId</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">分公司名称：</label>
+							<div class="controls">
+								<span class="notepad-inline">$!gbDiv.divName</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">营业执照：</label>
+							<div class="controls">
+								<span class="photo">
+									#if($!gbDiv.busiLicense)
+										<img src="$imgpath$!gbDiv.busiLicense">
+									#end
+								</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">合作协议：</label>
+							<div class="controls">
+								<span class="photo">
+									#if($!gbDiv.cooperAgree)
+										<img src="$imgpath$!gbDiv.cooperAgree">
+									#end	
+								</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">总经理姓名：</label>
+							<div class="controls">
+								<span class="notepad-inline">$!gbDiv.contEmpe</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">总经理手机号：</label>
+							<div class="controls">
+								<span class="notepad-inline">$!gbDiv.contEmpeTelePhone</span>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">联系人姓名：</label>
+							<div class="controls">
+								<span class="notepad-inline view_stat">$!gbDiv.managerName</span>
+								<input id="managerName" class="edit_stat" type="text" name="managerName" value="$!gbDiv.managerName" maxlength="50"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">联系人QQ：</label>
+							<div class="controls">
+								<span class="notepad-inline view_stat">$!gbDiv.contactQq</span>
+								<input id="contactQq" class="edit_stat" type="text" name="contactQq" value="$!gbDiv.contactQq" maxlength="11"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">联系人手机号：</label>
+							<div class="controls">
+								<span class="notepad-inline view_stat">$!gbDiv.managerPhone</span>
+								<input id="managerPhone" class="edit_stat" type="text" name="managerPhone" value="$!gbDiv.managerPhone" maxlength="11"/>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">分公司地址：</label>
+							<div class="controls">
+								<span class="notepad-inline">$!gbDiv.gbPrv.prvName/$!gbDiv.gbCity.cityName/$!gbDiv.gbCityArea.cityAreaName/$!gbDiv.adr</span>
+							</div>
+						</div>
+
+						<div class="form-actions">
+							<button class="btn btn-info" type="button" id="modify">修改</button>
+							<button class="btn btn-info" type="button" id="back">返回</button>
+							<button class="btn btn-info js-submit" type="submit" id="confirm">确认修改</button>
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$(function(){
+		
+		$(".edit_stat").hide();
+		$("#back,#confirm").hide();
+		
+		$("#modify").on("click",function(){
+			$(".view_stat,#modify").hide();
+			$("#back,#confirm,.edit_stat").show();
+		});
+		
+		$("#back").on("click",function(){
+			$(".view_stat,#modify").show();
+			$("#back,#confirm,.edit_stat").hide();
+		});
+
+		var managerName = $("#managerName"),
+			contactQq = $("#contactQq"),
+			managerPhone = $("#managerPhone");
+		$(".js-submit").on("click", function (e) {
+			if(isForm.isTrim(managerName.val())){
+				managerName.focus();
+				Toast.show("用户名不能为空");
+				return false;
+			}
+			if(!isForm.isQQ(contactQq.val())){
+				contactQq.focus();
+				Toast.show("请输入正确的QQ");
+				return false;
+			}
+			if(!isForm.isMobile(managerPhone.val())){
+				managerPhone.focus();
+				Toast.show("请输入正确的手机号");
+				return false;
+			}
+		});
+		
+	});
+</script>

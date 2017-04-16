@@ -1,0 +1,145 @@
+##投放系统资源管理页面
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 184, "cmenu": 185});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 投放系统 | 管理资源位 | <a href="$!{request.getContextPath()}/homeBanner/getBannerSchedule.do" class="btn btn-danger">返回</a></h1>
+</div>
+<hr>
+<div class="container-fluid">
+	<div class="row-fluid">
+		<div class="widget-box nomargin" id="MA-have-leafs">
+	  	<!-- <div class="item">
+	    	<div class="widget-title"><span class="icon"><i class="icon-arrow-right"></i></span><h5>模板内容</h5></div>
+	      <div class="widget-content nopadding">
+	      	<div class="form-horizontal">
+          	<div class="control-group">
+              <label class="control-label">功能开关：</label>
+              <div class="controls">
+	              <a class="btn btn-danger" href="javascript:;">下线</a>
+	              <span class="help-inline">(该功能当前为：<span class="label label-success">上线状态</span>)</span>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label">附属位置：</label>
+              <div class="controls">
+              <table class="table table-text-center MA-have-leafs">
+              	<thead>
+                	<tr>
+                  	<th>名称</th>
+                  	<th>排序</th>
+                  	<th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                	<tr>
+                  	<td><input type="text" placeholder="位置名称" /></td>
+                  	<td><input type="text" class="span5" placeholder="排序" /></td>
+                  	<td><a class="btn btn-danger btn-mini js-leafs-del" href="javascript:;">删除</a> </td>
+                  </tr>
+                  <tr>
+                  	<td><input type="text" placeholder="位置名称" /></td>
+                  	<td><input type="text" class="span5" placeholder="排序" /></td>
+                  	<td><a class="btn btn-danger btn-mini js-leafs-del" href="javascript:;">删除</a> </td>
+                  </tr>
+                  <tr>
+                  	<td><input type="text" placeholder="位置名称" /></td>
+                  	<td><input type="text" class="span5" placeholder="排序" /></td>
+                  	<td><a class="btn btn-danger btn-mini js-leafs-del" href="javascript:;">删除</a> </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                	<tr>
+                  	<td colspan="3">
+                    	<button class="btn btn-info js-leafs-new">增加</button>
+                      <button class="btn btn-success js-leafs-seve">保存</button>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+              </div>
+            </div>
+            
+          </div>
+	      </div>
+	    </div> -->
+       #foreach($item in $data )
+	    <div class="item">
+	    	<div class="widget-title"><a href="#collapse-$item.bannerType" data-toggle="collapse" data-parent="#MA-have-leafs"><span class="icon"><i class="icon-arrow-right"></i></span><h5>$!{item.bannerTypeName}</h5></a></div>
+	      <div class="widget-content nopadding in" id="collapse-$item.bannerType">
+	      	<div class="form-horizontal">
+          	<div class="control-group">
+              <label class="control-label">功能开关：</label>
+              <div class="controls">
+              	#if($item.isOnline == 1)
+	              <a class="btn btn-danger js-leafs-onlie" data-online="0" data-type="$item.bannerType" href="javascript:;">下线</a>
+	              <span class="help-inline">(该功能当前为：<span class="label label-success">上线状态</span>)</span>
+                #else
+                <a class="btn btn-success js-leafs-onlie" data-online="1" data-type="$item.bannerType" href="javascript:;">上线</a>
+	              <span class="help-inline">(该功能当前为：<span class="label label-danger">下线状态</span>)</span>
+                #end
+              </div>
+            </div>
+            #if($item.bannerType != 1)
+            <div class="control-group">
+              <label class="control-label">附属位置：</label>
+              <div class="controls">
+              <table class="table table-text-center MA-have-leafs">
+              	<thead>
+                	<tr>
+                  	<th>名称</th>
+                  	<th width="200">排序</th>
+                  	<th width="100">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                #if($item.bannerGroup.size() == 0)
+                  <tr class="null"><td colspan="3">暂无相关内容</td></tr>
+                #else
+                	#foreach($leafs in $!{item.bannerGroup})
+	                  #if($item.bannerType ==4)
+                    	##黄金坑位
+                    	#set($count = $foreach.count - 1)
+                      <tr class="js-batchid-$!{leafs.batchId}" data-json='{"bannerId": $!{leafs.bannerId}, "batchId": $!{leafs.batchId}, "weight": $!{leafs.weight}}'>
+		                  	<td><input type="text" name="name" placeholder="位置名称" value="$!{leafs.bannerName}" maxlength="20" /></td>
+                        #if($count % 3 == 0)
+		                  	<td rowspan="3" class="rows"><input type="text" name="orderBy" class="span5" placeholder="排序" value="$!{leafs.orderBy}" maxlength="2" /></td>
+		                  	<td rowspan="3" class="rows"><a class="btn btn-danger btn-mini js-leafs-del" href="javascript:;" data-type="$item.bannerType" data-bannerid="$leafs.bannerId" data-batchid="$!{leafs.batchId}">删除</a> </td>
+                        #end
+		                  </tr>
+	                  #else
+	                  	<tr data-json='{"bannerId": "$!{leafs.bannerId}"}'>
+		                  	<td><input type="text" name="name" placeholder="位置名称" value="$!{leafs.bannerName}" maxlength="20" /></td>
+		                  	<td><input type="text" name="orderBy" class="span5" placeholder="排序" value="$!{leafs.orderBy}" maxlength="2" /></td>
+		                  	<td>#if($item.bannerType != 6)<a class="btn btn-danger btn-mini js-leafs-del" href="javascript:;" data-type="$item.bannerType" data-bannerid="$leafs.bannerId" data-batchid="$!{leafs.batchId}">删除</a>#end</td>
+		                  </tr>
+	                  #end
+                  #end
+                #end
+                </tbody>
+                <tfoot>
+                	<tr>
+                  	<td colspan="3">
+                    	<button class="btn btn-info js-leafs-new" data-type="$item.bannerType">增加</button>
+                      <button class="btn btn-success js-leafs-seve" data-type="$item.bannerType">保存</button>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+              </div>
+            </div>
+            #end
+            
+          </div>
+	      </div>
+	    </div>
+      #end
+	  </div>
+	</div>
+</div>
+
+##${data}
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/home-ad.js"></script>
+<script type="text/javascript">MA.setHave.init();</script>

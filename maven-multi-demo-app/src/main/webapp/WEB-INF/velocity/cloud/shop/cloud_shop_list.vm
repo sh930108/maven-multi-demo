@@ -1,0 +1,594 @@
+##微分销商家列表
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({
+	"menu" : 154,
+	"cmenu" : 168
+});
+</script>
+<div id="content-header">
+	<h1>微分销管理 | 微分销商家信息</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i></span>
+					<h5>商家列表</h5>
+				</div>
+				<!-- 筛选条件 -->
+				<div class="widget-content">
+				 <div class="widget-box widget-tabs-box">
+				   <ul class="nav nav-tabs">
+				     <li class="#if('$!shopRes'==''||$!shopRes=='1') active #end">
+				      <a href="#if('$!shopRes'==''||$!shopRes=='1')javascript:;#else$!{request.getContextPath()}/cloud/cloudShop/list.do?shopRes=1&isDelete=0#end">实体店</a>
+				     </li>
+					 <li class="#if($!shopRes==2) active #end">
+					  <a href="#if($!shopRes==2)javascript:;#else$!{request.getContextPath()}/cloud/cloudShop/list.do?shopRes=2&isDelete=0#end">第三方店铺</a>
+					 </li>
+				   </ul>
+				   <div class="widget-content">
+					<form class="form-horizontal" method="get" action="$!{request.getContextPath()}/cloud/cloudShop/list.do" id="frm">
+						<input type="hidden" name="shopRes" value="$!shopRes" id="shopResId"/>
+						<input type="hidden" name="isDelete" value="$!shop.isDelete"/>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">店铺名称：</label>
+									<div class="controls">
+										<input type="text" placeholder="" maxlength="50" name="shopName" value="$!shop.shopName">
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">联系人：</label>
+									<div class="controls">
+										<input type="text" placeholder="" maxlength="10" name="contactPerson" value="$!shop.contactPerson">
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">联系电话：</label>
+									<div class="controls">
+										<input type="text" maxlength="13" name="contactPhone" value="$!shop.contactPhone" placeholder="例:0571-85250100">
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">角色名称：</label>
+									<div class="controls">
+										<select name="roleId" id="_queryRoleId">
+											<option value="">请选择</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">所属总公司：</label>
+									<div class="controls">
+										<select name="parentCompanyId" id="_queryParentCompanyId">
+											<option value="">请选择</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">所属分公司/部门：</label>
+									<div class="controls">
+										<select name="branchCompanyId" id="_queryBranchCompanyId">
+											<option value="">请选择</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="form-actions">
+							<button type="submit" id="js_search" class="btn btn-success">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							<a class="btn btn-primary" href="javascript:;" id="add_shop">新增</a>
+						</div>
+					</form>
+					</div>
+					<!-- 新增/修改 弹窗 -->
+					<div aria-hidden="false" id="new_shop_modal" class="modal hide in">
+						<div class="modal-header">
+							<button data-dismiss="modal" class="close" type="button">×</button>
+							<h3>新增商家</h3>
+						</div>
+
+						<div class="modal-body">
+							<div class="form-horizontal">
+								<div class="row-fluid">
+									<div class="control-group">
+										## <form method="post" action="$!{request.getContextPath()}/cloud/cloudShop/save.do?shopResource=$!shopRes" id="frm_add_shop">
+											<input type="hidden" name="id" id="shopIdID"/>
+											<input type="hidden" name="areaId" id="areaIdID"/>
+											<label class="control-label"><font color="red">*</font>角色名称：</label>
+											<div class="controls">
+												<select class="input_formheader" name="roleId" id="_roleName"></select>
+											</div>
+
+											<label class="control-label"><font color="red">*</font>角色类型：</label>
+
+        									<div class="controls">
+												<input  type="hidden" name="shopType" id="shopTypeId"/>
+												<span class="notepad-inline" name="_roleType" id="_roleType"></span>
+        									</div>
+
+											<label class="control-label"><font color="red">*</font>店铺名称：</label>
+											<div class="controls">
+												<select class="input_formheader" name="baseShopId" id="_shopName"></select>
+											</div>
+
+											<label class="control-label"><font color="red">*</font>所属总公司：</label>
+											<div class="controls">
+												<select class="input_formheader" name="parentCompanyId" id="_parentOrg"></select>
+											</div>
+
+											<label class="control-label branch"><font color="red">*</font>所属分公司/部门：</label>
+											<div class="controls branch">
+												<select class="input_formheader" name="branchCompanyId" id="_branchOrg"></select>
+											</div>
+										## </form>
+										<label class="control-label"><font color="red">*</font>联系人：</label>
+										<div class="controls">
+											<input type="text" name="_contact" id="_contact" readonly="readonly">
+										</div>
+
+										<label class="control-label"><font color="red">*</font>联系方式：</label>
+										<div class="controls">
+											<input type="text" name="_contactMobile" id="_contactMobile" readonly="readonly">
+										</div>
+
+										<label class="control-label">联系地址：</label>
+										<div class="controls">
+											<textarea style="min-width:100px; width:220px;" class="span11" name="_contactAddress" id="_contactAddress" readonly></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-success" type="button" id="add_commit">确定</button>
+							<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+						</div>
+					</div>
+					<!-- 删除弹窗 -->
+					<div aria-hidden="false" id="delete_modal" class="modal hide in">
+						<div class="modal-header">
+							<button data-dismiss="modal" class="close" type="button">×</button>
+							<h3>删除商家</h3>
+						</div>
+						<div class="modal-body"><p class="text-center text-error">确定从微分销中删除该商家吗？</p></div>
+						<div class="modal-footer">
+							<button class="btn btn-success" type="button" id="delete_commit">确定</button>
+							<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+						</div>
+					</div>
+					<!--恢复弹出-->
+					<div aria-hidden="false" id="modify_ok_modal" class="modal hide in">
+						<div class="modal-header">
+							<button data-dismiss="modal" class="close" type="button">×</button>
+							<h3>确认恢复商家</h3>
+						</div>
+						<div class="modal-body"><p class="text-center text-error">确认恢复此微分销商家吗？</p></div>
+						<div class="modal-footer">
+							<button class="btn btn-success" type="button" id="modify_ok_commit">确定</button>
+							<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+						</div>
+					</div>
+				</div>
+				
+				<!--微分销商家信息列表-->
+				<div class="widget-content">
+					<div class="widget-box widget-tabs-box">
+						<ul class="nav nav-tabs">
+							<li class="#if('$!shop.isDelete'==''||$!shop.isDelete=='0') active #end">
+							  <a href="#if('$!shop.isDelete'==''||$!shop.isDelete=='0')javascript:;#else$!{request.getContextPath()}/cloud/cloudShop/list.do?shopRes=$!shopRes&isDelete=0 #end">正常</a>
+							</li>
+							<li class="#if($!shop.isDelete==1) active #end">
+							 <a href="#if($!shop.isDelete==1)javascript:;#else$!{request.getContextPath()}/cloud/cloudShop/list.do?shopRes=$!shopRes&isDelete=1 #end">已删除</a>
+							</li>
+						</ul>
+						<div class="widget-content tab-content">
+							<table class="table table-hover table-bordered table-text-center">
+								<thead>
+									<tr>
+										<th>店铺名称</th>
+										<th>角色名称</th>
+										<th>直属上级</th>
+										<th>联系人</th>
+										<th>联系电话</th>
+										<th>联系地址</th>
+										#if($!shop.isDelete==0||'$!shop.isDelete'=='')
+										  <th>店铺账号状态</th>
+										#end
+										
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									#foreach($data in $!datas)
+									<tr id="$data.get('shopId')">
+										<td><a class="btn btn-link" href="javascript:;" target="_blank">$data.get('shopName')</a></td>
+										<td>$data.get('roleName')</td>
+										#if($data.get('roleBelong')== 1)
+										<td>$!data.get('orgName1')</td>
+										#elseif($data.get('roleBelong')== 2)
+										<td>$!data.get('orgName2')</td>
+										#elseif($!data.get('roleBelong')== 3)
+
+										#end
+										<td>$!data.get('contactName')</td>
+										<td>$!data.get('contactPhone')</td>
+										<td>$!data.get('shopAddress')</td>
+										#if($!shop.isDelete==0||'$!shop.isDelete'=='')
+										  <td>
+										  #if("$!data.get('accountAvailable')"=="")
+										                暂无账号
+										  #elseif("$!data.get('accountAvailable')"=="0")
+										                  冻结
+										  #else
+										                 正常
+										  #end
+										</td>
+										#end
+										
+										<td>
+										#if($!shop.isDelete==1)
+										  <a class="btn btn-mini btn-primary js_modify_ok" href="javascript:;" shopid="$data.get('shopId')" roleType="$!data.get('roleType')"
+											roleBelong="$data.get('roleBelong')"   parentOrgId="$data.get('orgId1')" branchOrgId="$data.get('orgId2')" roleId="$data.get('roleId')">恢复</a>
+										#else
+										   <a class="btn btn-mini btn-primary js_modify" href="javascript:;" shopid="$data.get('shopId')" roleType="$!data.get('roleType')"
+											roleBelong="$data.get('roleBelong')"   parentOrgId="$data.get('orgId1')" branchOrgId="$data.get('orgId2')" roleId="$data.get('roleId')">修改</a>
+										   <a class="btn btn-mini btn-danger js_delete" href="javascript:;" shopid="$data.get('shopId')">删除</a>
+										#end
+										    #set($ahref ="http://ishop"+$data.get('shopId')+".mamahao.com/shop/refreshAll.htm" )
+											<a class="btn btn-mini btn-primary js_refreshAll" href=$ahref target="_blank">数据预热</a>
+										</td>
+									</tr>
+									#end
+								</tbody>
+							</table>
+							##分页
+							#parse("pagination.vm")
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+initOrgs("_queryParentCompanyId", "");//查询总公司下拉框
+var parentCompanyId="$!shop.parentCompanyId";
+if(parentCompanyId!=""){
+  initOrgs("_queryBranchCompanyId",parentCompanyId);//分公司、部门下拉框
+}
+
+initRoles("_queryRoleId");
+$("#_queryRoleId").val("$!shop.roleId");
+$("#_queryParentCompanyId").val("$!shop.parentCompanyId");
+$("#_queryBranchCompanyId").val("$!shop.branchCompanyId");
+
+
+
+$("#js_search").on("click", function(){
+	$("input[type=text]").delBlank(); // 删除前后空格;
+	if(isForm.isCheck($("input[name=shopName]").val())){
+		$("input[name=shopName]").focus();
+		Toast.show("请输入正确格式的内容");
+		return false;
+	}else if($("input[name=contactPerson]").val() && !isForm.isCN($("input[name=contactPerson]").val())){
+		$("input[name=contactPerson]").focus();
+		Toast.show("只允许输入中文");
+		return false;
+	}else if($("input[name=contactPhone]").val() && (!isForm.isPhone($("input[name=contactPhone]").val()))){
+		$("input[name=contactPhone]").focus();
+		Toast.show("联系电话只能输入数字或“-”");
+		return false;
+	}
+	$('#frm').submit();
+});
+function frmSubmit(shopRes){
+	$('#shopResId').val(shopRes);
+	$('#frm').submit();
+}
+//初始化角色列表
+function initRoles(id){
+	var url = "$!{request.getContextPath()}/share/role/getRoles.do?scope=1";
+	$.ajax({
+		url:url,
+		type:'GET',
+		async : false,
+		success:function(data){
+			var option = "<option value=''>请选择</option>";
+			$.each(data,function(idx,item){
+				option += ("<option value='"+item.roleId+"' roletype='"+item.roleType+"' belong='"+item.roleBelong+"'>"+item.roleName+"</option>");
+			});
+			$("#"+id).html(option);
+		}
+	});
+}
+//初始化总公司列表
+function initOrgs(id,parentId){
+	var url  = "$!{request.getContextPath()}/share/org/queryChildOrgList.do";
+	if(parentId != null && parentId !=""){
+		url +=("?parentId="+parentId);
+	}
+	initOrgs2(id,url);
+}
+//初始化分公司/部门列表
+function initOrgs2(id,url){
+  var option = "<option value=''>请选择</option>";
+  var shopId=$("#shopIdID").val();
+  if(shopId!=""){
+   option="";
+  }
+	$.ajax({
+		url:url,
+		type:'GET',
+		async : false,
+		success:function(data){
+
+			$.each(data,function(idx,item){
+				option += ("<option value='"+item.orgId +"'>"+item.name+"</option>");
+			});
+			$("#"+id).html(option);
+		}
+	});
+}
+//初始化门店
+function initShops(roleType){
+	var url="$!{request.getContextPath()}/cloud/cloudShop/listBaseShop.do?roleType="+roleType;
+	$.ajax({
+		url:url,
+		type:'GET',
+		async : false,
+		success:function(data){
+			if(data==null){
+				Toast.show("此角色类型下没有门店信息！");
+			}else{
+				var option = "<option value=''>请选择</option>";
+				$.each(data,function(idx,item){
+					option += ("<option value='"+item.shopId+"' areaNumId='"+item.areaNumId+"' contactperson='"+item.contactPerson+"' contactphone='"+item.contactPhone+"' shopAdr='"+item.shopAdr+"'>"+item.shopName+"</option>");
+				});
+				$("#_shopName").html(option);
+			}
+		}
+	});
+}
+
+$(function(){
+//显示添加商家页面
+$("#add_shop").bind("click",function() {
+	$.each($("#frm_add_shop select"),function(){
+		$(this).html("");
+		$(this).removeAttr("readonly");
+	})
+	$.each($("#new_shop_modal input"),function(){
+		$(this).val("");
+	})
+	$("#new_shop_modal textarea").text("");
+	$("#_roleType").text("");
+	$("#shopIdID").val("");
+	$("#new_shop_modal .modal-header h3").text("新增商家");
+	$("#new_shop_modal").modal("show");
+
+	initRoles("_roleName");
+});
+//选择角色信息时
+var belong="";
+$("#_roleName").on('change',function(){
+	belong = $("#_roleName").find("option:selected").attr("belong");
+	var roleType=$("#_roleName").find("option:selected").attr("roletype");
+
+	var shopType="";
+	if(roleType==4){
+		shopType="第三方店";
+	}else if(roleType==5){
+		shopType="直营e家";
+	}else if(roleType==6){
+		shopType="加盟e家";
+	}
+	$("#_roleType").html(shopType);
+	$("#shopTypeId").val(roleType);
+	if(belong == 1){
+		$(".branch").hide();
+	}else if(belong ==2){
+		$(".branch").show();
+	}
+	initOrgs("_parentOrg", "");
+
+	initShops(roleType);
+
+});
+//选择总公司时触发
+$("#_parentOrg").on('change',function(){
+	if(belong==2){
+		var val = $(this).val();
+		if(val!=""){
+			initOrgs("_branchOrg", val);
+		}else{
+			$("#_branchOrg").html("<option value=''>请选择</option>")
+		}
+	}
+});
+//选择查询总公司时触发
+$("#_queryParentCompanyId").on('change',function(){
+	var val = $(this).val();
+	initOrgs("_queryBranchCompanyId", val);
+});
+//选择门店时触发
+$("#_shopName").on('change',function(){
+	var contactPerson=$("#_shopName").find("option:selected").attr("contactperson");
+	var contactPhone=$("#_shopName").find("option:selected").attr("contactphone");
+	var contactAdr=$("#_shopName").find("option:selected").attr("shopAdr");
+	var areaNumId=$("#_shopName").find("option:selected").attr("areaNumId");
+	$("#areaIdID").val(areaNumId);
+	$("#_contact").val(contactPerson);
+	$("#_contactMobile").val(contactPhone);
+	$("#_contactAddress").val(contactAdr == "undefined" ? "" : contactAdr);
+});
+var isAjax = false;
+//点击添加或者修改的确定按钮时触发
+$("#add_commit").bind("click",function(){
+	if(isAjax) return;
+	var iiiii = $("#shopIdID").val();
+	if($("#_roleName").is(':visible') && $("#_roleName").val() == ""){
+		Toast.show("请选择角色名称");
+		$("#_roleName").focus();
+		return;
+	}
+
+	if($("#_shopName").is(':visible') && $("#_shopName").val() == "" && $("#_shopName").find("option").length == 1){
+		Toast.show("请先至商户管理页面添加第三方店铺");
+		return;
+	}
+	if($("#_shopName").is(':visible') && $("#_shopName").val() == ""){
+		Toast.show("请选择一个店铺");
+		$("#_shopName").focus();
+		return;
+	}
+	if($("#_parentOrg").is(':visible') && $("#_parentOrg").val() == ""){
+		Toast.show("请选择所属总公司");
+		$("#_parentOrg").focus();
+		return;
+	}
+	if($("#_branchOrg").is(':visible') && $("#_branchOrg").val() == ""){
+		Toast.show("请选择所属分公司/部门");
+		$("#_branchOrg").focus();
+		return;
+	}
+	isAjax = true;
+    $.ajax({
+		url: '$!{request.getContextPath()}/cloud/cloudShop/save.do?shopResource=$!shopRes',
+		type:'post',
+		data:{
+			id:$("#shopIdID").val(),
+			roleId:$("#_roleName").val(),
+			baseShopId:$("#_shopName").val(),
+			parentCompanyId:$("#_parentOrg").val(),
+			branchCompanyId:$("#_branchOrg").val(),
+			shopType: $("#shopTypeId").val(),
+			areaId:$("#areaIdID").val()
+		},
+		success:function(ret){
+		    if(ret.success){
+		       Toast.show('保存成功');
+		       window.location.reload();
+		    }else{
+		       Toast.show(ret.msg);
+		    }
+			//Toast.show('保存成功');
+			//setTimeout(function(){
+			//	window.location.reload();
+			//}, 1000);
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+			Toast.show("[服务器异常]" + XMLHttpRequest.status);
+		}
+	});
+
+});
+//点击删除按钮时触发
+$(".js_delete").bind("click",function(){
+	var shopId=$(this).attr("shopid");
+	$("#delete_modal").modal("show");
+	$("#delete_commit").on("click",function(){
+		$.ajax({
+			url: root + '/cloud/cloudShop/del.do?shopId='+shopId,
+			type:'post',
+			dataType:'json',
+			success:function(ret){
+				Toast.show(ret.msg);
+				if(ret.success){
+					//$("#"+shopId).remove();
+					window.location.reload();
+					$("#delete_modal").modal("hide");
+				}
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				Toast.show("[服务器异常]" + XMLHttpRequest.status);
+			}
+		});
+
+	})
+});
+##点击恢复按钮时触发
+$(".js_modify_ok").bind("click",function(){
+	var shopId=$(this).attr("shopid");
+	$("#modify_ok_modal").modal("show");
+	$("#modify_ok_commit").on("click",function(){
+		$.ajax({
+			url: root + '/cloud/cloudShop/recover.do?id='+shopId+'&isDelete=0',
+			type:'post',
+			dataType:'json',
+			success:function(ret){
+				Toast.show(ret.msg);
+				if(ret.success){
+					//$("#"+shopId).remove();
+					window.location.reload();
+					$("#modify_ok_modal").modal("hide");
+				}
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				Toast.show("[服务器异常]" + XMLHttpRequest.status);
+			}
+		});
+
+	})
+});
+
+$(".js_modify").bind("click",function(){
+	var roleType=$(this).attr("roletype");
+	belong=$(this).attr("roleBelong");
+	var shopType="";
+	if(roleType==4){
+		shopType="第三方店";
+	}else if(roleType==5){
+		shopType="直营e家";
+	}else if(roleType==6){
+		shopType="加盟e家";
+	}
+	var shop_id = $(this).attr("shopid");
+	var shopTR = $("#"+shop_id).find("td");
+	$("#shopIdID").val(shop_id);
+	$("#_roleName").attr("readonly","readonly");
+	$("#_roleName").html("<option value=\"" +$(this).attr("roleId") + "\">" + $(shopTR[1]).text() + "</option>");
+	$("#_roleType").html(shopType);
+	$("#_shopName").attr("readonly","readonly");
+	$("#_shopName").html("<option value=\"" + shop_id + "\">" + $(shopTR[0]).text() + "</option>");
+	initOrgs("_parentOrg", "");
+	$("#_parentOrg").val($(this).attr("parentOrgId"));
+	if(belong == 1){
+		$(".branch").hide();
+	}else if(belong ==2){
+		$(".branch").show();
+		initOrgs("_branchOrg",$(this).attr("parentOrgId"));
+		$("#_branchOrg").val($(this).attr("branchOrgId"));
+	}
+
+	$("#_contact").val($(shopTR[3]).text());
+	$("#_contactMobile").val($(shopTR[4]).text());
+	$("#_contactAddress").text($(shopTR[5]).text());
+	$("#new_shop_modal .modal-header h3").text("修改商家信息");
+	$("#new_shop_modal").modal("show");
+});
+})
+</script>

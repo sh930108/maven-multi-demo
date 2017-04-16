@@ -1,0 +1,71 @@
+{
+    "goodsName": "童车",
+    "specDetail": [
+        {
+            "itemId": 1,
+            "no": "01",
+            "type": [
+                {
+                    "key": 21,
+                    "value": "100mg"
+                },
+                {
+                    "key": 22,
+                    "value": "香辣"
+                }
+            ],
+            "price": "15.0",
+            "picName": "a.png"
+        },
+        {
+            "itemId": 3,
+            "no": "01",
+            "type": [
+                {
+                    "key": 21,
+                    "value": "100mg"
+                },
+                {
+                    "key": 22,
+                    "value": "麻辣"
+                }
+            ],
+            "price": "15.0",
+            "picName": "a.png"
+        },
+        {
+            "itemId": 9,
+            "no": "01",
+            "type": [
+                {
+                    "key": 21,
+                    "value": "150mg"
+                },
+                {
+                    "key": 22,
+                    "value": "香辣"
+                }
+            ],
+            "price": "15.0",
+            "picName": "a.png"
+        },
+        {
+            "itemId": 10,
+            "no": "01",
+            "type": [
+                {
+                    "key": 21,
+                    "value": "150mg"
+                },
+                {
+                    "key": 22,
+                    "value": "麻辣"
+                }
+            ],
+            "price": "15.0",
+            "picName": "a.png"
+        }
+    ],
+    "goodsTemplateId": 2,
+    "goodsTemplateNo": "000x1"
+}

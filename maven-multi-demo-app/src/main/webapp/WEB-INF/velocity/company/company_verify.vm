@@ -1,0 +1,194 @@
+##分公司审核页面
+<div class="content">
+  <div class="title">
+		<title_1>分公司审核</title_1>
+  </div>
+  <article>
+	<div class="article_line">
+		<div class="form_group_title">基本信息</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+		<p>分公司名称:</p>
+		</div>
+		<div class="form_group_right">
+		<p>$!company.companyName</p>
+		</div>
+		</div> 
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>营业执照:</p>
+		</div>
+		<div class="form_group_right">
+			<img src="$!company.companyBusiLicense" width="" height="" alt="" />
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>合作协议:</p>
+		</div>
+		<div class="form_group_right">
+			<img src="$!company.companyCooperAgree" width="" height="" alt="" />
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>总经理姓名:</p>
+		</div>
+		<div class="form_group_right">
+			<p>$!company.companyManagerName</p>
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>总经理手机号:</p>
+		</div>
+		<div class="form_group_right">
+			<p>$!company.companyManagerPhone</p>
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>联系人姓名:</p>
+		</div>
+		<div class="form_group_right">
+			<p>$!company.companyContactName</p>
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>联系人QQ:</p>
+		</div>
+		<div class="form_group_right">
+			<p>$!company.companyContactQq</p>
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+				<p>联系人手机号:</p>
+		</div>
+		<div class="form_group_right">
+			<p>$!company.companyContactPhone</p>
+		</div>
+		</div>
+		<div class="form_group1">
+		<div class="form_group_left">
+			<p>分公司地址:</p>
+		</div>
+		<div class="form_group_right">
+				<p>#if($companyAddr)
+    									$!companyAddr.province
+	    								#if($!companyAddr.province != $!companyAddr.city)
+	    									$!companyAddr.city
+	    								#end
+	    								$!companyAddr.name
+	    								$!company.companyAddrDetail
+									#end</p>
+		</div>
+		</div>
+		</div>
+		<div class="article_line">
+			<div class="form_group_title">结算方式
+		</div>
+	  <div class="form_group1">
+	  <div class="form_group_left">
+			<p>银行卡类型:</p>
+	  </div>
+	  <div class="form_group_right">
+		<p>储蓄卡（借记卡）</p>
+	  </div>
+	</div>
+	<div class="form_group1">
+		<div class="form_group_left">
+				<p>户名:</p>
+		</div>
+		<div class="form_group_right">
+				<p>$!company.companyBankAccount</p>
+		</div>
+		</div>
+	<div class="form_group1">
+	<div class="form_group_left">
+		<p>银行名称</p>
+	</div>
+	<div class="form_group_right">
+		<p>$!company.companyBankName</p>
+	</div>
+	</div>
+	<div class="form_group1">
+	<div class="form_group_left">
+		<p>开户行地址:</p>
+	</div>
+	<div class="form_group_right">
+	<p>
+	  #if($bankAddr)
+	     $!bankAddr.province
+	    #if($!bankAddr.province != $!bankAddr.name)
+	    		$!bankAddr.name
+	    #end
+	    		$!company.companyBankSub
+	  #end
+		
+	</p>
+	</div>
+	</div>
+	<div class="form_group1">
+	<div class="form_group_left">
+		<p>银行账号</p>
+	</div>
+	<div class="form_group_right">
+		<p>$!company.companyBankNo</p>
+	</div>
+	</div>
+	<div class="form_group_title">配送信息
+	</div>
+	<div class="form_group1">
+	<div class="form_group_left">
+		<p>门店配送设置</p>
+	</div>
+	<div class="form_group_right">
+		#if($deliveryTimes && $deliveryTimes.size() > 0)
+	    	#foreach($deliveryTime in ${deliveryTimes})  
+	    	<p>
+	    	今日
+	    	$deliveryTime.beginTime
+	    	至
+	    	$deliveryTime.endTime
+	    	下单，预计
+	    	#if($deliveryTime.arriveType == 0)
+	    	当日
+	    	#else
+	    	次日
+	    	#end
+	    	$deliveryTime.arriveTime
+	    	前到达。
+	      </p>
+	    #end 
+	#end
+	</div>
+	</div>
+	<div class="form_group1">
+	<div class="form_group_left">
+		<p>仓储配送设置</p>
+	</div>
+	<div class="form_group_right">
+		<p>默认快递：$storageDelivery.key</p>
+	</div>
+  </div>
+ </div>
+  <form method="post" action="$!{request.getContextPath()}/company/verifyCompany.do" id="frm">
+     <input type="hidden" id="companyid" name="companyId" value="$!company.companyId"/>
+     <input type="hidden" id="verifyStatus" name="verifyStatus"/>
+  </form>							
+ <div class="article_footer">
+ <div class="p_right">
+  <button type="button" class="btn_next" onclick="javascript:verifyCompany(2);">通过</button>
+  <button type="button" class="btn_next_dele" onclick="javascript:verifyCompany(1);">拒绝</button>
+ </div>
+ </div>
+</article>
+</div>//verifyCompany
+<script type="text/javascript">
+	function verifyCompany(verifyStatus){
+	   $("#verifyStatus").val(verifyStatus);
+	   frm.submit();
+	}
+</script>

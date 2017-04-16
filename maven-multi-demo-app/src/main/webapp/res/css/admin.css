@@ -1,0 +1,27 @@
+/* CSS Document */
+#idPageHead{height:26px; border:1px solid #ccc; background:#eee; clear:both}
+#idPageFoot{height:26px; border:1px solid #ccc; background:#eee; clear:both}
+#idLeftMenu{width:150px; float:left; vertical-align:top; text-align:left;}
+#idMainFrame{float:left}
+#idLeftMenu dl{ margin:0px; padding:0px 0px 10px 0px; line-height:18px;}
+#idLeftMenu dt{ margin-left:5px;}
+#idLeftMenu dd{ margin-left:20px;}
+
+.toolbar{line-height:28px; background-color:#CFF; border-bottom:1px solid #aaa;margin-bottom:5px;}
+.toolbar a{padding:4px 8px 4px 8px; margin:4px; border:1px solid #ccc;background-color:#f0f0f0; color:#000; text-decoration:none}
+.toolbar a:hover{ background:#FFF}
+
+.pager{border:1px solid #ccc; padding:3px; background-color:#F4F4F4; height:30px}
+.pager a{ text-decoration:none; line-height:24px;}
+.pager span{float:right; padding-right:20px}
+
+.table_list{width:100%; border-top:1px solid #ccc; border-left:1px solid #ccc}
+.table_list td{line-height:20px;border-right:1px solid #ccc; border-bottom:1px solid #ccc}
+.table_list td a{ padding:0px 4px 0px 4px}
+.table_list th{line-height:24px;background-color:#eee;border-right:1px solid #ccc; border-bottom:1px solid #ccc;text-align:left; font-weight:bold}
+
+.table_edit{width:400px; border-top:1px solid #ccc; border-left:1px solid #ccc}
+.table_edit td{line-height:28px;border-right:1px solid #ccc; border-bottom:1px solid #ccc}
+.table_edit th{ width:100px; padding-right:5px; line-height:28px;background-color:#eee;border-right:1px solid #ccc; border-bottom:1px solid #ccc;text-align:right; font-weight:bold}
+.mod_select dt{background-color:#eee; line-height:24px; font-weight:bold}
+.mod_select dd{line-height:20px;}

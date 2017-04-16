@@ -1,0 +1,113 @@
+##转单配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 100, "cmenu": 103});
+</script>
+
+#set($subUnitNumId = $!{request.getParameter("subUnitNumId")})
+<div id="content-header">
+	<h1>商户管理 | 商品转单（仅针对总仓）</h1>
+</div>
+<div class="container-fluid">
+<hr>
+<div class="row-fluid">
+	<div class="span12">
+		<div class="widget-box widget-tabs-box">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="viewMain.do?subUnitNumId=$!{subUnitNumId}">商品转单（仅针对总仓）</a></li>
+				<li><a href="view.do?subUnitNumId=$!{subUnitNumId}">门店转单</a></li>
+			</ul>
+			<div class="widget-content nopadding">
+				<!-- 表单 -->
+				<div class="form-horizontal">
+					<div class="control-group">
+						<label class="control-label">指定商品：</label>
+						<div class="controls">
+							<textarea placeholder="请填写商品款式编码，以“,”区隔" style="width:50%;" class="js-goods-id"></textarea>
+						</div>
+					</div>
+				</div>
+				<!-- 商品模板 -->
+				<div class="MA-goods-template">
+					<div class="list js-goods-list">
+						<!-- <div class="item">
+							<button class="btn btn-danger btn-mini">删除</button>
+							<dl>
+								<dt>商品品牌：</dt>
+								<dd>
+									<label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品类目：</dt>
+								<dd>
+									<span>一级类目<select><option>请选择</option></select></span><span>二级类目<select><option>请选择</option></select></span><span>三级类目<select><option>请选择</option></select></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品价格：</dt>
+								<dd>
+									<label><input type="radio" name="price" /> 50元以上</label><label><input type="radio" name="price" /> 50元以上</label><label><input type="radio" name="price" /> 50元以上</label><label><input type="radio" name="price" /> 50元以上</label>
+									<p><label><input type="radio" name="price" /> 自定义<input type="text" style="width:50px;" />元以上</label></p>
+								</dd>
+							</dl>
+						</div>
+						<div class="item">
+							<button class="btn btn-danger btn-mini">删除</button>
+							<dl>
+								<dt>商品品牌：</dt>
+								<dd>
+									<label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品类目：</dt>
+								<dd>
+									<span>一级类目<select><option>请选择</option></select></span><span>二级类目<select><option>请选择</option></select></span><span>三级类目<select><option>请选择</option></select></span>
+								</dd>
+							</dl>
+							<dl>
+								<dt>商品价格：</dt>
+								<dd>
+									<label><input type="checkbox" /> 50元以上</label><label><input type="checkbox" /> 50元以上</label><label><input type="checkbox" /> 50元以上</label><label><input type="checkbox" /> 50元以上</label>
+									<p>自定义<input type="text" style="width:50px;" />元以上</p>
+								</dd>
+							</dl>
+						</div> -->
+					</div>
+					<!-- 操作按钮 -->
+					<div class="tools">
+						<button class="btn btn-primary btn-mini" onclick="Setting.addItem();">添加商品模板</button>
+					</div>
+				</div>
+				<div class="form-actions nomargin">
+					<button class="btn btn-success" type="button" onclick="Setting.seve();">提交审核</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="http://s.mamhao.cn/admin/yy/js/transformationsetting-viewmain.js"></script>
+<script type="text/javascript">
+	var VM = {
+		vm: '$!{VM}',
+		Result: '$!{Result}',
+		subUnitNumId: '$!{subUnitNumId}'
+	};
+	Setting.init();
+	//var VM = '$!{VM}';			// 返回品牌、一级类目、价格初始化值;
+	//var Result = '$!{Result}'; // 返回提交的数据  json格式;
+	
+	// 初始化数据;
+	// vm = '{"brands":[{"name":"mothercare","id":64},{"name":"好孩子","id":1},{"name":"三叶草","id":102},{"name":"NIKE","id":75},{"name":"ELC","id":114},{"name":"小龙哈彼","id":82},{"name":"迈可适","id":81},{"name":"CYBEX","id":68},{"name":"SKECHERS","id":101},{"name":"HiPP","id":86},{"name":"NewBalance","id":63},{"name":"Family by GB","id":104},{"name":"Merries","id":65},{"name":"Hero Baby","id":67},{"name":"Clarks","id":70},{"name":"Innosense","id":105},{"name":"CONVERSE","id":96},{"name":"汤美天地","id":99},{"name":"Quinny","id":79},{"name":"The North Face","id":97},{"name":"玛格罗兰","id":110},{"name":"Nutrilon","id":77},{"name":"Aptamil","id":73},{"name":"adidas","id":72},{"name":"PUMA","id":89}],"one":[{"name":"妈妈专区","id":232},{"name":"奶粉专区","id":2},{"name":"尿裤湿巾","id":49},{"name":"婴童玩具","id":164},{"name":"安全座椅","id":126},{"name":"寝居服饰","id":89},{"name":"童车童床","id":108},{"name":"宝宝洗护","id":61},{"name":"喂养用品","id":34},{"name":"童装童鞋","id":137}],"price":[{"name":"50元以上","id":"50"},{"name":"200元以上","id":"200"},{"name":"300元以上","id":"300"},{"name":"400元以上","id":"400"},{"name":"500元以上","id":"500"}]}';
+	// 测试数据，有VM输出了注释掉就成;
+	//var Result = '{"DesignatedGoods":[2313,332131,32,32,13,2132,1321],"Items":[{"Brands":[1,75,104],"Category":[2,3],"Price":120},{"Brands":[70,72,79],"Category":[34,35,40],"Price":200}]}';
+	
+</script>
+
+
+
+
+

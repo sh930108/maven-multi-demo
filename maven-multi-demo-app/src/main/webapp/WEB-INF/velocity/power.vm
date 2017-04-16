@@ -1,0 +1,2 @@
+#set($layout="/admin/layout/blank.vm")
+当前用户没有权限登录系统

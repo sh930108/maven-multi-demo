@@ -1,0 +1,173 @@
+##仓储列表
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 100, "cmenu": 102});
+	$(function(){
+		 getPrv('$!gbStorage.prvNumId'); //省
+		 showCity('$!gbStorage.prvNumId', '$!gbStorage.cityNumId');  //市
+		 showArea('$!gbStorage.cityNumId','$!gbStorage.cityAreaNumId');	//区
+	});
+</script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<div id="content-header">
+    <h1>商户管理 | 分仓储-审核</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+	  	<div class="span12">
+	    	<div class="widget-box">
+	    		<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          	<h5>仓储列表</h5>
+		        </div>
+              	<div class="widget-content nopadding">
+              		<form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/gbStorage/listdata.do">
+              			<input type="hidden" name="status" value="$!status" id="verifyStatus"/>
+              			<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">所在区域：</label>
+									<div class="controls">
+										<select id="prv" class="span2" onchange="showCity(this.value)" name="prvNumId">
+										</select>
+										<select id="city" class="span2" onchange="showArea(this.value)" name="cityNumId">
+										</select>
+										<select id="area" class="span2" onchange="showCompanyByAreaId(this.value)" name="cityAreaNumId">
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">公司名称：</label>
+									<div class="controls">
+										<input id="" type="text" name="gbDiv.divName" value="$!gbStorage.gbDiv.divName" />
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">仓储名称：</label>
+									<div class="controls">
+										<input id="" type="text" name="storageName" value="$!gbStorage.storageName" />
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-actions">
+				            <button class="btn btn-success" type="submit" id="next">筛选</button>
+							<button class="btn btn-success" type="reset" id="next">重置</button>
+			            </div>
+              		</form>
+              	</div>
+
+              	<div class="widget-content">
+	            	<div class="widget-box widget-tabs-box">
+			          	<ul class="nav nav-tabs">
+				            <li class="#if(!$!status) active #end"><a href="$!{request.getContextPath()}/gbStorage/listdata.do" >全部</a></li>
+				            <li class="#if($!status=='TO_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbStorage/listdata.do?status=TO_AUDIT" >待编辑</a></li>
+				            <li class="#if($!status=='NO_CHECK_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbStorage/listdata.do?status=NO_CHECK_AUDIT" >待审核</a></li>
+				            <li class="#if($!status=='PASS_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbStorage/listdata.do?status=PASS_AUDIT" >已通过</a></li>
+				            <li class="#if($!status=='NO_PASS_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbStorage/listdata.do?status=NO_PASS_AUDIT" >已拒绝</a></li>
+				        </ul>
+
+				        <div class="widget-content tab-content">
+			            	<!-- 选项卡 -->
+			            	<div id="tab1" class="tab-pane active">
+			              	<table class="table table-hover table-text-center">
+			              		<thead>
+	    							<tr>
+                                        <th>仓储ID</th>
+	    								<th>仓储名称</th>
+	                        			<th>区域</th>
+	                        			<th>所属分公司</th>
+	                        			<th>状态</th>
+	                        			<th>操作</th>
+	    							</tr>
+								</thead>
+								<tbody>
+									#foreach($!data in ${dataList})
+									<tr>
+                                        <td>$!data.get('STORAGE_NUM_ID')</td>
+										<td>
+											<a class="btn_p" href="$!{request.getContextPath()}/gbStorage/view.do?storageNumId=$!data.get('STORAGE_NUM_ID')">$!data.get('STORAGE_NAME')</a>
+										</td>
+										<td>$!data.get('PRV_NAME')/$!data.get('CITY_NAME')/$!data.get('CITY_AREA_NAME')</td>
+										<td>$!data.get('DIV_NAME')</td>
+										<td>
+											#if("$!data.get('STATUS')"==""||$!data.get('STATUS') == 0)
+												<span class="badge badge-info">待编辑</span>
+											#elseif($!data.get('STATUS')== 1)
+												<span class="badge badge-info">待审核</span>
+											#elseif($!data.get('STATUS') == 2)
+												<span class="badge badge-important">已拒绝</span>
+											#elseif($!data.get('STATUS') == 3)
+												<span class="badge badge-success">已通过</span>
+												<span class="tip-top" data-original-title="指定销售仓">
+													<input type="checkbox" class="saleStatus" #if($!data.get('SALE_STATUS')) checked #end storageNumId="$!data.get('STORAGE_NUM_ID')"/>
+												</span>
+											#end
+										</td>
+										<td>
+										  <div class="commodity_operat">
+											<a class="btn btn-primary btn-mini"  href="$!{request.getContextPath()}/gbStorage/view.do?storageNumId=$!data.get('STORAGE_NUM_ID')">查看仓储信息</a>
+										  </div>
+										</td>
+									</tr>
+									#end
+								</tbody>
+							</table>
+							#parse("/pagination.vm")
+							</div>
+						</div>
+				    </div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  function showWarehouseByCompanyId(companyId){
+		var verifyStatus=$("#verifyStatus").val();
+		//Toast.show("compayid:"+companyId+" status:"+verifyStatus);
+		showWarehouseByDivID(companyId,verifyStatus);
+  }
+ 
+ function showWarehouseByDivID(companyId,verifyStatus){
+     $.getJSON("$!{request.getContextPath()}/gbStorage/getStorageByProperty.do?jsoncallback=?",
+				{
+					divNumId:companyId,
+					status:verifyStatus
+				},
+				function(ret){
+    				if(!ret.success || ret.total == 0){
+						Toast.show(ret.msg);
+    				}else{
+    					var data = ret.data;
+    					var opts = "<option value=''>仓储名称</option>";
+    					$.each(data,function(i,o){
+    						opts += "<option value="+o.storageNumId+">"+o.storageName+"</option>";
+    					});
+    					$("#warehouseId").html(opts);
+    				}
+			});
+  }
+
+
+  $('.saleStatus').on("click", function () {
+      var saleStatus = $(this).attr("checked") ? 1 : 0;
+      var storageNumId = $(this).attr('storageNumId');
+      Matrix.JSON({
+          url: "$!{request.getContextPath()}/gbStorage/saleStorage.do",
+          val: {storageNumId : storageNumId , saleStatus : saleStatus},
+          fun: function (data) {
+              window.location.reload();
+          }
+      });
+
+  });
+</script>  

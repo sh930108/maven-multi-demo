@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/maven-multi-demo.iml" filepath="$PROJECT_DIR$/maven-multi-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/maven-multi-demo-app/maven-multi-demo-app.iml" filepath="$PROJECT_DIR$/maven-multi-demo-app/maven-multi-demo-app.iml" />
+    </modules>
+  </component>
+</project>

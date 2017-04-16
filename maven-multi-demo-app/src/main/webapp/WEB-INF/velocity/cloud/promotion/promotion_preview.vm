@@ -1,0 +1,67 @@
+#parse("/admin/com/common.vm")
+#set ($layout ="/admin/layout/mobile.vm")
+## $!{mapRet}
+<div style="width: 750px;margin: 0 auto;">
+<div class="focus-all royalSlider heroSlider rsMinW">
+    <img src="http://bgo.mamhao.cn/$!{mapRet.cover_pic}">
+</div>
+<div class="title">
+    <h2 style="font-size:24px;padding:0 5%;">$!{mapRet.brand_promotion_title}</h2>
+</div>
+<style>
+    .preBpInfo {background-color: #fff;}
+    .bpCover img { width: 100%; }
+    .bpTitle {padding: 10px 20px 0;text-align: left;font-size: 20px;font-weight: 600;font-family: 微软雅黑;line-height: 28px;}
+    .content_block{ padding: 10px;}
+    .text_block{}
+    .pic_block{text-align: center;}
+    .video_block{text-align: center; padding: 0 0 20px;}
+    .text_block p{padding: 5px 5%;text-align: left;text-indent: 2em;font-size: 16px;}
+    .pic_block img{max-width: 80%;}
+    #vb{max-width: 80%;min-width: 60%;}
+
+    .cover_pic_block{padding: 10px 0 0;text-align: center;}
+    .cover_pic_block img{max-width: 80%;min-width: 60%;}
+</style>
+<div class="preBpInfo">
+    ## <div class="bpCover"><img src="http://bgo.mamhao.cn/$!{mapRet.coverPic}"></div>
+    ## <h4 class="padding10 bpTitle">$!{mapRet.brandPromotionTitle}</h4>
+    <div class="bpDetails">
+        #if( $!{mapRet.is_cover_pic_in_text} != 0 )
+        <div class="cover_pic_block"><img src="http://bgo.mamhao.cn/$!{mapRet.cover_pic}"></div>
+        #end
+        #foreach($data in $!{mapRet.detail})
+        <div class="content_block">
+            #if($data.block.type==1)
+            <div class="text_block"><p>$data.block.content</p></div>
+            #elseif($data.block.type==2)
+            <div class="pic_block"><img src="http://bgo.mamhao.cn/$data.block.content"></div>
+            #else
+            <div class="video_block">
+            <iframe id="vb" src="$data.block.content" frameborder=0 allowfullscreen></iframe>
+            </div>
+            #end
+        </div>
+        #end
+    </div>
+</div>
+<script type="text/javascript">
+    $("#vb").attr("height",$("#vb").width()*4/5);
+    $('.focus-all').royalSlider({
+        loop: true,
+        arrowsNav:false,
+        slidesSpacing: 0,
+        imageScaleMode: 'fill',
+        autoScaleSlider: true,
+        controlNavigation: 'none',
+        autoPlay: {
+            enabled: true,
+            stopAtAction: false,
+            delay: 5e3
+        }
+    });
+</script>
+
+
+
+</div>

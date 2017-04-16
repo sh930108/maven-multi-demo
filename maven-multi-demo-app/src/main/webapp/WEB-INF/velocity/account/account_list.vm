@@ -1,0 +1,424 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 132,
+		"cmenu" : 133
+	});
+</script>
+<div id="content-header">
+	<h1>权限管理 | 员工管理</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>运营管理主账号</h5>
+				</div>
+				<div class="widget-content">
+					<div class="alert alert-success nomargin">
+						您当前使用的是运营管理账号，可以为您管理的员工创建子账号，登陆门店管理后台进行操作。<br /> <br />用户名：${account.username}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>子账号</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<!-- Bug #873 新增筛选form -->
+					<form action="../platform/listAccount.do" method="get"
+						name="searchFrm">
+					<!-- 
+					 -->
+						<div class="form-horizontal form-horizontal-inline">
+							<div class="row-fluid">
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">用户名：</label>
+										<div class="controls">
+											<input type="hidden" name="search" value="true" /> 
+											<input type="text" class="span12" name="s_userName" />
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">姓名：</label>
+										<div class="controls">
+											<input type="text" class="span12" name="s_realName" />
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">职位：</label>
+										<div class="controls">
+											<select class="input_formheader span11" name="s_job">
+												<option value="">全部</option>
+												<option value="财务">财务</option>
+												<option value="运营">运营</option>
+												<option value="平台运营">平台运营</option>
+												<option value="类目运营">类目运营</option>
+												<option value="营销策划">营销策划</option>
+												<option value="客服">服务运营</option>
+												<option value="UED">UED</option>
+												<option value="电商设计">电商设计</option>
+												<option value="产品">产品</option>
+												<!-- app首页管理职位 -->
+												<option value="资源位投放">资源位投放</option>
+												<option value="资源位审核">资源位审核</option>
+												<option value="资源位管理">资源位管理</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-actions">
+								<a class="btn btn-primary" href="javascript:void();" id="open_addcommodity">创建子账号</a>
+								<button type="submit" id="js_search" class="btn btn-success">筛选</button>
+                <button class="btn btn-warning" type="reset">重置</button>
+							</div>
+						</div>
+					</form>
+						<!-- 
+						 -->
+					<!-- /Bug #873 新增筛选form -->
+
+				</div>
+				<div class="widget-content">
+					<table class="table table-text-center">
+						<thead>
+							<tr>
+								<th>序列</th>
+								<th>用户名</th>
+								<th>姓名</th>
+								<th>职位</th>
+								<th>创建时间</th>
+								<th>修改时间</th>
+								<th>权限</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${accounts}) #set($index = $loopCounter + 1)
+							<tr>
+								<td>$index</td>
+								<td>$!data.userName</td>
+								<td>$!{data.realName}</td>
+								<td>$!{data.job}</td>
+								<td>$!date.format('yyyy-MM-dd HH:mm:ss
+									',$!{data.createTime})</td>
+								<td>$!date.format('yyyy-MM-dd HH:mm:ss
+									',$!{data.modifyTime})</td>
+								<td><span class="label label-info tip-top"
+									data-original-title="#foreach($cmenu in ${data.myTopMenu})$!{cmenu.menuName} #end">查看权限</span>
+								</td>
+								<td><a class="btn btn-primary btn-mini js-edit"
+									id="${data.userId}" mid="#inline_content">编辑</a> <a
+									class="btn btn-danger btn-mini js-delete"
+									userid="${data.userId}" username="${data.userName}">删除</a></td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					##分页 
+					#parse("pagination.vm")
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div aria-hidden="false" id="inline_content" class="modal hide modal-lg">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3>配置子账号</h3>
+	</div>
+	<form method="post" action="" id="frm-account-info">
+		<input type="hidden" name="userId" />
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">用户名：</label>
+						<div class="controls">
+							<input type="text" name="userName" maxlength="32" />
+						</div>
+
+						<label class="control-label">密码：</label>
+						<div class="controls">  <!--password   -->
+							<input type="text" placeHolder="不修改密码请不填" maxlength="16"
+								name="userPwd" onfocus="this.type='password'"/>
+						</div>
+
+						<label class="control-label">姓名：</label>
+						<div class="controls">
+							<input type="text" name="realName" maxlength="32" />
+						</div>
+
+						<label class="control-label">职位：</label>
+						<div class="controls">
+							<select class="input_formheader" name="job">
+												<option value="">全部</option>
+												<option value="财务">财务</option>
+												<option value="运营">运营</option>
+												<option value="平台运营">平台运营</option>
+												<option value="类目运营">类目运营</option>
+												<option value="营销策划">营销策划</option>
+												<option value="客服">服务运营</option>
+												<option value="UED">UED</option>
+												<option value="电商设计">电商设计</option>
+												<option value="产品">产品</option>
+												
+												<!-- app首页管理职位 -->
+												<option value="资源位投放">资源位投放</option>
+												<option value="资源位审核">资源位审核</option>
+												<option value="资源位管理">资源位管理</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<div class="row-fluid">
+					<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th>主模块</th>
+								<th>子模块</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${menuPowers})
+							<tr>
+								<td><label>#if(${data.status}) <input
+										type="checkbox" value="${data.menuId}" name="menuIds"
+										id="menu_${data.menuId}" level="1"> #end
+										${data.menuName}
+								</label></td>
+								<td>#foreach($d in ${data.childMenus}) <label>#if(${data.status})
+										<input type="checkbox" value="${d.menuId}" name="menuIds"
+										id="menu_${d.menuId}" level="2">#end ${d.menuName}
+								</label> #end #if(!${data.status}) <span class="label label-important">（专属主账号高级权限，子账号无法授权）</span>
+									#end
+								</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+				</div>
+
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-success" type="button" id="commit">确定</button>
+			<a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+		</div>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+	$(function() {
+		$(".js-edit")
+				.on(
+						'click',
+						function() {
+							// $("#frm-account-info").find("input").val("");
+							var username = $(this).parent().parent().find(
+									"td:eq(1)").text();
+							var realname = $(this).parent().parent().find(
+									"td:eq(2)").text();
+							var job = $(this).parent().parent()
+									.find("td:eq(3)").text();
+							var userid = $(this).attr('id');
+							$('input[name=userName]').val(username);
+							$('input[name=userName]').attr("disabled",
+									"disabled");
+							$('input[name=realName]').val(realname);
+							$('select[name=job]').val(job);
+							$('input[name=userId]').val(userid);
+							
+							$('input[name=userPwd]').val("");
+							
+							$.get('../platform/toEditAccountView.do?accountId='
+									+ userid, function(data) {
+								if (data.success == true) {
+									$.each(data.data, function(index, d) {
+										$('#menu_' + d.menuId).attr('checked',
+												true);
+									});
+								} else {
+									Toast.show("获取数据异常");
+								}
+							});
+
+							$("#inline_content").modal("show");
+
+						});
+
+		$(".js-delete").on(
+				'click',
+				function() {
+					var o = $(this)
+					if (confirm('确定要删除该用户吗?')) {
+						$.get('deleteAccount.do?accountId=' + o.attr("userid")
+								+ "&userName=" + o.attr("username"), function(
+								data) {
+							Toast.show(data.msg);
+							if (data.result == 1) {
+								o.parent().parent().remove();
+							}
+
+						});
+					}
+				});
+
+		$("input:checkbox[level='1']").on(
+				'click',
+				function() {
+					if ($(this).attr("checked") == "checked") {
+						$(this).parent().parent().next().find(
+								"input[level='2']").attr("checked", "checked");
+					} else {
+						$(this).parent().parent().next().find(
+								"input[level='2']").removeAttr("checked");
+					}
+				});
+
+		$("input:checkbox[level='2']").on(
+				"click",
+				function() {
+					if ($(this).attr("checked") == "checked") {
+						$(this).parent().parent().prev().find(
+								"input[level='1']").attr("checked", "checked");
+					} else {
+						var nochecked = true;
+						$.each($(this).parent().siblings().find(
+								"input[level='2']"), function() {
+							if (this.getAttribute("checked") == "checked"
+									|| this.checked)
+								nochecked = false;
+						})
+						if (nochecked) {
+							$(this).parent().parent().prev().find(
+									"input[level='1']").removeAttr("checked");
+						}
+					}
+				});
+
+		$("#open_addcommodity").bind(
+				"click",
+				function() {
+					$('input[name=userName]').removeAttr("disabled");
+					$("#frm-account-info").find("input[type!='checkbox']").val(
+							"");
+					$("#frm-account-info").find("select").val("运营");
+					$("#frm-account-info").find("input:checkbox").removeAttr(
+							"checked");
+					$("#inline_content").modal("show");
+				});
+
+		$("#commit")
+				.bind(
+						"click",
+						function() {
+							var arguments = {};
+							var userId = $('input[name=userId]').val();
+							var userName = $('input[name=userName]').val();
+							var realName = $('input[name=realName]').val();
+							var userPwd = $('input[name=userPwd]').val();
+							var job = $('select[name=job]').val();
+
+							if (!isForm.isAccount(userName)
+									|| userName.length < 6) {
+								Toast.show("用户名只能为字母、数字或下划线，6-32位");
+								$('input[name=userName]').focus();
+								return false;
+							}
+
+							if (isForm.isTrim(userId)
+									&& (!isForm.isAccount(userPwd) || userPwd.length < 6)) {
+								Toast.show('密码只能为字母、数字或下划线，6-16位');
+								$('input[name=userPwd]').focus();
+								return;
+							}
+
+							if (isForm.isTrim(realName)) {
+								Toast.show("请填写姓名");
+								$('input[name=realName]').focus();
+								return;
+							}
+							if (isForm.isTrim(job)) {
+								Toast.show("请选择职位");
+								return;
+							}
+							var menuIds = [];
+							$('input[name="menuIds"]:checked').each(function() {
+								menuIds.push(parseInt($(this).val()));
+							});
+							if (!menuIds.length) {
+								Toast.show("请选择权限");
+								return;
+							}
+							arguments.userId = userId;
+							arguments.userName = userName;
+							arguments.realName = realName;
+							arguments.userPwd = userPwd;
+							arguments.job = job;
+							arguments.menuIds = menuIds;
+
+							Matrix.JSON({
+								showLoad : true,
+								type : "POST",
+								val : arguments,
+								url : '../platform/editAccount.do',
+								fun : function(data) {
+									if (data.result == 1) {
+										Toast.show("操作成功");
+										document.location.reload();
+									} else {
+										Toast.show(data.msg);
+										$('input[name=userName]').focus();
+									}
+								}
+							});
+
+							/*$.post('../platform/editAccount.do',arguments,function(data){
+								if (data.result == 1) {
+									Toast.show("操作成功");
+									document.location.reload();
+								} else {
+									Toast.show(data.msg);
+									$('input[name=userName]').focus();
+								}
+							});*/
+						});
+		$("#js_search").click(function() {
+			document.searchFrm.submit();
+		});
+
+		fillSearchInput();
+		
+		function fillSearchInput(){
+			#if(${search})
+			var userName = '${condition.userName}';
+			var realName = '${condition.realName}';
+			var job = '${condition.job}';
+			$('input[name=s_userName]').val(userName);
+			$('input[name=s_realName]').val(realName);
+			$("select[name=s_job]").val(job);
+		   #end
+		}
+		
+	});
+</script>

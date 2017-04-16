@@ -1,0 +1,18 @@
+<script>
+	function refreshObject(styleId){
+		if(confirm("你确认刷新该款式的图片缓存么，每天最多只能操作100次！！！！？")){
+		Matrix.JSON({
+		val: {styleId: styleId},
+		url: root + '/gb/goods/refresh.do',
+		fun: function(msg){
+    			if(msg.success==0){
+    				Toast.show('刷新缓存失败!');
+    			}else{
+    				Toast.show('刷新成功，请查看最新图片!');
+    			}
+			}
+		});
+	}
+		
+	}
+</script>

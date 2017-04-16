@@ -1,0 +1,454 @@
+##App配置管理-为您优选
+
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 119});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 配置管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr> 
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <ul class="nav nav-tabs">
+                    ##<li ><a href="$!{request.getContextPath()}/appconf/index.do">启动广告</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=0">首页顶图</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=1&valid=0">妈豆尊享</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=2">万众瞩目</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/iconMaintain.do">图标维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/goodsType/list.do">类目维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/appconf/list.do?confType=3">为您优选</a></li>
+                    <li class="active"><a href="$!{request.getContextPath()}/appconf/getOptimization4uPageList.do">为您优选-新版</a></li>
+                    <li><a href="$!{request.getContextPath()}/shopservice/list.do">实体店服务标签</a></li>
+
+				</ul>
+                <div class="widget-content tab-content">
+                    <div class="app-optim-ad">
+                        <table class="table table-hover table-text-center">
+                            <thead>
+                                <tr>
+                            	#*
+                            		<th>年龄段
+                            			<select id="styleApplyAge">
+                            				<option value="">全部</option>
+                            				<option value="-1-0" #if($!gcdto.styleApplyAge == '-1-0') selected #end>孕妈咪</option>
+                            				<option value="0-3" #if($!gcdto.styleApplyAge == '0-3') selected #end>0~3个月</option>
+                            				<option value="3-6" #if($!gcdto.styleApplyAge == '3-6') selected #end>3~6个月</option>
+                            				<option value="6-12" #if($!gcdto.styleApplyAge == '6-12') selected #end>6~12个月</option>
+                            				<option value="12-36" #if($!gcdto.styleApplyAge == '12-36') selected #end>12~36个月</option>
+                            				<option value="36-84" #if($!gcdto.styleApplyAge == '36-84') selected #end>36~84个月</option>
+                            				<option value="84-" #if($!gcdto.styleApplyAge == '84-') selected #end>84个月以上</option>
+                            			</select>
+                            		</th>
+                            	*#
+                                <th>标题</th>
+                        			<th width="200">图片预览</th>
+                        			<th>落地页</th>
+                        			<th>排序(数字越大，越靠前)</th>
+                        			<th>操作</th>
+                        		</tr>
+                            </thead>
+                            <tbody>
+                            	#foreach($data in ${list})
+                            	<tr>
+                                #*
+                            		<td>
+                            			#if($!{data.styleApplyAge} == "-1-0")
+                            			孕妈咪
+                            			#elseif($!{data.styleApplyAge} == "0-3")
+                            			0~3个月
+                            			#elseif($!{data.styleApplyAge} == "3-6")
+                            			3~6个月
+                            			#elseif($!{data.styleApplyAge} == "6-12")
+                            			6~12个月
+                            			#elseif($!{data.styleApplyAge} == "12-36")
+                            			12~36个月
+                            			#elseif($!{data.styleApplyAge} == "36-84")
+                            			36~84个月
+                            			#elseif($!{data.styleApplyAge} == "84-")
+                            			84个月以上
+                            			#end
+                            		</td>
+                            		*#
+									<td>$!{data.title}</td>
+                            		<td>
+                            			<div class="photo">
+                            				#if(${data.pic} != "")
+                            				<img src="$imgpath$data.pic" alt="$!{data.title}"/>
+                            				#end
+                            			</div>
+                            		</td>
+                            		<td>$!{data.linkTo}</td>
+                            		
+                            		<td>$!{data.orderBy}</td>
+                            		<td>
+                            			<a href="#inline_content" class="btn btn-primary btn-mini" onclick="openModal(this,${data.id})">编辑</a>
+                            			<a href="javascript:deleteById(${data.id});" class="btn btn-danger btn-mini">删除</a>
+                            		</td>
+                            	</tr>
+                            	#end
+                                <tr>
+                                    <td colspan="6" style="text-align:left;">
+                                        <a class="btn btn-primary" href="#inline_content" data-toggle="modal">添加</a>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        ##分页
+                        #parse("/pagination.vm")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="width: 600px;" aria-hidden="false" id="inline_content" class="modal hide in">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>为您优选</h3>
+    </div>
+    <div class="modal-body app-optim-ad-pop">
+        <form class="form-horizontal form-horizontal-inline" method="get" id="frm">
+            #*<input type="hidden" name="confType" value="3"/>*#
+            <input id="id" type="hidden" name="id">
+            <!-- <input id="styleNumId" type="hidden" name="style.styleNumId"> -->
+            <div class="control-group">
+                <label class="control-label"><i>*</i>上传图片：<br>（750*330px）</label>
+                <div class="controls">
+                    <span class="up-photo">
+                        <input name="pic" id="pic-hidden" type="hidden" value=""/>
+                        <span id="picName"></span>
+                        <div class="up-pic" id="pic-pic">
+                            <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+                        </div>
+                        <div class="up-btn" data-id="pic"><a href="javascript:;" id="pic" class="btn">选择图片</a></div>
+                    </span>
+                </div>
+            </div>
+            #*
+            <div class="control-group">
+                <label class="control-label"><i>*</i>商品ID：</label>
+                <div class="controls">
+                    <input id="styleNumId" type="text" placeholder="" name="style.styleNumId" value="" >
+                </div>
+            </div>
+            *#
+             <div class="control-group">
+                <label class="control-label"><i>*</i>落地类型：</label>
+                <div class="controls">
+                    <select name="linkType">
+		                <option value="1">无</option>
+						<option value="2">商品详情页</option>
+						<option value="3">H5链接</option>
+                        <option value="6">众筹商品</option>
+                        <option value="7">类目主页</option>
+                        <option value="8">品牌商品列表</option>
+                        <option value="9">三级类目商品列表</option>
+					</select>
+                </div>
+            </div> 
+            <div class="control-group group_link">
+                <label class="control-label"><i>*</i>落地页：</label>
+                <div class="controls">
+                    <input id="linkTo" type="text" placeholder="" name="linkTo" value="" >
+                    <span id="linkToInfo" class="label label-important"></span>
+                </div>
+            </div>
+			<div class="control-group">
+                <label class="control-label"><i>*</i>标题：</label>
+                <div class="controls">
+                    <input type="text" placeholder="" name="title" value="" >
+                    <span class="label label-important">标题不能超过30个字</span>
+                </div>
+            </div>
+            #*
+            <div class="control-group">
+                <label class="control-label"><i>*</i>年龄段：</label>
+                <div class="controls">
+                    <select name="styleApplyAge">
+		                <option value="-1-0">孕妈咪</option>
+						<option value="0-3">0~3个月</option>
+						<option value="3-6">3~6个月</option>
+						<option value="6-12">6~12个月</option>
+						<option value="12-36">12~36个月</option>
+						<option value="36-84">36~84个月</option>
+						<option value="84-">84个月以上</option>
+					</select>
+                </div>
+            </div>
+            *#
+            <div class="control-group">
+                <label class="control-label"><i>*</i>排序：</label>
+                <div class="controls">
+                    <input type="text" placeholder="" name="orderBy" value="" >
+                    <span class="label label-important">数字越大，越靠前</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn_info btn_submit" href="javascript:;">完成</a>
+        <a class="btn btn_info" href="javascript:;" id="cancel">取消</a>  
+    </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript">
+//文件上传
+$(".up-btn").each(function(){
+    var thas = $(this);
+    thas.children().uploadify({
+		uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',  
+        swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',  
+        queueID: 'null', // 上传进度列表;
+        fileTypeDesc: "jpg",
+        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+        multi: false,
+        wmode: "transparent",
+        buttonText: '选择图片',
+        width: "100%",
+        height: "100%",
+        onUploadStart: function(){
+            var id = this.button.parents(".up-btn").data("id");
+            $("#" + id + "-pic").html('');
+        },
+        onUploadSuccess: function(file,data,response) {
+            //上传完成时触发（每个文件触发一次）;
+            var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+			if(!data.success){
+				 Toast.show(data.msg);
+				 $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+			}else{
+				deleteFileByName($("#" + id + "-hidden").val());
+                $("#" + id + "-pic").html('<img src="$imgpath'+ data.fileName +'"/>');
+                $("#" + id + "-hidden").val(data.fileName);
+			}		 
+        }
+    }); 
+});
+	$(function(){
+		//检查款式是否已存在
+		$("#styleNumId").on("blur", function () {
+            checkStyleNumId($(this).val());
+        });
+		
+		$("#styleApplyAge").on("change",function(){
+			location.href = root + "/appconf/list.do?confType=3&styleApplyAge="+$(this).val();
+		});
+/* 		$("select[name='linkType']").on("change",function(){
+			var linkType = $(this).val();
+			if(linkType == 1){
+				$("#linkTo").val("");
+				$(".group_link").hide();
+			}else{
+				$(".group_link").show();
+				if(linkType == 2){
+					$("#linkTo").val($("#styleNumId").val());
+				}
+			}
+		}); */
+		
+		//文件上传
+		$('#file_upload').uploadify ({
+　　			'uploader' : '$!{request.getContextPath()}/oss/uploadFiles.do',  
+            'swf' : '$!{request.getContextPath()}/res/uploadify/uploadify.swf',  
+            'cancelImg' : '$!{request.getContextPath()}/res/uploadify/uploadify-cancel.png',  
+            //'folder' : 'uploads',//您想将文件保存到的路径  
+            'queueID' : 'fileQueue',//与下面的id对应  
+            'queueSizeLimit' : 5, 
+            //'formData'      : {'gtId':$('#gtId').val()},   
+            'fileTypeDesc' : '首页顶图',
+            'fileTypeExts' : '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            'fileDataName':'file',
+            'auto' : true,  
+            'multi' : true,  
+            'simUploadLimit' : 2,  
+            'buttonText' : '选择图片', 
+            'onUploadSuccess' : function(file,data,response) {//上传完成时触发（每个文件触发一次）  
+					var ret = eval("("+data+")");
+					if(ret.success){
+                     	$('#picName').html(ret.fileName);
+						$('#pic').val(ret.fileName);
+					}else{
+						Toast.show(ret.msg);
+						return;
+					}
+            }
+        }); 
+		
+		//保存
+		$(".btn_submit").on("click",function(){
+            if(validateForm()){
+    			$.ajax({
+        			url:root + '/appconf/saveOptimization4u.do',
+        			type:'post',
+        			dataType:'json',
+        			data:$("#frm").serialize(),
+        			success:function(ret){
+        				if(ret.success){
+    						window.location.reload();    
+        				}else{
+    						Toast.show(ret.msg);
+    					}
+        			},
+            		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                       Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                    }
+        		});
+            }
+			
+		});
+
+		//取消
+	    $("#cancel,.close").on("click",function(){
+	        $("#id").val("");
+	        // $('#picName').html("");
+	        $('.up-pic img').attr("src","$!{request.getContextPath()}/res/images/photo-default.png");
+	        $('#pic').val("");
+	        $("#linkTo").val("");
+	        $("input[name='styleApplyAge']").val("");
+	        $("input[name='orderBy']").val("");
+	        $('#inline_content').modal('hide');
+	    });
+	});
+	
+	
+	function openModal(obj,id){
+		if(id){
+			$.getJSON(root + "/appconf/getOptimization4uById.do?jsoncallback=?",
+			{
+				id: id
+			},function(ret){
+				if(ret.success){
+					$("#id").val(ret.data.id);
+					// $('#picName').html(ret.data.pic);
+					$("input[name='pic']").val(ret.data.pic);
+					$('.up-pic img').attr("src","$imgpath"+ret.data.pic);
+					$("input[name='title']").val(ret.data.title);
+//					$("#styleNumId").val(ret.data.style.styleNumId);
+					$("input[name='orderBy']").val(ret.data.orderBy);
+					$("select[name='styleApplyAge']").find("option[value='"+ret.data.styleApplyAge+"']").attr("selected",true); 
+					$("select[name='linkType']").find("option[value='"+ret.data.linkType+"']").attr("selected",true);
+					$("input[name='linkTo']").val(ret.data.linkTo);
+				}else{
+    				Toast.show(ret.msg);
+				}
+			});
+		}
+		$('#inline_content').modal('show');
+	}
+	
+	function deleteById(id){
+		if(confirm("是否删除?")){
+			Matrix.JSON({
+			  val: {id: id,isOption : true},
+				url: root + "/appconf/delOptimization4uById.do",
+				fun: function(ret){
+					Toast.show(ret.msg);
+					if(ret.success){
+						window.location.reload();    
+					}
+				}
+			});
+		}
+	}
+
+function validateForm(){
+    var valid = true;
+    var toast = "";
+    if($("input[name='pic']").val()==""){
+        toast = "请选择商品图片";
+        valid =  false;
+//    }else if($("input[name='style.styleNumId']").val()==""){
+//        toast = "请填写商品ID";
+//        $("input[name='style.styleNumId']").focus();
+//        valid =  false;
+//    }else if(!isForm.isImp($("input[name='style.styleNumId']").val())){
+//		toast = "请填写正确的商品ID,商品ID为数字";
+//        $("input[name='style.styleNumId']").focus();
+//        valid = false;
+    }else if($("input[name='title']").val()==""){
+        toast = "请填写标题";
+        $("input[name='title']").focus();
+        valid =  false;
+    } else if ($("input[name='title']").val().length > 30) {
+        toast = "标题不能超过30个字";
+        $("input[name='title']").focus();
+        valid =  false;
+    }else if($("input[name='orderBy']").val()==""){
+        toast = "请填写排序值";
+        $("input[name='orderBy']").focus();
+        valid =  false;
+    }else if(!isForm.isImp($("input[name='orderBy']").val())){
+        toast = "请填写正确的排序值";
+        $("input[name='orderBy']").focus();
+        valid =  false;
+    }
+
+    if(!valid) Toast.show(toast);
+    return valid;
+}
+
+
+//验证商品id是否已存在
+function checkStyleNumId(styleNumId){
+	if (styleNumId && !isNaN(styleNumId)) {
+        $.getJSON(root + "/appconf/getItemsByStyleNumId.do?jsoncallback=?",
+                {
+                    styleNumId: styleNumId
+                }, function (ret) {
+					 if (ret.success && ret.count > 0) {
+					 	$.getJSON(root + "/appconf/queryGoodsConfExist.do?jsoncallback=?",
+							{
+								styleNumId : styleNumId,
+								confType : 3
+							},function(ret){
+								if(!ret.success){
+									 Toast.show("已存在该商品ID的配置信息，请配置其它商品ID！", 10000);
+								}
+							}
+						);
+					 } else {
+                        Toast.show("没有找到该商品下的规格详细信息，请检查商品ID是否正确以及是否有规格信息！", 2000);
+                     }
+                });
+    } else {
+        Toast.show("输入的商品ID为空，或有误！");
+    }
+}
+
+
+    $("select[name='linkType']").change(function(){
+        var placeholder = "";
+        switch (~~$(this).val()){
+            case 2:
+                placeholder = "请填写商品ID";
+                break;
+            case 3:
+                placeholder = "请填写H5链接地址";
+                break;
+            case 6:
+                placeholder = "请填写众筹商品ID";
+                break;
+            case 8:
+                placeholder = "请填写品牌ID";
+                break;
+            case 9:
+                placeholder = "请填写三级类目ID";
+                break;
+            default:
+                break;
+        }
+        $("#linkToInfo").text(placeholder);
+    });
+</script>
+
+
+
+
+  

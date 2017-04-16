@@ -1,0 +1,529 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 148,
+		"cmenu" : 152
+	});
+</script>
+<div id="content-header">
+	<h1>微推广管理 | 角色信息</h1>
+</div>
+
+<div class="container-fluid">
+
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>角色列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/share/role/list.do">
+						<div class="row-fluid">
+							
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">角色用途：</label>
+									<div class="controls">
+										<select name="scope" class="span11">
+											<option value="-1">全部</option>
+											<option value="0" #if($!{role.scope}==0) selected #end>微推广</option>
+											<option value="1" #if($!{role.scope}==1) selected #end>微分销</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">角色归属</label>
+									<div class="controls">
+										<select name="roleBelong" class="span11">
+											<option value="-1">全部</option>
+											<option value="1" #if($!{role.roleBelong}==1) selected #end>总公司</option>
+											<option value="2" #if($!{role.roleBelong}==2) selected #end>分公司/部门</option>
+											#if($!{role.scope} == 0)
+											<option value="3" #if($!{role.roleBelong}==3) selected #end>地推点/门店</option>
+											#end
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">角色类型：</label>
+									<div class="controls">
+										<select name="roleType" class="span11">
+											<option value="-1">全部</option>
+											#if($!{role.scope} == 0)
+											<option value="1" #if($!{role.roleType}==1) selected #end>GB-员工</option>
+											<option value="2" #if($!{role.roleType}==2) selected #end>MMH-员工</option>
+											<option value="3" #if($!{role.roleType}==3) selected #end>MMH-地推人员</option>
+											#else
+											<option value="5" #if($!{role.roleType}==5) selected #end>直营e家</option>
+											<option value="6" #if($!{role.roleType}==6) selected #end>加盟e家</option>
+											<option value="4" #if($!{role.roleType}==4) selected #end>第三方店</option>
+											#end
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+            <div class="row-fluid">
+            	<div class="span4">
+								<div class="control-group">
+									<label class="control-label">角色名称：</label>
+									<div class="controls">
+										<input name="roleName" type="text" maxlength="15" class="span11" value="$!{role.roleName}"/>
+									</div>
+								</div>
+							</div>
+            </div>
+
+						<div class="form-actions">
+							<input type="submit" class="btn btn-success" id="next" value="筛选">
+							<input type="button" class="btn btn-primary btn-add" value="新增">
+							<button class="btn btn-warning" type="reset">重置</button>
+						</div>
+					</form>
+				</div>
+				<div class="widget-content">
+					<table class="table table-hover table-text-center">
+						<thead>
+							<tr>
+								<th class="text-left">角色名称</th>
+								<th>角色用途</th>
+								<th>角色归属</th>
+								<th>角色类型</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${roles}) #set($index = $loopCounter + 1)
+							<tr id="role-$!{data.roleId}">
+								<td class="text-left">$!{data.roleName}</td>
+								
+######################################## 新增								
+								#if(${data.scope} == 0)
+                                    <td>微推广</td>
+								#end
+								#if(${data.scope} == 1)
+                                    <td>微分销</td>
+								#end
+									
+									
+									
+								#if(${data.roleBelong} == 1)
+								<td>总公司</td> 
+								#end 
+								#if(${data.roleBelong} == 2)
+								<td>分公司/部门</td> 
+								#end
+								#if(${data.roleBelong} == 3)
+								<td>地推点/门店</td> 
+								#end 
+								
+								#if(${data.roleType} == 1)
+								<td>GB-员工</td> 
+								#end 
+								#if(${data.roleType} == 2)
+								<td>MMH-员工</td> 
+								#end
+								#if(${data.roleType} == 3)
+								<td>MMH-地推人员</td> 
+								#end
+								
+######################################## 新增
+								#if(${data.roleType} == 4)
+								<td>第三方店</td> 
+								#end
+								#if(${data.roleType} == 5)
+								<td>直营e家</td> 
+								#end
+								#if(${data.roleType} == 6)
+								<td>加盟e家</td> 
+								#end
+			
+															
+								<td>
+								<!-- 
+								<a class="btn btn-primary btn-mini btn-view"
+									mid="#inline_content" roleid="$!{data.roleId}"
+									href="javascript:void();">查看</a> 
+								 -->
+								<a class="btn btn-success btn-mini btn-edit"
+									href="javascript:void(0)" roleScope="$!{data.scope}" rolename="$!{data.roleName}" rolebelong="$!{data.roleBelong}" roletype="$!{data.roleType}" roleid="$!{data.roleId}">编辑
+								</a>
+								<a class="btn btn-danger btn-mini btn-delete"  href="javascript:void(0)" rolename="$!{data.roleName}" roleid="$!{data.roleId}" >删除</a>
+								</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					#parse("/pagination.vm")
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 
+
+<div aria-hidden="false" id="inline_content" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3 id="modal-window-title">新增</h3>
+	</div>
+	<form method="post" action="" id="frm-promoter-info">
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<input type="hidden" name="roleId" />
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">角色名称：</label>
+						<div class="controls">
+						<input type="text" name="_roleName">
+						</div>
+						<label class="control-label">角色归属：</label>
+						<div class="controls">
+							<input type="radio" name="_roleBelong" value="1" id="belong-1"><label
+								for="belong-1">总公司</label>&nbsp;&nbsp; <input type="radio"
+								name="_roleBelong" value="2" id="belong-2"><label
+								for="belong-2">分公司</label>&nbsp;&nbsp; <input type="radio"
+								name="_roleBelong" value="3" id="belong-3"><label
+								for="belong-3">服务点</label>
+						</div>
+						<label class="control-label">角色类型：</label>
+						<div class="controls">
+							<input type="radio" name="_roleType" value="1" id="type-1"><label
+								for="type-1">员工</label>&nbsp;&nbsp; <input type="radio"
+								name="_roleType" value="2" id="type-2"><label
+								for="type-2">地推人员</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input class="btn btn-success" type="button" id="commit" value="确定" />
+			<a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+		</div>
+	</form>
+</div>
+ -->
+<div aria-hidden="false" id="inline_content_edit" class="modal hide in">
+	<div class="modal-header"><button data-dismiss="modal" class="close" type="button">×</button><h3 id="dialog-title">编辑</h3></div>
+	<form method="post" action="" id="frm-promoter-info">
+		<div class="modal-body nopadding">
+			<div class="form-horizontal">
+				<input type="hidden" name="roleId" id="roleId"/>
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label"><font color="red">*</font>角色名称：</label>
+						<div class="controls">
+							<input type="text" name="e_roleName" id="e-roleName" maxlength="15" />
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"><font color="red">*</font>角色用途：</label>
+						<div class="controls">
+							<label class="notepad-inline" name="scope_promoter" id="scope_promoter_type">
+								<input type="radio" name="e_roleScope" value="0" id="e-scope-0" class="scope_radio_item" >微推广
+							</label>
+							<label class="notepad-inline" name="scope_trader" id="scope_trader_type">
+								<input type="radio" name="e_roleScope" value="1" id="e-scope-1" class="scope_radio_item" >微分销
+							</label>
+						</div>
+					</div>	
+					<div class="control-group">
+						<label class="control-label"><font color="red">*</font>角色归属：</label>
+						<div class="controls">
+							<div id="scope_belong_1"><label for="e-belong-1"><input type="radio" name="e_roleBelong" value="1" id="e-belong-1"> 总公司</label></div>
+							<div id="scope_belong_2"><label for="e-belong-2"><input type="radio" name="e_roleBelong" value="2" id="e-belong-2"> 分公司/部门</label></div>
+							<div id="scope_belong_3"><label for="e-belong-3"><input type="radio" name="e_roleBelong" value="3" id="e-belong-3"> 地推点/门店</label></div>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label"><font color="red">*</font>角色类型：</label>
+						<div class="controls">
+							<div name="scope_promoter" id="scope_promoter_item">
+							<label for="e-type-1"><input type="radio" name="e_roleType" value="1" id="e-type-1" >GB-员工</label>
+							<label for="e-type-2"><input type="radio" name="e_roleType" value="2" id="e-type-2" >MMH-员工</label>
+							<label for="e-type-3"><input type="radio" name="e_roleType" value="3" id="e-type-3" >MMH-地推人员</label>
+							</div>
+################################新增微分销
+	                        <div name="scope_trader" id="scope_trader_item">
+							<label for="e-type-4"><input type="radio" name="e_roleType" value="4" id="e-type-4" >第三方店</label>
+							<label for="e-type-5"><input type="radio" name="e_roleType" value="5" id="e-type-5" >直营e家</label>
+							<label for="e-type-6"><input type="radio" name="e_roleType" value="6" id="e-type-6" >加盟e家</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input class="btn btn-success btn-sumit-edit" type="button" id="commit" value="确定" />
+			<a data-dismiss="modal" class="btn btn-close" href="javascript:;">关闭</a>
+		</div>
+	</form>
+</div>
+<script>
+
+
+
+// 筛选校验;
+$("#next").on("click", function(){
+	var roleName = $("input[name=roleName]");
+	if(roleName.val() && !isForm.isName(roleName.val())){
+		roleName.focus();
+		Toast.show("只允许输入中文、英文、数字、下划线");
+		return false;
+	}
+	$('#form').submit();
+});
+
+$("select[name='scope']").change(function(){
+	var roleType = [];
+	roleType.push("")
+	if($(this).val()=='0'){
+		$("select[name='roleType']").html("<option value=\"-1\">全部</option><option value=\"1\">GB-员工</option><option value=\"2\">MMH-员工</option><option value=\"3\">MMH-地推人员</option>");
+		$("select[name='roleBelong']").html("<option value=\"-1\">全部</option><option value=\"1\">总公司</option><option value=\"2\">分公司/部门</option><option value=\"3\">地推点/门店</option>")
+	}else if($(this).val()=='1'){
+		$("select[name='roleType']").html("<option value=\"-1\">全部</option><option value=\"5\">直营e家</option><option value=\"6\">加盟e家</option><option value=\"4\">第三方店</option>");
+		$("select[name='roleBelong']").html("<option value=\"-1\">全部</option><option value=\"1\">总公司</option><option value=\"2\">分公司/部门</option>");
+	}else{
+		$("select[name='roleType']").html("<option value=\"-1\">全部</option><option value=\"1\">GB-员工</option><option value=\"2\">MMH-员工</option><option value=\"3\">MMH-地推人员</option><option value=\"5\">直营e家</option><option value=\"6\">加盟e家</option><option value=\"4\">第三方店</option>");
+		$("select[name='roleBelong']").html("<option value=\"-1\">全部</option><option value=\"1\">总公司</option><option value=\"2\">分公司/部门</option><option value=\"3\">地推点/门店</option>");
+	}
+})
+
+$(function() {
+
+	$(".btn-view").bind("click",function() {
+		var id = $(this).attr('roleid');
+		$.get("$!{request.getContextPath()}/share/role/getRoleById.do?roleId="+id,function(data){
+		// alert(data);
+		$("input[name='_roleName']").val(data.roleName);
+		$("#belong-"+data.roleBelong).attr('checked',true);
+		$("#type-"+data.roleType).attr('checked',true);
+		$("#inline_content-view").modal("show");
+		});
+	});	
+	
+	$('.btn-add').click(function(){
+		addRole();
+	});
+	$('.btn-edit').click(function(){
+		
+		$("input[name='e_roleBelong']").removeAttr("checked");;
+		$("input[name='e_roleType']").removeAttr("checked");;
+		
+		$("#dialog-title").text("编辑");
+		var name = $(this).attr('rolename');
+		var belong = $(this).attr('rolebelong');
+		var type = $(this).attr('roletype');
+		var id = $(this).attr('roleid');
+		
+		
+		var temp = $(this).attr('roleScope');
+		if (0 == temp) {
+			$("#e-scope-0").attr('checked',true);
+			$("#e-scope-1").attr('checked',false);
+			$("div[name=scope_promoter]").show();
+			$("#scope_belong_3").show();
+			$("#scope_trader_type").hide();
+			$("#scope_promoter_type").show();
+			$("div[name=scope_trader]").hide();
+		} else if(1 == temp) {
+			$("#e-scope-0").attr('checked',false);
+			$("#e-scope-1").attr('checked',true);
+			$("#scope_trader_type").show();
+			$("#scope_promoter_type").hide();
+			$("#scope_belong_3").hide();
+			$("div[name=scope_promoter]").hide();
+			$("div[name=scope_trader]").show();
+		} else {
+			$("#e-scope-0").attr('checked',false);
+			$("#e-scope-1").attr('checked',false);
+			$("div[name=scope_promoter]").show();
+			$("div[name=scope_trader]").show();
+		}
+		
+	
+		$("#roleId").val(id);
+		$("input[name='e_roleName']").val(name);
+		
+		$("#e-belong-"+belong).attr('checked',true);
+		$("#e-type-"+type).attr('checked',true);
+		$("#inline_content_edit").modal("show");
+	});
+	
+	
+	var isAjax = false;
+	$('.btn-sumit-edit').click(function(){
+	if(isAjax) return;
+	$("input[type=text]").delBlank(); // 删除前后空格;
+		var scope_selected_value = $("input[name='e_roleScope']:checked").val();
+	
+		var id = $("#roleId").val();
+		var name = $("input[name='e_roleName']").val();
+		var belong = $(":radio[name='e_roleBelong']:checked").val();
+		var type = $(":radio[name='e_roleType']:checked").val();
+		var url = "";
+		
+		if(scope_selected_value == undefined){
+			Toast.show("请选择角色用途"); 
+			return;
+		}
+		if(id == ''){
+			url = "$!{request.getContextPath()}/share/role/add.do";
+		}else{
+			url = "$!{request.getContextPath()}/share/role/update.do";
+		}
+		
+		if(!isForm.isName(name)){
+			$("#e-roleName").focus();
+			Toast.show("只允许输入中文、英文、数字、下划线");
+			return false;
+		}
+		if(belong ==  undefined){
+			Toast.show("请选择角色归属"); 
+			return;
+		}
+		if(type == undefined){
+			Toast.show("请选择角色类型"); 
+			return;
+		}	
+		isAjax = true;
+		$.post( url,
+				{
+				roleId:id,
+				roleName: name,
+				roleBelong : belong,
+				roleType: type,
+				scope: scope_selected_value
+				},function(data){
+				Toast.show(data.msg);
+				if(data.result == 1){
+					$(".btn-close").click();
+					window.location.reload();
+				}else{
+					isAjax = false;
+				}
+		});
+		
+		
+		
+	});
+	
+	// setQueryVal();
+	
+	var addFlag = '$!{flag}';
+	if(addFlag == "add"){
+		addRole();
+	}
+	
+});
+
+function addRole(){
+	
+	$("#dialog-title").text("新增");
+	$("#roleId").val("");
+	$("input[name='e_roleName']").val("");
+	$("input[name='e_roleBelong']").removeAttr("checked");;
+	$("input[name='e_roleType']").removeAttr("checked");;
+	$("#inline_content_edit").modal("show");
+	
+	$("input[name='e_roleScope']").removeAttr("checked");
+	$("#scope_promoter_type").show();
+	$("#scope_trader_type").show();
+	$("#scope_promoter_item").hide();
+	$("#scope_trader_item").hide();
+	
+	$("#scope_belong_1").hide();
+	$("#scope_belong_2").hide();
+	$("#scope_belong_3").hide();
+	$("#e-scope-0").click();//新增时默认选择“微推广”
+}
+
+$(function(){ 
+    	$(".scope_radio_item").change(function() { 
+    		
+			var selected_value = $("input[name='e_roleScope']:checked").val();
+
+    		if (0 == selected_value) {
+    			$("#scope_promoter_item").show();
+				$("#scope_trader_item").hide();
+				
+				$("#scope_belong_1").show();
+				$("#scope_belong_2").show();
+				$("#scope_belong_3").show();
+				
+    		} else if(1 == selected_value) {
+    			$("#scope_promoter_item").hide();
+				$("#scope_trader_item").show();
+				
+				$("#scope_belong_1").show();
+				$("#scope_belong_2").show();
+				$("#scope_belong_3").hide();
+				
+    		} else {
+    			$("#scope_promoter_item").hide();
+				$("#scope_trader_item").hide();
+				
+				$("#scope_belong_1").hide();
+				$("#scope_belong_2").hide();
+				$("#scope_belong_3").hide();
+    		}
+			
+    	}); 
+	}
+); 
+
+function setQueryVal(){
+	$('input[name=roleName]').val('$!{role.roleName}');
+	$('select[name=roleBelong]').val('$!{role.roleBelong}');
+	$('select[name=roleType]').val('$!{role.roleType}');
+	// $("select[name=scope]").val("$!{role.scope}");
+}
+
+
+//删除角色功能
+$(".btn-delete").click(function(){
+	var roleId = $(this).attr("roleId");
+	var roleName = $(this).attr("roleName");
+	if(confirm('您确定要删除该角色：'+ roleName  +" ?")){
+			$.get('$!{request.getContextPath()}/share/role/deleteRole.do?roleId='+roleId,function(data){
+                Toast.show({template:data.msg, second: 500, callback: function(){
+                    if(data.result == 1){
+                        window.location.reload();
+                    }
+                }});
+		    });
+	}
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

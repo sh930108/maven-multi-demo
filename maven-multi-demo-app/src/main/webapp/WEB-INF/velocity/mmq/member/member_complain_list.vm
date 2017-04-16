@@ -1,0 +1,193 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+#set($sort="$!{request.getParameter('sort')}")
+#set($status="$!{request.getParameter('status')}")
+#set($vstatus=2)
+<script type="text/javascript">
+    Matrix.Nav({"menu": 208, "cmenu": 209});
+</script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/kindeditor.js"></script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/lang/zh_CN.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+
+<style type="text/css">
+    .search-box .phone{ position: relative; }
+    .search-box .phone i{ position: absolute; right: 7px; top: 17px; opacity: 0.5; }
+    .js-sort span{display: none;}
+    .js-sort.active span{display: inherit;}
+</style>
+
+<div id="content-header">
+    <h1>妈妈圈 | 用户管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+
+        <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                <h5>用户列表</h5>
+            </div>
+
+            <div class="widget-content">
+                <div class="widget-box widget-tabs-box">
+                    <ul class="nav nav-tabs">
+                        <li class=""><a href="$!{request.getContextPath()}/mmq/member/queryNormalMemberList.do">普通用户</a></li>
+                        <li class="active" ><a href="$!{request.getContextPath()}/mmq/member/queryComplainMemberList.do">被举报的人</a></li>
+                    </ul>
+                    <div class="widget-content tab-content">
+                        <ul class="nav nav-tabs">
+                            <li #if($status != $vstatus)class="active"#end ><a href="$!{request.getContextPath()}/mmq/member/queryComplainMemberList.do">待处理</a></li>
+                            <li #if($status == $vstatus)class="active"#end ><a href="$!{request.getContextPath()}/mmq/member/queryComplainMemberList.do?status=$vstatus">黑名单</a></li>
+                        </ul>
+                        <div class="widget-content tab-content">
+                            <div class="tab-pane active">
+                                <table id="lists" class="table table-hover with-check table-text-center table-bordered">
+                                    <thead>
+                                        <tr>
+                                            #if($status != $vstatus)
+                                                <th>被举报用户</th>
+                                                <th>举报内容</th>
+                                                <th>举报时间</th>
+                                                <th>待处理</th>
+                                            #else
+                                                <th>用户ID</th>
+                                                <th>用户昵称</th>
+                                                <th>异常信息</th>
+                                                <th>举报时间</th>
+                                                <th>操作</th>
+                                            #end
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        #foreach($data in $dataList)
+                                            <tr data-channel-id="">
+                                                #if($status != $vstatus)
+                                                <td style="width:100px;">$!{data.memberNickname}</td>
+                                                <td>$!{data.complainDetail}</td>
+                                                <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.updateTime})</td>
+                                                <td>
+                                                <a href="javascript:;" class="btn btn-primary btn-mini btn-verify" data-complain-id="$!{data.complainId}" data-status="1">正常</a>
+                                                <a href="javascript:;" class="btn btn-primary btn-mini btn-verify" data-complain-id="$!{data.complainId}" data-status="2">加入黑名单</a>
+                                                </td>
+                                                #else
+                                                    <td style="width: 20%;">$!{data.memberId}</td>
+                                                    <td style="width: 20%;">$!{data.memberNickname}</td>
+                                                    <td style="width: 20%;">$!{data.complainDetail}</td>
+                                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.createTime})</td>
+                                                    <td>
+                                                    <a href="javascript:;" class="btn btn-primary btn-mini btn-verify" data-complain-id="$!{data.complainId}" data-status="3">移除</a>
+                                                    </td>
+                                                #end
+                                            </tr>
+                                        #end
+    								</tbody>
+                                </table>
+                            </div>
+                            #parse("/pagination.vm")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    var VM = {
+        rootPath: '$!{request.getContextPath()}',
+        imgPath: '$imgpath'
+    }
+</script>
+<script type="text/javascript">
+    /* 妈妈圈 用户设置*/
+    (function(){
+        var page = {
+            config: {
+                vm: VM,
+                api: {
+                    query: VM.rootPath + '/mmq/member/queryComplainMemberList.do',
+                    verify: VM.rootPath + '/mmq/member/updateMemberComplain.do'
+                }
+            },
+            ele: {
+                doc: $(document.body)
+            },
+            init: function (){
+                var o = page.ele, c = page.config;
+                // o.sort.on('click', page.sort);
+                // o.doc.on('click', '#checkAll', page.checkAll);  //绑定全选
+                // o.doc.on('click', '.btn-batch-verify', page.batchVerify);  //审核
+                o.doc.on('click', '.btn-verify', page.verify);  //审核
+            },
+            // 审核按钮
+            verify: function () {
+                var o = page.ele, c = page.config;
+                var _this = $(this), status = _this.data('status'), complainIds = [], complainId = _this.data('complain-id'), complainName = _this.parent().siblings('td').eq(0).text();
+                var confirmMsg = '确定将用户 “' + complainName + '” 加入黑名单吗？';
+                if(+status == 1){
+                    confirmMsg = '确定将用户 “' + complainName + '” 处理为正常吗？';
+                }else if(+status == 3){
+                    confirmMsg = '确定将用户 “' + complainName + '” 处理为正常吗？';
+                }
+                if(!confirm(confirmMsg)) return false;
+
+                complainIds.push(complainId);
+
+                var params = {
+                    complainIds:complainIds.join(),
+                    status:status
+                }
+                page.ajaxReq(params,c.api.verify);
+            },
+            // batchVerify: function () {
+            //     var o = page.ele, c = page.config;
+            //     var _this = $(this), status = _this.data('status'), complainIds = [], ch = $("#lists").find('[type=checkbox]:checked');
+            //     var confirmMsg = status==1 ? '确定所选项审核通过？':'确定所选项审核不通过？';
+            //     if (ch && ch.length == 0) {
+            //         Toast.show('请选择要审核的项目');
+            //         return false;
+            //     }
+            //     if(!confirm(confirmMsg)) return false;
+            //     ch && ch.each(function() {
+            //         var obj = $(this);
+            //         complainIds.push(obj.val());
+            //     });
+            //     var params = {
+            //         complainIds:complainIds.join(),
+            //         status:status
+            //     }
+            //     page.ajaxReq(params,c.api.verify);
+            // },
+            /*全选*/
+            // checkAll:function(){
+            //     var _this = $(this);
+            //     if(_this.attr('checked') == 'checked'){
+            //         _this.closest('table').find('[type=checkbox]').attr('checked','checked');
+            //     }else{
+            //         _this.closest('table').find('[type=checkbox]').removeAttr('checked');
+            //     }
+            // },
+            // sort: function () {
+            //     var o = page.ele, c = page.config;
+            //     var obj = $(this), sortType = obj.data('sort-type'), status = obj.data('status');
+            //     window.location.href = c.api.query + '?sort=' + sortType + '&status=' + status;
+            // },
+            /*ajax请求*/
+            ajaxReq:function(params,url){
+                Matrix.JSON({
+                    url: url,
+                    val: params,
+                    fun: function(res) {
+                        if(res.code == 0){
+                            Toast.show('操作成功');
+                            setTimeout('location.reload()', 1000)
+                        }
+                    }
+                });
+            }
+        }
+        page.init();
+    })();
+</script>

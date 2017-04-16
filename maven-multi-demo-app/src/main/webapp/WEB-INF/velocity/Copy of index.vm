@@ -1,0 +1,58 @@
+#set($layout="/admin/layout/home.vm")
+#set($unshow = "-HIDE-")
+#set($unshowcount = 6)
+<hr/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:void(0);" id="tree-opt">全部展开-收起
+$menu
+</a>
+<hr/>
+#foreach($item in $!{mods})
+  #if($!{item.status}==1)
+  #set($str=$!{item.name})   
+  #if($str.length() >= $unshowcount && $str.substring(0,$unshowcount) == $unshow)  
+  #else  
+    <dl class="item_">
+	<dt class="item_title" style="cursor:pointer">${item.name}</dt>
+		#foreach($subItem in $!{item.items})
+		#if($!{subItem.status}==1)
+		<dd>
+			<a href="${request.contextPath}$!{subItem.url}" target="mainFrame">
+			  #set($str=$!{subItem.name})   
+			  #if($str.length() >= $unshowcount && $str.substring(0,$unshowcount) == $unshow)  
+			  #else  
+			     $!{subItem.name}
+			  #end   
+			</a>
+		</dd>
+		#end
+		#end
+	</dl>
+  #end 
+  #end 
+#end
+
+<script type="text/javascript">
+	var allItems = $(".item_");
+	
+	allItems.each(function(){
+		$(this).children("dd").hide();
+	});
+		
+	$(".item_title").click(function(){
+		var curr = this;
+		$(curr).parent().children("dd").slideToggle("fast");
+	})
+	
+	$(function(){
+		$('#tree-opt').toggle(function(){
+			allItems.each(function(){
+				$(this).children("dd").show('fast');
+			});
+		}, function(){
+			allItems.each(function(){
+				$(this).children("dd").hide('fast');
+			});
+		});
+	});
+</script>
+<p><a href="j_spring_security_logout">退出</a></p>

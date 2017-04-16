@@ -1,0 +1,212 @@
+﻿﻿`#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu":161, "cmenu":271});
+</script>
+
+<div id="content-header">
+<h1>活动管理 | 运营活动奖品配置</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="form-horizontal">
+            <div class="accordion" id="collapse-group">
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                            <h5>719育儿节（妈豆翻倍概率）</h5>
+                        </div>
+
+                        <div class="accordion-body collapse in" id="activity719">
+                            ## #foreach($key in $data.keySet())
+                            ##     #set ($t = 0.0)
+                            ##     #set ($t2 = $t.parseDouble($key)/10)
+                            ##     <label class="control-label"><i>*</i>$t2 倍：</label>
+                            ##     <div class="controls">
+                            ##         <input type="text" class="span5" placeholder="" id="" name="f-activity719-$key" data-key="$key" value="$!data.get($key)">
+                            ##     </div>
+                            ## #end
+                            <style>
+                                .form-horizontal #activity719 .control-group .wrap { display: inline-block; width: 35%; float: left; overflow: hidden; }
+                                .form-horizontal #activity719 .control-label { width: 35%; }
+                                .form-horizontal #activity719 .controls { margin-left: 35%; }
+                                .form-horizontal #activity719 .controls input { width: 60%; }
+                                .form-horizontal #activity719 .control-group:last-child { display: block; float: none; width: 100%; }
+                            </style>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>0.5倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['5']}" name="f-activity719-5" data-key="5">
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>1.0倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['10']}" name="f-activity719-10" data-key="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>1.5倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['15']}" name="f-activity719-15" data-key="15">
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>2.0倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['20']}" name="f-activity719-20" data-key="20">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>2.5倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['25']}" name="f-activity719-25" data-key="25">
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>3.0倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['30']}" name="f-activity719-30" data-key="30">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>3.5倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['35']}" name="f-activity719-35" data-key="35">
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>4.0倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['40']}" name="f-activity719-40" data-key="40">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>4.5倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['45']}" name="f-activity719-45" data-key="45">
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>5.0倍：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" placeholder="" id="" value="$!{data['50']}" name="f-activity719-50" data-key="50">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label"></label>
+                                <div class="controls">
+                                    <a href="javascript:;" class="btn btn-success js-save">保存</a>
+                                </div>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row-fluid">
+        <div class="form-horizontal">
+            <div class="accordion" id="collapse-group">
+                <div class="accordion-group widget-box">
+                    <div class="accordion-heading">
+                        <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                            <h5>719育儿节（活动时间配置）</h5>
+                        </div>
+                        <form action="$!{request.getContextPath()}/activity/save719ActTime.do" method="post" id="timeFrm">
+                        <div class="accordion-body collapse in" id="activity719">
+                            <style>
+                                .form-horizontal #activity719 .control-group .wrap { display: inline-block; width: 35%; float: left; overflow: hidden; }
+                                .form-horizontal #activity719 .control-label { width: 35%; }
+                                .form-horizontal #activity719 .controls { margin-left: 35%; }
+                                .form-horizontal #activity719 .controls input { width: 60%; }
+                                .form-horizontal #activity719 .control-group:last-child { display: block; float: none; width: 100%; }
+                            </style>
+                            <div class="control-group">
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>开始时间：</label>
+                                    <div class="controls">
+                                        <input class="input_formheader" type="text" name="startTime" value="$!date.format('yyyy-MM-dd HH:mm:ss ',$!{dateConfig.startDate})" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});"/>
+                                    </div>
+                                </div>
+                                <div class="wrap">
+                                    <label class="control-label"><i>*</i>结束时间：</label>
+                                    <div class="controls">
+                                       <input  class="input_formheader" type="text" name="endTime" value="$!date.format('yyyy-MM-dd HH:mm:ss ',$!{dateConfig.endDate})" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'});"/>
+					               </div>
+					          </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label"></label>
+                                <div class="controls">
+                                    <button type="button" class="btn btn-success" onclick="javascript:saveTime();">保存</button>
+                                </div>
+                                <span></span>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var api = {
+    'activity719':'$!{request.getContextPath()}/activity/savePrizeConfig.do'
+}
+$('.js-save').on('click', function() {
+    var btn = $(this),
+        con = btn.closest('.accordion-body'),
+        id = con.attr('id'),
+        data = getData(id);
+    data && $.post( api[id], data, function (res) {
+            !res.success && alert(res.msg);
+            res.success && window.location.reload();
+        }
+    );
+});
+function saveTime(){
+    if(confirm('确定更新游戏时间吗？')){
+			timeFrm.submit();
+	}
+}
+function getData(id) {
+    var con = $('#' + id),
+        inps = con.find('input[name^=f-'+id+']'),
+        len = inps.length,
+        data = {}, ratio = {};
+
+    data.type = 1;
+
+    for (var i = 0; i < len; i++) {
+        var inp = inps.eq(i),
+            val = Number(inp.val()),
+            key = inp.data('key');
+        if (val <= 0 || val >= 1) {
+            alert('请填写小数！');
+            inp.focus();
+            return false;
+        }
+        ratio[key] = val;
+    }
+
+    data.ratio = ratio;
+    return {data: JSON.stringify(data)};
+}
+</script>

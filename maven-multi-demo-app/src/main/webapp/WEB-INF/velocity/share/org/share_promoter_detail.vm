@@ -1,0 +1,878 @@
+#set($layout="/admin/layout/matrix.vm")
+<style>
+	.widget-title .btn{margin-top: 3px;}
+</style>
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 148,
+		"cmenu": 153
+	});
+</script>
+<script type="text/javascript" src="../../res/js/qrcode.js"></script>
+<div id="content-header">
+	<h1>微推广管理 | 推广员信息 | 详情</h1>
+</div>
+
+<div class="container-fluid">
+
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>基本信息</h5>
+					<div class="pull-right">
+						<a class="btn btn-primary" href="$!{request.getContextPath()}/share/promoter/queryPromoterList.do">返回</a>
+						<input type="button"  value="修改" class="btn btn-primary btn-edit">
+						
+						<input type="hidden" name="h_promoterId" id="h_promoterId" value="$!{promoter.promoterId}">
+						<input type="hidden" name="h_roleBelong" id="h_roleBelong" value="$!{promoter.shareRole.roleBelong}">
+						<input type="hidden" name="h_roleId"  id="h_roleId" value="$!{promoter.shareRole.roleId}">
+						<input type="hidden" name="h_parentOrgId" id="h_parentOrgId" value="$!{promoter.parentShareOrg.orgId}">
+						<input type="hidden" name="h_branchOrgId" id="h_branchOrgId" value="$!{promoter.branchShareOrg.orgId}">
+						<input type="hidden" name="h_serviceOrgId" id="h_serviceOrgId" value="$!{promoter.serviceShareOrg.orgId}">
+                        <input type="hidden"  id="roleType" value="$!{promoter.shareRole.roleType}">
+
+					</div>
+				</div>
+				<div class="widget-content nopadding">
+					<table class="table table-bordered table-text-center">
+						<tr>
+							<th>姓名</th>
+							<th>手机号</th>
+							<th>角色</th>
+						</tr>
+						<tr>
+							<td>$!{promoter.name}</td>
+							<td>$!{promoter.mobile}</td>
+							<td>$!{promoter.shareRole.roleName}</td>
+						</tr>
+						<tr>
+							<th>所属总公司</th>
+							<th>所属分公司/部门</th>
+							<th>所属地推点/门店名称</th>
+						</tr>
+						<tr>
+							<td>$!{promoter.parentShareOrg.name}</td>
+							<td>
+							#if(!$!{promoter.branchShareOrg.name})
+								/							
+							#else
+							$!{promoter.branchShareOrg.name}
+							#end
+							</td>
+							<td>
+							#if(!$!{promoter.serviceShareOrg.name})
+								/	
+							#else						
+							$!{promoter.serviceShareOrg.name}
+							#end
+							</td>
+						</tr>
+						<tr>
+							<th>支付宝账号（支付宝实名）</th>
+							<th>拉新用户数/交易GMV</th>
+							<th>累计提现/累计收入</th>
+						</tr>
+						<tr>
+							<td>$!{promoter.alipayAccount}
+							#if($!{promoter.alipayRealName})
+							（$!{promoter.alipayRealName}）
+							#end
+							</td>
+							<td>$!{promoter.newUserCnt} / ￥$!{promoter.GMV}</td>
+							<td>￥$!{promoter.withdrawSum} / ￥$!{promoter.incomSum}</td>
+						</tr>
+						<tr>
+							<td>APP推广注册链接</td>
+							<td colspan="2">
+								<span style="word-wrap: break-word;word-break: normal;display:block; width:500px;margin:0 auto;">$!{promoter.promoteRegUrl}</span>
+								<input type="button" class="btn btn-primary pull-right btn-open-qrcode" value="二维码"/>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="1">购物佣金</td>
+							<td colspan="2">
+								#if($!{promoter.tcCommission})
+									童车$!{promoter.tcCommission}%;
+								#end
+								#if($!{promoter.tzCommission})
+									童装$!{promoter.tzCommission}%;
+								#end
+								#if($!{promoter.ypCommission})
+									用品$!{promoter.ypCommission}%;
+								#end
+								#if($!{promoter.ydCommission})
+									运动$!{promoter.ydCommission}%;
+								#end
+								#if($!{promoter.mcCommission})
+									MC$!{promoter.mcCommission}%;
+								#end
+							</td>
+						</tr>
+						<tr>
+							<td >配送佣金</td>
+							<td colspan="2">
+								#if($!{promoter.psCommission})
+									$!{promoter.psCommission}%
+								#else
+									无
+								#end
+							</td>
+						</tr>
+					</table>
+
+				</div>
+			</div>
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<!--<h5>推广收入详情</h5>-->
+					<ul class="nav nav-tabs">
+				       <li class="#if("${queryTab}"=="1") active #end"><a href="$!{request.getContextPath()}/share/promoter/queryPromoter.do?id=$!{promoterId}" >推广收入详情</a></li>
+				       <li class="#if("${queryTab}"=="2") active #end"><a href="$!{request.getContextPath()}/share/promoter/queryPromoterNewMemberList.do?promoterId=$!{promoterId}&queryTab=2" >拉新注册详情</a></li>
+				       <li class="#if("${queryTab}"=="3") active #end"><a href="$!{request.getContextPath()}/share/promoter/queryPromoterNewMemberList.do?promoterId=$!{promoterId}&promoterTag=1&queryTab=3" >推广员注册详情</a></li>
+				    </ul>
+				</div>
+				<div class="widget-content nopadding">
+				  #if("$!{queryTab}"=="1")
+					<form class="form-horizontal form-horizontal-inline" method="get" name="searchFrm"
+						action="$!{request.getContextPath()}/share/promoter/queryPromoter.do">
+						<input type="hidden" name="id" value="$!{promoterId}"/>
+						<input type="hidden" name="memberId" value="$!{memberId}"/>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">时间：</label>
+									<div class="controls">
+										<input type="text" readonly="readonly" name="startDate" id="startDate" class="Wdate span5" type="text" size="20" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+										 至  
+										<input type="text" readonly="readonly" name="endDate" id="endDate" class="Wdate span5" type="text" size="20" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">收入类型：</label>
+									<div class="controls">
+										<select name="type" id="type">
+											<option value="-1">全部</option>
+											<option value="0">用户注册</option>
+											<option value="1">首次购物</option>
+											<option value="2">购物</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="span2">
+								<div class="control-label" style="width: auto;">
+									<input type="button"  value="筛选"  class="btn btn-success btn-search">
+									<input type="button" id="btn-export" memberid="$!{memberId}" value="导出" class="btn btn-primary btn-export">
+								</div>
+							</div>
+						</div>
+					</form>
+				  #elseif("$!{queryTab}"=="2")
+				     <form class="form-horizontal form-horizontal-inline" method="get" name="searchFrm2"
+						action="$!{request.getContextPath()}/share/promoter/queryPromoterNewMemberList.do">
+						<input type="hidden" name="promoterId" value="$!{promoterId}"/>
+						<input type="hidden" name="queryTab" value="$!{queryTab}"/>
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">时间：</label>
+									<div class="controls">
+										<input id="startDate" class="span3" type="text" name="begin" value="$!date.format('yyyy-MM-dd',$!{dto.beginDate})" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endDate\')}'})"/>
+                                      <span class="notepad-inline">至</span>
+                                      <input id="endDate" class="span3" type="text" name="end" value="$!date.format('yyyy-MM-dd',$!{dto.endDate})" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'beginDate\')}'})"/> 
+									</div>
+								</div>
+							</div>
+							<div class="span3">
+							  <div class="control-group">
+                                <label class="control-label">新用户手机号：</label>
+                                <div class="controls">
+                                  <input type="text"  name="newMemberMobile" value="$!dto.newMemberMobile">
+                                </div>
+                              </div>
+							</div>
+							<div class="span3">
+								<div class="control-group">
+									<label class="control-label">登录情况：</label>
+									<div class="controls">
+										<select name="newMemberIfLogin" id="newMemberIfLogin" length="30" style="width: auto;">
+											<option value="" #if("$!dto.newMemberIfLogin"=="") selected #end>全部</option>
+											<option value="Y" #if("$!dto.newMemberIfLogin"=="Y") selected #end>已登录</option>
+											<option value="N" #if("$!dto.newMemberIfLogin"=="N") selected #end>未登录</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="span1">
+								<div class="control-label" style="width: auto;">
+									<input type="button"  value="筛选"  class="btn btn-success btn-search2">
+								</div>
+							</div>
+						</div>
+					</form>
+				#elseif("$!{queryTab}"=="3")
+				     <form class="form-horizontal form-horizontal-inline" method="get" name="searchFrm2"
+						action="$!{request.getContextPath()}/share/promoter/queryPromoterNewMemberList.do">
+						<input type="hidden" name="promoterId" value="$!{promoterId}"/>
+						<input type="hidden" name="promoterTag" value="1"/>
+						<input type="hidden" name="queryTab" value="$!{queryTab}"/>
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">时间：</label>
+									<div class="controls">
+										<input id="startDate" class="span3" type="text" name="begin" value="$!date.format('yyyy-MM-dd',$!{dto.beginDate})" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endDate\')}'})"/>
+                                      <span class="notepad-inline">至</span>
+                                      <input id="endDate" class="span3" type="text" name="end" value="$!date.format('yyyy-MM-dd',$!{dto.endDate})" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'beginDate\')}'})"/> 
+									</div>
+								</div>
+							</div>
+							<div class="span3">
+							  <div class="control-group">
+                                <label class="control-label">新用户手机号：</label>
+                                <div class="controls">
+                                  <input type="text"  name="newMemberMobile" value="$!dto.newMemberMobile">
+                                </div>
+                              </div>
+							</div>
+							<div class="span3">
+								<div class="control-group">
+									<label class="control-label">登录情况：</label>
+									<div class="controls">
+										<select name="newMemberIfLogin" id="newMemberIfLogin" length="30" style="width: auto;">
+											<option value="" #if("$!dto.newMemberIfLogin"=="") selected #end>全部</option>
+											<option value="Y" #if("$!dto.newMemberIfLogin"=="Y") selected #end>已登录</option>
+											<option value="N" #if("$!dto.newMemberIfLogin"=="N") selected #end>未登录</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="span1">
+								<div class="control-label" style="width: auto;">
+									<input type="button"  value="筛选"  class="btn btn-success btn-search2">
+								</div>
+							</div>
+						</div>
+					</form>
+				  #end	
+				</div>
+				
+				#if("$!{queryTab}"=="2")
+				 <div class="widget-content tab-content">
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th>新用户昵称</th>
+                                    <th>新用户手机号</th>
+									<!--<th>推广员</th>-->
+									<th>来源</th>
+                                    <th>注册时间</th>
+									<th>首次登录时间</th>
+									<th>关系变更时间</th>
+                                </tr>
+								 #foreach($data in ${list})
+                                <tr>
+                                    <td>$!data.nickName</td>
+                                    <td>$!data.phone</td>
+									<!--<td>
+										#if($!data.name)
+											$!data.name ($!data.mobile)
+										#else
+											普通用户
+										#end	
+									</td>-->
+									<td>
+										#if($!data.orignal == 1)
+											微推广
+										#else
+											首页抢红包
+										#end
+									</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.createTime)</td>
+									<td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.firstLoginTime)</td>
+									<td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.lastModifyTime)</td>
+                                </tr>
+								#end
+
+                            </table>
+
+							#parse("/pagination.vm")
+                        </div>
+                #elseif ("$!{queryTab}"=="1")
+                     <div class="widget-content">
+					<table class="table table-hover with-check table-text-center">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>新用户昵称</th>
+								<th>手机号</th>
+								<th>收入类型</th>
+								<th>时间</th>
+								<th>用户消费金额</th>
+								<th>推广员收入</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${details}) #set($index = $loopCounter + 1)
+							<tr>
+								<td>$index</td>
+								<td>$!{data.newMemberExt.nickName}</td>
+								<td>$!{data.newMemberRelationShip.signMobile}</td>
+								<td>
+								#if($!{data.type} == 0)
+								用户注册
+								#end
+								#if($!{data.type} == 1)
+								首次购物
+								($!{data.orderNo})
+								#end
+								#if($!{data.type} == 2)
+								购物
+								($!{data.orderNo})
+								#end
+								</td>
+								<td>
+								$!date.format('yyyy-MM-dd HH:mm:ss
+									',$!{data.createDate})
+								</td>
+								<td>#set($mon = $!{data.monetary}/100.0)  
+								#if($mon)
+								￥$!mon
+								#else
+								￥0.0
+								#end
+								</td>
+								<td>#set($income = $!{data.income}/100.0)  ￥$income</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					#parse("/pagination.vm")
+				</div>
+			#elseif ("$!{queryTab}"=="3")
+				<div class="widget-content tab-content">
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th>新用户昵称</th>
+                                    <th>新用户手机号</th>
+									<!--<th>推广员</th>-->
+									<th>来源</th>
+                                    <th>注册时间</th>
+									<th>首次登录时间</th>
+									<th>关系变更时间</th>
+                                </tr>
+								 #foreach($data in ${list})
+                                <tr>
+                                    <td>$!data.nickName</td>
+                                    <td>$!data.phone</td>
+									<!--<td>
+										#if($!data.name)
+											$!data.name ($!data.mobile)
+										#else
+											普通用户
+										#end	
+									</td>-->
+									<td>
+										#if($!data.orignal == 1)
+											微推广
+										#else
+											首页抢红包
+										#end
+									</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.createTime)</td>
+									<td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.firstLoginTime)</td>
+									<td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.lastModifyTime)</td>
+                                </tr>
+								#end
+
+                            </table>
+
+							#parse("/pagination.vm")
+                        </div>
+			#end
+			</div>
+		</div>
+	</div>
+</div>
+
+<div aria-hidden="false" id="inline_content-edit" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3 id="modal-window-title">编辑推广员</h3>
+	</div>
+	<form method="post" action="" id="frm-promoter-info">
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">角色名称<font color="red">*</font>：</label>
+						<div class="controls">
+							<select name="_roleName" id="_roleName" >
+							</select>
+						</div>
+						<label class="control-label">姓名<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="text" name="_name" id="_name" value="$!{promoter.name}" maxlength="20"/>
+						</div>
+						<label class="control-label">手机号<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="tel" name="_mobile" maxlength="11" value="$!{promoter.mobile}" id="_mobile"/>
+						</div>
+						<label class="control-label">支付宝帐号：</label>
+						<div class="controls">
+							<input type="text" name="_alipayAccount"  maxlength="64" value="$!{promoter.alipayAccount}" id="_alipayAccount"/>
+						</div>
+						<label class="control-label">支付宝实名：</label>
+						<div class="controls">
+							<input type="text" name="_alipayRealName" maxlength="20" value="$!{promoter.alipayRealName}" id="_alipayRealName"/>
+						</div>
+						<label class="control-label">购物佣金：</label>
+						<div class="controls">
+							童车：<input type="text" name="_tcCommission" maxlength="20"  value="$!{promoter.tcCommission}" id="_tcCommission"/><br/>
+							童装：<input type="text" name="_tzCommission" maxlength="20"  value="$!{promoter.tzCommission}" id="_tzCommission"/><br/>
+							用品：<input type="text" name="_ypCommission" maxlength="20"  value="$!{promoter.ypCommission}" id="_ypCommission"/><br/>
+							运动：<input type="text" name="_ydCommission" maxlength="20"  value="$!{promoter.ydCommission}" id="_ydCommission"/><br/>
+							MC：<input type="text" name="_mcCommission" maxlength="20"  value="$!{promoter.mcCommission}" id="_mcCommission"/>
+						</div>
+						<label class="control-label">配送佣金：</label>
+						<div class="controls">
+							<input type="text" name="_psCommission" maxlength="20" value="$!{promoter.psCommission}" id="_psCommission"/>
+						</div>
+						<label class="control-label parent">所属总公司<font color="red">*</font>：</label>
+						<div class="controls parent">
+							<select name="_parentOrg" id="_parentOrg">
+							</select>
+						</div>
+						<label class="control-label branch">所属分公司/部门<font color="red">*</font>：</label>
+						<div class="controls branch">
+							<select name="_branchOrg" id="_branchOrg">
+							</select>
+						</div>
+						<label class="control-label service">所属地推点/门店名称<font color="red">*</font>：</label>
+						<div class="controls service">
+							<select name="_serviceOrg" id="_serviceOrg">
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input class="btn btn-success btn-edit-submit" promoterid="$!{promoterId}" type="button" value="确定" id="commit">
+			<a data-dismiss="modal" class="btn btn-close" href="javascript:;">关闭</a> 
+		</div>
+	</form>
+</div>
+
+
+
+<div aria-hidden="false" id="inline_content-qrcode" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3 id="modal-window-title">二维码</h3>
+	</div>
+		<div class="modal-body">
+			<div id="qrcode" align="center">
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a data-dismiss="modal" class="btn btn-close" href="javascript:;">关闭</a> 
+		</div>
+</div>
+
+
+
+<script>
+	$(document).ready(function(){
+		setQueryCondition();
+		$("#btn_export").click(function(){
+			var id = $(this).attr("memberid");
+			exportIncomDetails(id);
+		});
+		
+	});
+	
+	function setQueryCondition(){
+	   var queryTab="$!{queryTab}";
+	    if(queryTab=="1"){
+	       $("#startDate").val("$!{startDate}");
+		   $("#endDate").val("$!{endDate}");
+		   $("#type").val("$!{type}");
+	    }
+	}
+	
+	$(function() {
+		//打开编辑页面
+		$(".btn-edit").click(function(){
+			setPromoters();			
+			$("#inline_content-edit").modal("show");
+		});
+		//总公司
+		$("#_parentOrg").on('change',function(){
+			var val = $(this).val();
+			initOrgs("branchOrg", val);
+		});
+		//分公司
+		$("#_branchOrg").on('change',function(){
+			var val = $(this).val();
+			initOrgs("serviceOrg", val);
+		});
+		//加载组织架构相关信息
+		$("#_roleName").on('change',function(){
+			var val = $(this).val().split("_");
+			var belong = val[1];
+			showSelectInput4Org(belong);
+			
+			var roleType = $("#_roleName").find("option:selected").attr("roletype");
+			initOrgs3('parentOrg',roleType);
+			
+		});
+		//提交编辑
+		$(".btn-edit-submit").click(function(){
+			var val = $(this).attr("promoterid");
+			editPromoter(val);
+		});
+		//筛选按钮
+		$(".btn-search").click(function(){
+			if(checkFrm()){
+				searchFrm.action="$!{request.getContextPath()}/share/promoter/queryPromoter.do";
+				searchFrm.submit();
+			}
+		});
+		$(".btn-search2").click(function(){
+			if(checkFrm()){
+				searchFrm2.submit();
+			}
+		});
+		//数据导出
+		$(".btn-export").click(function(){
+			if(checkFrm()){
+				searchFrm.action="$!{request.getContextPath()}/share/promoter/exportInComeDetails.do";
+				searchFrm.submit();
+				//startDate endDate memberId type
+			}
+		});
+		//打开二维码显示层
+		$(".btn-open-qrcode").click(function(){
+			var url = '$!{promoter.promoteRegUrl}';
+			createQrcode(url);
+			$("#inline_content-qrcode").modal("show");
+		});
+		
+	});
+
+	
+	var oQRCode = null;
+	//生成二维码
+	function createQrcode(url){
+		if(oQRCode == null){
+	 		oQRCode = new QRCode("qrcode", {
+			    text : url,
+			   	width : 250,
+			    height : 250
+			});
+		}else{
+			oQRCode.clear();
+			oQRCode.makeCode(url);
+		}	
+	}
+	
+	function checkFrm(){
+		var start  = $("#startDate").val();
+		var end = $("#endDate").val();
+		if(start != "" || end !=""){
+			var startDate = new Date(start.replace(/\-/g, "\/"));  
+			var endDate = new Date(end.replace(/\-/g, "\/"));  
+			if(endDate < startDate){
+				Toast.show("您选择的结束日期小于开始日期，请重新选择。");
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	function showSelectInput4Org(belong){
+		$(".parent").hide();
+		$(".branch").hide();
+		$(".service").hide();
+		if(belong == 1){
+		$(".parent").show();
+		}else if(belong ==2){
+		$(".parent").show();
+		$(".branch").show();
+		}else if(belong ==3){
+			$(".parent").show();
+			$(".branch").show();
+			$(".service").show();
+		}
+	}
+	
+	function setPromoters(){
+
+		var pid = $("#h_promoterId").val();
+		var roleBelong = $("#h_roleBelong").val();
+		var roleId = $("#h_roleId").val();
+		var parentOrgId = $("#h_parentOrgId").val();
+		var branchOrgId = $("#h_branchOrgId").val();
+		var serviceOrgId = $("#h_serviceOrgId").val();
+
+		initRoles();
+		var role = roleId+"_"+roleBelong;
+		$("#_roleName").val(role);
+		
+		//initOrgs("parentOrg", 1);
+        initParentOrgs("parentOrg","")
+	 	$("#_parentOrg").val(parentOrgId);
+	 	
+	 	showSelectInput4Org(roleBelong);
+	 	
+		if(roleBelong == 2){
+			initOrgs("branchOrg",parentOrgId);
+		 	$("#_branchOrg").val(branchOrgId);
+		 }else if(roleBelong == 3){
+			 
+			initOrgs("branchOrg", parentOrgId);
+		 	$("#_branchOrg").val(branchOrgId);
+		 	
+			initOrgs("serviceOrg", branchOrgId);
+		 	$("#_serviceOrg").val(serviceOrgId);
+		 }
+		
+		
+	}
+	
+	
+	function initRoles(){
+		var url = "$!{request.getContextPath()}/share/role/getRoles.do";
+		$.ajax({
+				url: url,
+				type:'GET',
+				async : false,
+				success:function(data){
+				var option = "<option value=''>全部</option>";
+				$.each(data,function(idx,item){
+					option += ("<option value='"+item.roleId+"_"+item.roleBelong+"' roletype='"+item.roleType+"'>"+item.roleName+"</option>");
+				});
+				$("#_roleName").html(option);			
+			}
+		});
+		
+	}
+	function initOrgs(id,parentId){
+		var url  = "$!{request.getContextPath()}/share/org/queryChildOrgList.do";
+		if(parentId != null && parentId !=""){
+			url +=("?parentId="+parentId);
+		}
+//		var roleType = $("#roleType").val();
+//		url +=("?roleType="+roleType);
+		initOrgs2(id,url);
+	}
+
+    function initParentOrgs(id,parentId){
+        var url  = "$!{request.getContextPath()}/share/org/queryChildOrgList.do";
+//        if(parentId != null && parentId !=""){
+//            url +=("?parentId="+parentId);
+//        }
+		var roleType = $("#roleType").val();
+		url +=("?roleType="+roleType);
+        initOrgs2(id,url);
+    }
+	
+	function initOrgs3(id,roleType){
+		if(roleType == 3){
+			roleType = 2;
+		}
+		var url  = "$!{request.getContextPath()}/share/org/queryChildOrgList.do?roleType="+roleType;
+		initOrgs2(id,url);
+	}
+
+	function initOrgs2(id,url){
+		$.ajax({
+			url:url,
+			type:'GET',
+			async : false,
+			success:function(data){
+			var option = "<option value='-1'>全部</option>";
+			$.each(data,function(idx,item){
+				option += ("<option value='"+item.orgId +"'>"+item.name+"</option>");
+			});
+			$("#_"+id).html(option);	
+			}
+		});
+	}
+	
+	
+	function editPromoter(promoterId){
+		var url = "$!{request.getContextPath()}/share/promoter/updatePromoter.do";
+		var roleVal = $("#_roleName").val().split("_");
+		var roleId = roleVal[0];
+		var roleBelong = roleVal[1];
+		var name = $("#_name").val();
+		var mobile = $("#_mobile").val();
+		var parent = $("#_parentOrg").val();
+		var branch = $("#_branchOrg").val();
+		var service = $("#_serviceOrg").val();
+		var alipayAccount = $("#_alipayAccount").val();
+		var alipayRealName = $("#_alipayRealName").val();
+		var _tcCommission = $("#_tcCommission").val();
+		var _tzCommission = $("#_tzCommission").val();
+		var _ypCommission = $("#_ypCommission").val();
+		var _ydCommission = $("#_ydCommission").val();
+		var _psCommission = $("#_psCommission").val();
+		var _mcCommission = $("#_mcCommission").val();
+		if($('#_roleName').val() == ''){
+			Toast.show('请选择角色');
+			return;
+		}
+		if(name == ''){
+			$("#_name").focus();
+			return;
+		}
+		if(mobile == ''){
+			 $("#_mobile").focus();
+			return;
+		}else{
+			var pMobile = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/;  
+			if(!pMobile.test(mobile)){
+				Toast.show('手机号码格式不正确');
+				return;
+			}	
+		}
+		
+		if(parent == -1){
+			Toast.show('请选择总公司');
+			return;
+		}
+		if(roleBelong == 2){
+			if(branch == -1){
+				Toast.show('请选择分公司/部门');
+				return;
+			}
+		}
+		if(roleBelong ==3){
+			if(branch == -1){
+				Toast.show('请选择分公司/部门');
+				return;
+			}
+			if(service == -1){
+				Toast.show('请选择地推点/门店名称');
+				return;
+			}
+		}
+		
+		var reg = '^-?\\d+\\.?\\d{0,'+ (1) +'}$';
+		if(_tcCommission!=null && _tcCommission!=""){
+			if(_tcCommission > 100 || _tcCommission <0 ){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_tcCommission").focus();
+				return ;
+			}
+    		if(!new RegExp(reg).test(_tcCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_tcCommission").focus();
+    			return;
+    		}
+		}
+		if(_tzCommission!=null && _tzCommission!=""){
+			if(_tzCommission > 100|| _tzCommission <0){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_tzCommission").focus();
+				return ;
+			}
+			if(!new RegExp(reg).test(_tzCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_tzCommission").focus();
+				return;
+			}
+		}
+
+		
+		
+		if(_ypCommission!=null && _ypCommission!=""){
+			if(_ypCommission > 100|| _ypCommission <0){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_ypCommission").focus();
+				return ;
+			}
+    		if(!new RegExp(reg).test(_ypCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_ypCommission").focus();
+    			return;
+    		}
+		}
+		if(_ydCommission!=null && _ydCommission!=""){
+			if(_ydCommission > 100|| _ydCommission <0){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_ydCommission").focus();
+				return ;
+			}
+    		if(!new RegExp(reg).test(_ydCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_ydCommission").focus();
+    			return;
+    		}
+		}
+		if(_mcCommission!=null && _mcCommission!=""){
+			if(_mcCommission > 100|| _mcCommission <0){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_ydCommission").focus();
+				return ;
+			}
+    		if(!new RegExp(reg).test(_mcCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_mcCommission").focus();
+    			return;
+    		}
+		}
+		if(_psCommission!=null && _psCommission!=""){
+			if(_psCommission > 100|| _psCommission <0){
+				Toast.show("佣金比例只能设置0-100的数字，且只能保留一位小数");
+				$("#_psCommission").focus();
+				return ;
+			}
+    		if(!new RegExp(reg).test(_psCommission)){
+    			Toast.show("佣金比例只能精确到小数点一位");
+    			$("#_psCommission").focus();
+    			return;
+    		}
+		}
+		
+		
+		
+		
+		$.post(url,
+		 {
+			'promoterId':promoterId,
+			'shareRole.roleId':roleId, 
+			'name':name,
+			'mobile':mobile,
+			'parentShareOrg.orgId' :parent,
+			'branchShareOrg.orgId' :branch,
+			'serviceShareOrg.orgId' :service,
+			'alipayAccount':alipayAccount,
+			'alipayRealName':alipayRealName,
+			'tcCommission':_tcCommission,
+			'tzCommission':_tzCommission,
+			'ypCommission':_ypCommission,
+			'ydCommission':_ydCommission,
+			'psCommission':_psCommission,
+			'mcCommission':_mcCommission
+		 },
+		 function(data){
+		 	//Toast.show(data.msg);
+		 	if(data.result == 1){
+		 		$(".btn-close").click();
+		 		window.location.reload();
+		 	}
+		 }
+		);
+	}
+	
+</script>

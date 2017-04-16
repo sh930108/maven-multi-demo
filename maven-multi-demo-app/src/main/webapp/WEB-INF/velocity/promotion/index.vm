@@ -1,0 +1,250 @@
+#set($layout="/admin/layout/matrix.vm")
+#set($voucherType=$!{request.getParameter('type')})
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 264});
+</script>
+<div id="content-header">
+	<h1>商品管理 | 促销管理 </h1>
+</div>
+<div class="container-fluid">
+	<div class="form-horizontal">
+		<div class="form-actions">
+			<div class="row-fluid">
+				<ul class="clearfix create-opt ">
+					<li class="span4">
+						<h4 class="font-sm">促销价导入</h4>
+						<div><a class="btn btn-primary" href="javascript:;" >导入促销</a></div>
+						<p>按照模版的格式导入商品促销的价格</p>
+					</li>
+					<li class="span4">
+						<h4>满减促销设置</h4>
+						<div><a class="btn btn-primary" href="#" >立即创建</a></div>
+						<p>满相应金额减对应金额设置成套餐销售</p>
+					</li>
+					<li class="span4">
+						<h4>满赠促销设置</h4>
+						<div><a class="btn btn-primary" href="#" >立即创建</a></div>
+						<p>满相应金额可选赠品设置成套餐来销售</p>
+					</li>
+				</ul>
+			</div>
+			<div class="row-fluid">
+				<ul class="clearfix create-opt ">
+					<li class="span4">
+						<h4>组合促销设置</h4>
+						<div><a class="btn btn-primary" href="#" >立即创建</a></div>
+						<p>将商品组合在一起设置成套餐来销售</p>
+					</li>
+					<li class="span4">
+						<h4>赠品促销设置</h4>
+						<div><a class="btn btn-primary" href="#" >立即创建</a></div>
+						<p>买商品A赠送商品B设置成套餐来销售</p>
+					</li>
+					<li class="span4">
+						<h4>弹窗测试</h4>
+						<div><a class="btn btn-primary" href="#salesDetail" data-toggle="modal">点击弹窗</a></div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-tag"></i> </span>
+					<h5>满减促销</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<div class="form-horizontal form-horizontal-inline">
+						<div class="control-group">
+							<div class="row-fluid">
+								<label class="control-label"><font color="red">*</font>促销名称：</label>
+								<div class="controls">
+									<input type="text" placeholder="不超过10个字" class="" name="name" value="" maxlength="10">
+								</div>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="row-fluid">
+								<label class="control-label"><font color="red">*</font>促销时间：</label>
+								<div class="controls">
+									<label class="notepad-inline" name="" id="">
+										<input type="radio" name="isTimeLimit" value="0" id="" class="" checked="checked">不限时
+									</label>
+									<label class="notepad-inline" name="" id="">
+										<input type="radio" name="isTimeLimit" value="1" id="" class="">限时
+									</label>
+									<div class="grantTime" hidden="true">
+										<input type="text" placeholder="开始时间" id="promotionStartTime" class="datepicker" name="promotionStartTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'promotionEndTime\',{s:-1});}'});"> 至 <input type="text" placeholder="结束时间" id="promotionEndTime" class="datepicker" name="promotionEndTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'promotionStartTime\',{s:1});}'});"></div>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="row-fluid">
+									<label class="control-label"><font color="red">*</font>落地类型：</label>
+									<div class="controls">
+										<select>
+											<option value="">无</option>
+											<option value="">H5链接</option>
+											<option value="">类目ID</option>
+											<option value="">品牌ID</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="row-fluid">
+									<div class="span5">
+										<label class="control-label"><font color="red">*</font>落地页：</label>
+										<div class="controls">
+											<input type="text" placeholder="" class="span12" name="" value="" maxlength="10">
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="alert alert-success">活动规则</div>
+							<div class="control-group">
+								<div class="row-fluid">
+									<div class="span8">
+										<label class="control-label"><font color="red">*</font>满减阶梯：</label>
+										<div class="controls full-rules">
+											满 <input type="text" placeholder="" class="span2 m-wrap" name="" value="" maxlength="10"> 
+											减 <input type="text" placeholder="" class="span2 m-wrap" name="" value="" maxlength="10"> 元
+										</div>
+										<div class="controls full-rules">
+											满 <input type="text" placeholder="" class="span2 m-wrap" name="" value="" maxlength="10"> 
+											减 <input type="text" placeholder="" class="span2 m-wrap" name="" value="" maxlength="10"> 元  
+											<a href="#" class="btn btn-primary">增加</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="row-fluid">
+									<label class="control-label">参与商品：</label>
+									<div class="controls">
+										<label class="notepad-inline" name="" id="">
+										<input type="radio" name="isFullCourt" value="1" id="" class="" checked="checked">全场参与
+										</label>
+										<label class="notepad-inline" name="" id="">
+										<input type="radio" name="isFullCourt" value="0" id="" class="">指定商品
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 查询条件 -->
+		<!-- 促销活动列表 -->
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="widget-box">
+					<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+						<h5>促销活动列表</h5>
+					</div>
+
+					<div class="widget-content nopadding">
+						<form class="form-horizontal form-horizontal-inline" method="get" action="/mamahao-yy-admin/">
+							<div class="row-fluid">
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">促销名称：</label>
+										<div class="controls">
+											<input type="text" placeholder="" class="span12" name="name" value="">
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">商品ID：</label>
+										<div class="controls">
+											<input type="text" placeholder="" class="span12" name="name" value="">
+										</div>
+									</div>
+								</div>
+								<div class="span4">
+									<div class="control-group">
+										<label class="control-label">促销类型：</label>
+										<div class="controls">
+											<select>
+												<option value="">全部</option>
+												<option value="">满减促销</option>
+												<option value="">满赠促销</option>
+												<option value="">组合促销</option>
+												<option value="">赠品促销</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="form-actions">
+								<button class="btn btn-success" type="submit" id="">筛选</button>
+								<button class="btn btn-warning" type="reset" id="next">重置</button>
+							</div>
+						</form>
+					</div>
+					<div class="widget-content">
+						<table class="table table-hover table-text-center">
+							<thead>
+								<tr>
+									<th>促销名称</th>
+									<th>活动规则</th>
+									<th>类型</th>
+									<th>促销时间</th>
+									<th>审核状态</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>aaaaaa</td>
+									<td>bbbbbbb</td>
+									<td>满减促销</td>
+									<td>2016-6-10</td>
+									<td>未审核</td>
+									<td>
+										<a href="javascript:;" class="btn btn-mini btn-primary">查看</a> 
+										<a href="javascript:;" class="btn btn-mini btn-success">编辑</a> 
+										<a href="javascript:;" class="btn btn-mini btn-danger">删除</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div aria-hidden="true" id="salesDetail" class="modal hide">
+				<div class="modal-header"><button data-dismiss="modal" class="close" type="button">×</button><h3 id="dialog-title">促销信息</h3></div>
+				<form method="post" action="" id="frm-promoter-info">
+					<div class="modal-body nopadding">
+						<div class="form-horizontal">
+
+							<div class="row-fluid">
+								<div class="control-group">
+									<label class="control-label">促销名称：</label>
+									<div class="controls">
+										<span class="notepad-inline">促销名称</span>
+									</div>
+								</div>
+								<div class="control-group">
+									<label class="control-label">促销类型：</label>
+									<div class="controls">
+
+									</div>
+								</div>	
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input class="btn btn-success btn-sumit-edit" type="button" id="commit" value="确定">
+						<a data-dismiss="modal" class="btn btn-close" href="javascript:;">关闭</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>

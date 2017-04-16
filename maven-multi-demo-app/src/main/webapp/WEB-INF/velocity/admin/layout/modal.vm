@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>妈妈好运营后台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    #parse("/admin/layout/bootstrap.vm")
+    <style>
+        html, body {background: #fff;}
+    </style>
+</head>
+
+<body>
+<div class="modal-iframe-content">$screen_content</div>
+</body>
+</html>

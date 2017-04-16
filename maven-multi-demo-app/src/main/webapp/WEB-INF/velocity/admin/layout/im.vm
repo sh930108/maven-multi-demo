@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>环信客服</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link type="text/css" href="http://s.mamhao.cn/common/style/reset.css" rel="stylesheet" />
+<link type="text/css" href="http://s.mamhao.cn/admin/easemob/style/style.css" rel="stylesheet" />
+<script type="text/javascript" src="http://s.mamhao.cn/common/js/jq.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/easemob/js/easemob.min.js"></script>
+</head>
+
+<body>
+	$screen_content
+</body>
+</html>

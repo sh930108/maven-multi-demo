@@ -1,0 +1,119 @@
+##转单配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 100, "cmenu": 103});
+</script>
+
+#set($subUnitNumId = $!{request.getParameter("subUnitNumId")})
+<div id="content-header">
+	<h1>商户管理 | 门店转单</h1>
+</div>
+<div class="container-fluid">
+<hr>
+<div class="row-fluid">
+	<div class="span12">
+		<div class="widget-box widget-tabs-box">
+			<ul class="nav nav-tabs">
+				<li><a href="viewMain.do?subUnitNumId=$!{subUnitNumId}">商品转单（仅针对总仓）</a></li>
+				<li class="active"><a href="view.do?subUnitNumId=$!{subUnitNumId}">门店转单</a></li>
+			</ul>
+			<div class="widget-content nopadding">
+				<div class="MA-stores-template">
+					<h3>区域转单（三选一）</h3>
+					<div class="block js-stores-block">
+						<dl>
+							<dt><label><input type="radio" name="area" value="0" />区域配置：</label></dt>
+							<dd class="js-area-list">
+								<!-- <label><input type="checkbox" checked="checked" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label><label><input type="checkbox" /> 好孩子</label> -->
+							</dd>
+						</dl>
+						<dl>
+							<dt><label><input type="radio" name="area" value="1" />公里配置：</label></dt>
+							<dd>
+								以门店为中心<input type="text" class="js-area-kilo" style="width:50px;" />公里以内
+							</dd>
+						</dl>
+						<dl>
+							<dt><label><input type="radio" name="area" value="2" />地址配置：</label></dt>
+							<dd>
+								以经度：<input type="text" style="width:100px;" class="js-address-lo" />，纬度：<input type="text" style="width:100px;" class="js-address-la" />为中心，<input type="text" style="width:50px;" class="js-address-kilo" />公里以内，详细地址为<input type="text" class="js-address-name" />
+							</dd>
+						</dl>
+					</div>
+					<h3>会员转单</h3>
+					<div class="block">
+						<div class="add-phone"><strong>推广员手机号：</strong><input type="tel" class="js-add-phone" placeholder="请输入手机号" maxlength="11" style="margin:0;" /> <button class="btn btn-primary js-add-phone-btn">添加</button></div>
+						<div class="user">
+							<table class="table table-hover table-text-center">
+								<thead>
+									<tr>
+										<th>推广员姓名</th>
+										<th>手机号码</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody class="js-user-list">
+									<!-- <tr>
+										<td>啊党</td>
+										<td>15088660575</td>
+										<td><a class="btn btn-danger btn-mini" href="javascript:;">删除</a></td>
+									</tr> -->
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<h3>转单地址</h3>
+					<div class="block">
+						<div class="receipt">
+							<ul class="address js-receipt-address">
+								<li><strong>收货地址：</strong><p>
+								<select id="prv" onchange="showCity(this.value)"></select>
+								<select id="city" onchange="showArea(this.value)"></select>
+								<select id="area"></select>
+								<input type="text" class="js-rec-address" placeholder="请输入具体地址" /></p></li>
+								<li><strong>经度：</strong><input type="text" class="js-rec-lo" placeholder="请输入经度" /></li>
+								<li><strong>纬度：</strong><input type="text" class="js-rec-la" placeholder="请输入纬度" /></li>
+								<li><strong>收货人：</strong><p><input type="text" class="js-rec-name" placeholder="请输入收货人" /></p></li>
+								<li><strong>联系方式：</strong><p><input type="text" class="js-rec-phone" placeholder="请输入联系方式" /></p></li>
+							</ul>
+						</div>
+						<div class="add-phone"><strong>添加配送人员：</strong><input type="tel" class="js-postman-input" placeholder="请输入手机号" maxlength="11" style="margin:0;" /> <button class="btn btn-primary js-add-postman">添加</button></div>
+						<div class="delivery clearfix js-delivery">
+							<!-- <ul class="address">
+								<li><strong>配送人：</strong><p>沈江</p></li>
+								<li><strong>联系方式：</strong><p>18768488799</p></li>
+								<li><button class="btn btn-danger btn-mini">删除</button></li>
+							</ul>
+							<ul class="address">
+								<li><strong>配送人：</strong><p><input type="text" value="新增"></p></li>
+								<li><strong>联系方式：</strong><p><input type="text" value="新增"></p></li>
+								<li><button class="btn btn-danger btn-mini">删除</button></li>
+							</ul> -->
+						</div>
+					</div>
+				</div>
+				<div class="form-actions nomargin">
+					<button class="btn btn-success js-save" type="button">提交审核</button>
+				</div>
+			</div>			
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/yy/js/transformationsetting-setting.js"></script>
+<script type="text/javascript">
+	var VM = {
+		vm: JSON.parse('$!{VM}'),
+		Result: '$!{Result}',
+		subUnitNumId: '$!{subUnitNumId}'
+	};
+	
+	Setting.init();
+	
+	
+// vm = {"area":[{"name":"锦江区","id":510104},{"name":"青羊区","id":510105},{"name":"金牛区","id":510106},{"name":"武侯区","id":510107},{"name":"成华区","id":510108},{"name":"高新区","id":510109},{"name":"龙泉驿区","id":510112},{"name":"青白江区","id":510113},{"name":"新都区","id":510114},{"name":"温江区","id":510115},{"name":"金堂县","id":510121},{"name":"双流县","id":510122},{"name":"郫县","id":510124},{"name":"大邑县","id":510129},{"name":"蒲江县","id":510131},{"name":"新津县","id":510132},{"name":"都江堰市","id":510181},{"name":"彭州市","id":510182},{"name":"邛崃市","id":510183},{"name":"崇州市","id":510184},{"name":"市辖市","id":51010099}]};
+// result = { "_id" : { "$oid" : "56f8f6095248e93c67b63d7d"} , "subUnitNumId" : 8931 , "subUnitNumName" : "四川成都锦江区春熙路南段NIKE店" , "Area" : { "type" : 0 , "areas" : [ 510115]} , "Promoter" : [ { "name" : "刘伦党" , "phonenum" : "15088660575"}] , "Receipt" : { "addressId" : "785" , "gbAddressId" : "1149" , "prvNumId" : 360000 , "cityNumId" : 360800 , "areaNumId" : 360822 , "detailAddress" : "111" , "lng" : 222.0 , "lat" : 2222.0 , "name" : "2222" , "phonenum" : "222"} , "peoples" : [ { "name" : "刘伦党" , "phonenum" : "15088660575"}]};
+
+</script>
+

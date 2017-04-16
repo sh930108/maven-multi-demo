@@ -1,0 +1,296 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 176,
+		"cmenu" : 177
+	});
+</script>
+<div id="content-header">
+	<h1>系统菜单管理 | 菜单管理</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>菜单列表</h5>
+				</div>
+				<div class="widget-content">
+					<table class="table table-text-center">
+						<thead>
+							<tr>
+								<th>菜单ID</th>
+								<th>菜单名</th>
+								<th>菜单链接</th>
+								<th>排序</th>
+								<th>状态</th>
+								<th>类型</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${list}) #set($index = $loopCounter + 1)
+							<tr>
+								<td>$!data.menuId</td>
+								<td>$!data.menuName</td>
+								<td>/</td>
+								<td>$!data.sort</td>
+								<td>$!data.status</td>
+								<td>
+								#if($!data.sysType == 1)
+									分公司菜单
+								#else
+									运营菜单
+								#end
+								</td>
+								<td>
+									 <a
+									class="btn btn-success btn-mini js-view"
+									href="../menu/list.do?level=2&pMenuId=${data.menuId}">子菜单</a>
+									 <a
+									class="btn btn-danger btn-mini js-delete"
+									menuid="${data.menuId}">删除</a>
+                                    <a class="btn btn-info btn-mini js-add-menu-power"
+                                            menuid="${data.menuId}" href="javascript:void();">添加权限</a>
+									</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					##分页 
+					#parse("pagination.vm")
+					<a type="button" class="btn btn-info"  href="javascript:void()" onclick="$('.dialog-add').modal('show')" id="addMenuBtn">新增菜单</a>
+					<a type="button" class="btn btn-danger"  href="javascript:void()" onclick="$('.dialog-deletePower').modal('show')" id="deleteMenuPowerBtn">删除菜单权限</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div aria-hidden="false" id="inline_content" class="modal hide modal-lg dialog-add">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3>添加菜单</h3>
+	</div>
+	<form method="post" name="menuFrm" action="" id="frm-menu-info">
+		<input type="hidden" name="sort"  value="0"/>
+		<input type="hidden" name="level"  value="1"/>
+		<input type="hidden" name="status"  value="1"/>
+		
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">用户名：</label>
+						<div class="controls">
+							<input type="text" name="username" id="username" maxlength="32" value="yaoshu"/>
+						</div>
+						<label class="control-label">菜单名：</label>
+						<div class="controls">
+							<input type="text" name="menuName" id="menuName"/>
+						</div>
+						<label class="control-label">菜单类型：</label>
+						<div class="controls">
+								<select name="type">
+									<option value="2">运营菜单</option>
+									<option value="1">分公司菜单</option>
+                                    <option value="3">事业部菜单</option>
+								</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-success" type="button" id="commit">确定</button>
+			<a data-dismiss="modal" class="btn close-btn" href="javascript:;">关闭</a>
+		</div>
+	</form>
+</div>
+
+<div aria-hidden="false" id="dialog-addPower" class="modal hide modal-lg dialog-addPower">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>添加菜单权限</h3>
+    </div>
+    <form method="post" name="menuFrm" action="" id="frm-menu-power">
+        <input type="hidden" name="sort"  value="0"/>
+        <input type="hidden" name="level"  value="1"/>
+        <input type="hidden" name="status"  value="1"/>
+
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label">用户名：</label>
+                        <div class="controls">
+							<input type="hidden" name="menuId" id="h-menuid">
+                            <input type="text" name="username" id="add-power-username" required maxlength="32" value="" placeholder="请填写用户名"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" type="button" id="commit-addPower">确定</button>
+            <a data-dismiss="modal" class="btn close-btn close-menupower-btn" href="javascript:;">关闭</a>
+        </div>
+    </form>
+</div>
+
+<div aria-hidden="false" id="dialog-deletePower" class="modal hide modal-lg dialog-deletePower">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>删除菜单权限</h3>
+    </div>
+    <form method="post" name="menuFrm" action="" id="frm-menu-power-delete">
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label">用户名：</label>
+                        <div class="controls">
+                            <input type="text" name="username" id="delete-power-username" required maxlength="32" value="" placeholder="请填写用户名"/>
+
+                        </div>
+						<label class="control-label">菜单id</label>
+						<div class="controls">
+                            <input type="number" name="menuId" id="delete-power-menuid" required placeholder="菜单id">
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" type="button" id="commit-deletePower">确定</button>
+            <a data-dismiss="modal" class="btn close-btn close-menupower-btn" href="javascript:;">关闭</a>
+        </div>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#commit").click(function(){
+			submit();		
+		});
+		$(".js-delete").click(function(){
+			var id = $(this).attr("menuid");
+			if(confirm("确定要删除该菜单吗?")){
+				deleteMenu(id);
+			}
+		});
+
+        $("#commit-addPower").click(function(){
+            doAddMenuPower();
+        });
+		$("#commit-deletePower").click(function(){
+			if(confirm("确定要去除该用户的此菜单权限吧？")){
+            	doDeleteMenuPower();
+			}
+        });
+
+		$(".js-add-menu-power").click(function(){
+			var id = $(this).attr("menuid");
+			$("#h-menuid").val(id);
+            $('.dialog-addPower').modal('show');
+		});
+
+
+	});
+
+	function  doAddMenuPower(){
+		var username = $("#add-power-username").val();
+		if(username == ""){
+			Toast.show("请输入要添加菜单权限的用户名");
+			return;
+		}
+        $.ajax({
+            type: "POST",
+            url:"../menu/addMenuPower.do",
+            data:$('#frm-menu-power').serialize(),
+            async: true,
+            error: function(request) {
+                Toast.show("请求失败");
+            },
+            success: function(data) {
+                Toast.show(data.msg);
+                if(data.result == 1){
+                    $('.close-btn').click();
+                }
+            }
+        });
+	}
+	function  doDeleteMenuPower(){
+		var username = $("#delete-power-username").val();
+		if(username == ""){
+			Toast.show("请输入要删除菜单权限的用户名");
+			return;
+		}
+        var id = $("#delete-power-menuid").val();
+        if(id == ""){
+            Toast.show("请输入要删除权限的菜单id");
+            return;
+        }
+        $.ajax({
+            type: "POST",
+            url:"../menu/deleteMenuPower.do",
+            data:$('#frm-menu-power-delete').serialize(),
+            async: true,
+            error: function(request) {
+                Toast.show("请求失败");
+            },
+            success: function(data) {
+                Toast.show(data.msg);
+                if(data.result == 1){
+                    $('.close-btn').click();
+                }
+            }
+        });
+	}
+
+	function submit(){
+		var username = $("#username").val();
+		if(username == ''){
+			Toast.show('请填写管理员用户名');
+			$('#username').focus();
+			return;
+		}
+		var menuName = $("#menuName").val();
+		if(menuName == ''){
+			Toast.show('请填写菜单名');
+			$('#menuName').focus();
+			return;
+		}
+		$.ajax({
+					type: "POST",
+					url:"../menu/addMenuPower4Mgr.do",
+					data:$('#frm-menu-info').serialize(),
+					async: true,
+				    error: function(request) {
+				       Toast.show("请求失败");
+				    },
+				    success: function(data) {
+				       Toast.show(data.msg);
+					   if(data.result == 1){
+						$('.close-btn').click();   
+					   }
+				    }
+			 });
+		
+	}
+	
+	function deleteMenu(id){
+		$.get("../menu/delete.do?menuId="+id,function(data){
+			Toast.show(data.msg);
+			if(data.result == 1){
+				window.location.reload();
+			}
+		});
+		
+		
+	}
+</script>

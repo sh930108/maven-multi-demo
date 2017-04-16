@@ -1,0 +1,136 @@
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 111});
+</script>
+
+<div id="content-header">
+    <h1>商品管理 | 编辑商品</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="widget-box">
+			<div class="widget-content nopadding">
+				<form class="form-horizontal " action="$!{request.getContextPath()}/gb/goods/addGoodsType.do" method="POST" onsubmit="return checkSubmit()">
+        	<div class="alert alert-info">请选择商品对应类目，商品类目及类目细项</div>
+					<input type="hidden" name="gtNo" value="$!{gbs.styleNumId}"/>
+          <div class="control-group">
+            <label class="control-label">款式编号：</label>
+            <div class="controls">
+              <span class="notepad-inline">$!{styleMap.styleNumId}</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">款式编码：</label>
+            <div class="controls">
+              <span class="notepad-inline">$!{styleMap.styleId}</span>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">商品简称：</label>
+            <div class="controls">
+              #if("$!{styleMap.itemName}"=="")
+								<span class="notepad-inline">暂无找到简称</span>
+							#else
+								<span class="notepad-inline">$!{styleMap.itemName}</span>
+							#end
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">一级类目：</label>
+            <div class="controls">
+              <select id="category-1" name="first" onchange="categoryTwo(this.value)">
+								<option value="0">请选择</option>
+								#foreach($g in $glist)
+								<option value="$g.gtId" #if($gbs.styleCatelogFirst ==$g.gtId) selected #end>$g.gtName</option>
+								#end 
+							</select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">二级类目：</label>
+            <div class="controls">
+              <select id="category-2" name="two" onchange="categoryThree(this.value)">
+								<option value="0">请选择</option>
+							</select>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label">三级类目：</label>
+            <div class="controls">
+              <select id="category-3" name="three" >
+								<option value="0">请选择</option>
+							</select>
+            </div>
+          </div>
+					<div class="form-actions">
+						<button class="btn btn-success" type="submit" id="commit-tonext">下一步</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+var first = "$!{gbs.styleCatelogFirst}";
+var second = "$!{gbs.styleCatelogSec}";
+var third = "$!{gbs.styleCatelogThird}";
+
+$("#category-1").val(first);
+if(second){
+	categoryTwo(first, second);
+}
+if(third){
+	categoryThree(second, third);
+}
+function categoryTwo(id, val){
+	if(id == 0){
+		$("#category-2").html('<option value="0">请选择</option>');
+		$("#category-3").html('<option value="0">请选择</option>');
+		return;
+	}
+	new Matrix.JSON({
+		val: {id: id},
+		url: root + '/goods/queryId.do',
+		fun: function(msg){
+			var i = 0, l = msg.length, arr = ['<option value="0">请选择</option>'];
+			for(; i < l; i++){
+				arr.push('<option value="'+ msg[i].gtId +'">'+ msg[i].gtName +'</option>');
+			}
+			$("#category-2").html(arr.join('')).val(val);
+			$("#category-3").html('<option value="0">请选择</option>');
+		}
+	});
+};
+
+function categoryThree(id, val){
+	if(id == 0){
+		$("#category-3").html('<option value="0">请选择</option>');
+		return;
+	}
+	new Matrix.JSON({
+		val: {id: id},
+		url: root + '/goods/queryId.do',
+		fun: function(msg){
+			var i = 0, l = msg.length, arr = ['<option value="0">请选择</option>'];
+			for(; i < l; i++){
+				arr.push('<option value="'+ msg[i].gtId +'">'+ msg[i].gtName +'</option>');
+			}
+			$("#category-3").html(arr.join('')).val(val);
+		}
+	});
+};
+
+function checkSubmit(){
+	var t1 = $('#category-1').val();
+	var t2 = $('#category-2').val();
+	var t3 = $('#category-3').val();
+	if(t1=="0" || t2 =="0" || t3 =="0"){
+		Toast.show("请选择商品类目");
+		return false;
+	}
+}
+</script>

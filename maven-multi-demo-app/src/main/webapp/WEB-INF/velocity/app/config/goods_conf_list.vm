@@ -1,0 +1,156 @@
+  ##商品配置列表
+
+#parse("/admin/com/common.vm")
+
+<div class="content">
+	<div class="title">
+		<title_1>配置列表</title_1>
+	</div>
+	<article>
+        <form id="frm" action="$!{request.getContextPath()}/goodsConf/list.do" method="get">
+			<div class="form">
+				<div class="form_content">
+					<div class="form_row2">
+							<div class="form_group">
+								<div class="form_group_left">配置类别</div>
+								<div class="form_group_right">
+									<select id="confTypeId" name="confType" class="select"></select>
+								</div>
+							</div>
+							<div class="form_group">
+								<div class="form_group_left">标题</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="title" value="" />
+								</div>
+							</div>
+						</div>
+						<div class="form_row2">
+							<div class="form_group">
+								<div class="form_group_left">发布时间</div>
+								<div class="form_group_right">
+									<input id="beginDate" class="input_formheader_small" type="text"  name="beginDate" value="" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'beginDate\')}'});"/> - 
+									<input id="endDate" class="input_formheader_small" type="text"  name="endDate" value="" onFocus="WdatePicker({minDate:'#F{$dp.$D(\'endDate\')}'});"/>
+								</div>
+							</div>
+							<div class="form_group">
+								<div class="form_group_left">内容</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="content" value="" />
+								</div>
+							</div>
+						</div>
+				</div>
+				<div class=" line_end">
+					<button type="submit" class="btn_saixuan ">筛选</button>
+					<a href="$!{request.getContextPath()}/goodsConf/appinfrom.do">测试多选</a>
+				</div>
+			</div>
+		</form>
+	</article>
+	
+		
+		
+		<article>
+			<div class="menu_commodity">
+				<button type="button" class="btn_increase" id="open_addConfig">添加配置</button>
+            </div>
+           
+				<table class="table_normal" width=100%;>
+					<tr>
+						<th width="50px">序号</th>
+						<th width="50px">ID</th>
+						<th min-width="150px">标题</th>
+						<th width="250px">排序</th>
+						<th width="150px">发布时间</th>
+						<th width="150px">图片</th>
+						<th width="150px">备注</th>
+						<th width="150px">操作</th>
+					</tr>
+					#foreach($data in ${list})
+		             #set($index = $loopCounter + 1)
+					  <tr>
+						<td>$index</td>
+						<td>$data.id</td>
+						<td align="left" >$!{data.title}</td>
+						<td>$!{data.orderBy}</td>
+						<td>
+						  $!date.format('yyyy-MM-dd HH:mm:ss ',$data.createDate)
+						</td>
+						<td>
+							#if(${data.pic})
+								<a href="$imgpath$data.pic" target="_blank">
+									<img src="$imgpath$data.pic" width="50" height="50" alt="$!{data.title}"/>
+								</a>
+							#end
+						</td>
+						<td>$!{data.remark}</td>
+						<td>
+							<div class="commodity_operat">	
+			                  <a class="btn_p" href="$!{request.getContextPath()}/goodsConf/toUpdate.do?id=$data.id">修改</a>&nbsp;&nbsp;
+							  <a class="btn_p" href="javascript:delWarehouse($data.id);">删除</a>
+							  #if($data.online)
+									<a class="btn_p" href="$!{request.getContextPath()}/goodsConf/save.do?id=$data.id&online=false" >下架</a>
+							  #else
+									<a class="btn_p" href="$!{request.getContextPath()}/goodsConf/save.do?id=$data.id&online=true" >上架</a>
+							  #end
+							</div>
+						</td>
+					</tr>
+					#end
+				</table>
+			
+               ##分页
+			   #parse("/pagination.vm")
+	</article>
+</div>
+<script>
+	$(function(){
+		
+		//查询类别
+		$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",
+         {
+            'fdName':'conf_type',
+            'tbName':'t_goods_conf'
+         },function(ret){
+            if(ret.success){
+               var opt = "<option value=''>全部</option>";
+               var data = ret.data;
+               $.each(data,function(i,o){
+                  opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+               });
+               $("#confTypeId").append(opt);
+            }else{
+               
+            }
+         });
+		 
+		$("#open_addConfig").click(function () {
+		    window.location.href="$!{request.getContextPath()}/goodsConf/toSave.do";
+		 });
+	
+   })
+   
+     function delWarehouse(id){
+       if(confirm("确认删除吗")){
+           $.ajax( {    
+               url:'$!{request.getContextPath()}/goodsConf/delConf.do',// 跳转到 action    
+              data:{id :id},    
+              type:'post',    
+             cache:false,    
+           success:function(data) { 
+              if(data=="success" ){    
+                 Toast.show("刪除成功！");
+                 window.location.reload();    
+              }else{    
+                Toast.show("刪除失敗！");
+              }    
+            },    
+           error : function() {    
+              Toast.show("系统异常！");
+            }    
+	      });
+       }else{
+        return;
+       }
+	  }
+</script>

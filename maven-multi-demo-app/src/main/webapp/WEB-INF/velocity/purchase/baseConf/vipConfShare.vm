@@ -1,0 +1,170 @@
+##会员分享配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 26, "cmenu": 221});
+</script>
+<div id="content-header">
+    <h1>用户管理 | 会员配置</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+     <div class="widget-box widget-tabs-box">
+        <ul class="nav nav-tabs">
+            <li><a href="$!{request.getContextPath()}/purchase/baseConf/vipIndex.do">会费配置</a></li>
+            <li class="active"><a href="javascript:;">分享配置</a></li>
+            <li><a href="$!{request.getContextPath()}/purchase/baseConf/vipRightIndex.do">权益配置</a></li>
+        </ul>
+        <div class="widget-content tab-content">
+            <form action="" class="form-horizontal form-horizontal-inline" method="post" id="">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="control-group">
+                            <label class="control-label">图标：<br>(200px*200px)</label>
+                            <div class="controls">
+                                <span class="up-photo">
+                                    <input name="shareImage" id="pic-hidden" type="hidden" value="$!{data.shareImage}"/>
+                                    <span id="picName"></span>
+                                    <div class="up-pic" id="pic-pic">
+                                        <img src="$imgpath$!{data.shareImage}">
+                                    </div>
+                                    <div class="up-btn" data-id="pic"><a href="javascript:;" id="pic" class="btn">选择图片</a></div>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">主标题：</label>
+                            <div class="controls">
+                                <textarea placeholder="建议不超过30字" name="shareTitle" rows="3" maxlength="30">$!{data.shareTitle}</textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">副标题：</label>
+                            <div class="controls">
+                                <textarea placeholder="建议不超过40字" name="shareDesc" rows="3" maxlength="40">$!{data.shareDesc}</textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">分享链接：</label>
+                            <div class="controls">
+                                <textarea name="shareUrl" rows="3">$!{data.shareUrl}</textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a class="btn btn-success" id="submit" href="javascript:;">保存</a>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <h5>分享样式说明:</h5>
+                        <img src="http://s.mamhao.cn/admin/bootstrap/img/20151204.png" alt="">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript">
+	var vm = {
+		rootPath:'$!{request.getContextPath()}',
+		imgPath: '$imgpath'
+	}
+</script>
+<script type="text/javascript">
+    (function(){
+        var page = {
+        	VM:vm,
+        	api:{
+        		"save":  vm.rootPath + '/purchase/baseConf/saveVipShareConf.do'
+        	},
+            init:function(){
+            	$('#submit').on('click', page.submit);
+                //文件上传
+                var oldImgUrl;
+                $(".up-btn").each(function(){
+                    var thas = $(this);
+                    thas.children().uploadify({
+                　　    uploader: vm.rootPath + '/oss/uploadFiles.do',  
+                        formData:{type:9}, 
+                        swf: vm.rootPath + '/res/uploadify/uploadify.swf', 
+                        queueID: 'null', // 上传进度列表;
+                        fileTypeDesc: "jpg",
+                        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+                        multi: false,
+                        wmode: "transparent",
+                        buttonText: '选择图片',
+                        width: "100%",
+                        height: "100%",
+                        onUploadStart: function(){
+                            var id = this.button.parents(".up-btn").data("id");
+                            oldImgUrl = $("#" + id + "-pic").find('img').attr('src');
+                            $("#" + id + "-pic").html('');
+                        },
+                        onUploadSuccess: function(file,data,response) {
+                            //上传完成时触发（每个文件触发一次）;
+                            var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                            if(!data.success){
+                                 Toast.show(data.msg);
+                                 $("#" + id + "-pic").html('<img src="'+ vm.rootPath +'/res/images/photo-default.png"/>');
+                            }else{
+                            	var imgUrl = 'http://bgo.mamhao.cn/' + data.fileName;
+								var imgObj = new Image(); //校验图片尺寸
+								imgObj.src = imgUrl;
+								imgObj.onload = function() {
+								  if (imgObj.width != 200 || imgObj.height != 200) {
+								    $("#" + id + "-pic").html('<img src="' + oldImgUrl + '"/>');
+								    var tips = '图片尺寸不符合要求，请上传200px*200px的图片！';
+								    Toast.show(tips);
+								  } else {
+		                                $("#" + id + "-pic").html('<img src="http://bgo.mamhao.cn/'+ data.fileName +'"/>');
+		                                $("#" + id + "-hidden").val(data.fileName);
+								  }
+								};
+
+                            }        
+                        }
+                    }); 
+                });
+
+            },
+            /**/
+            submit:function(){
+            	console.log('请求提交~');
+            	var p = {
+            		"shareImage":$('input[name="shareImage"]').val(),
+            		"shareTitle":$('textarea[name="shareTitle"]').val(),
+            		"shareDesc":$('textarea[name="shareDesc"]').val(),
+            		"shareUrl":$('textarea[name="shareUrl"]').val()
+            	}
+            	if(p.shareImage == ""){
+            		return Toast.show("图片必须上传");
+            	}else if(p.shareTitle == ""){
+            		$('textarea[name="shareTitle"]').focus();
+            		return Toast.show("主标题不能为空!");
+            	}else if(p.shareDesc == ""){
+            		$('textarea[name="shareDesc"]').focus();
+            		return Toast.show("副标题不能为空!");
+            	}else if(p.shareUrl == ""){
+            		$('textarea[name="shareUrl"]').focus();
+            		return Toast.show("分享链接不能为空!");
+            	}
+            	page.ajaxReq(p,page.api.save)
+            },
+            /*异步请求*/
+            ajaxReq:function(params,url){
+            	Matrix.JSON({
+		            val: params,
+		            url: url,
+		            fun: function (res) {
+		                if (res.success) {
+		                    setTimeout('window.location.reload()', Toast.show('操作成功'));
+		                } else {
+		                    Toast.show(res.msg);
+		                }
+		            }
+		        });
+            }
+        }
+        page.init();
+    })();
+</script>

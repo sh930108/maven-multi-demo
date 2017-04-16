@@ -1,0 +1,103 @@
+##分页
+
+<div class="pagination alternate text-right" id="pagination">
+	
+	#if($!page.recordCount > 0)
+		<div class="count">
+			<span>$!page.recordCount </span>条记录 (第 <span>$!page.page</span> 页,共<span>$!page.pageCount</span>页)
+		</div>
+		<ul>
+			#if($page.page != 1)
+				#set($pre = $page.page - 1) 
+				<li class=""><a href="page=$pre">上一页</a></li>
+			#else
+				<li class="disabled"><a href="javascript:;">上一页</a></li>
+			#end
+
+			##总页数小于10时页码全部显示
+			#if($page.pageCount <= 9)   
+				#foreach( $p in [1..$page.pageCount])
+					#if($!page.page == $p)
+						<li class="active"><a href="page=$p">$p</a></li>
+					#else
+						<li><a href="page=$p">$p</a></li>
+					#end
+				#end
+			#else
+				##中间段页面循环开始下标与结束下标
+				#set($start = 1)
+				#set($end = 9)
+				#if($page.page > 5)
+					#set($start = $page.page - 2)
+					#set($end = $page.page)
+					#set($end1 = $page.page + 1) 
+					#set($end2 = $page.page + 2)
+					
+					#if($end1 <= $page.pageCount)
+						#set($end = $page.page + 1)
+					#end
+					#if($end2 <= $page.pageCount)
+						#set($end = $page.page + 2)
+					#end
+					<li><a href="page=1">1</a></li>
+					<li><a href="page=2">2</a></li>
+					<li><a href="javascript:;">...</a></li>
+				#end
+				#foreach($p in [$start .. $end])
+					#if($!page.page == $p)
+						<li class="active"><a href="page=$p">$p</a></li>
+					#else
+						<li><a href="page=$p">$p</a></li>
+					#end
+				#end
+				#if($end < $page.pageCount)
+					##end页面小于显示最末页码
+					<li><a href="javascript:;">...</a></li>
+					#set($last = $page.pageCount)
+					<li><a href="page=$last">$last</a></li>
+				#end
+			#end
+
+			##下一页
+			#if($page.page != $page.pageCount) 
+				#set($next = $page.page + 1) 
+				<li><a href="page=$next">下一页</a></li>
+			#else
+				<li class="disabled"><a href="javascript:;">下一页</a></li>
+			#end
+		</ul>
+	#else
+		<div class="null">暂无记录</div>
+	#end
+	
+</div>
+#set($pageCount = $!page.pageCount)
+#set($page = $!page.page)
+<script>
+	$(function(){
+		var url_pre = location.href;
+		var page_flag = url_pre.indexOf('page');
+		if(page_flag != -1){
+			url_pre = url_pre.substring(0,page_flag);
+		}else{
+    		var flag = url_pre.indexOf('?');
+			if(flag != -1){
+    			url_pre += '&';
+    		}else{
+    			url_pre += '?'
+    		}
+		}
+		$("#pagination a").each(function(i,o){
+			var temp = $(o).attr('href');
+			if(temp=="javascript:;"){
+
+			}else{
+				$(o).attr('href',url_pre + temp);
+			}
+		});
+	});
+	var pageCount = Number('$!{pageCount}'), page = Number('$!page');
+	if(pageCount > 0 && page > pageCount){
+		window.location.href = location.href.replace("page=" + page,"page=" + pageCount);
+	}
+</script>

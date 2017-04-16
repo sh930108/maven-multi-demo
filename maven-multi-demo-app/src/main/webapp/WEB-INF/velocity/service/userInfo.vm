@@ -1,0 +1,78 @@
+#set ($layout ="/admin/layout/im.vm")
+#parse("/admin/com/common.vm")
+<div class="IM-right-all">
+	<!-- 用户基本信息 -->
+	<div class="user">
+		<div class="photo"><img src="$!{user.customer.photo}" /></div>
+		<ul>
+			<li><em>用户ID：</em><span>${user.memberId}</span></li>
+			<li><em>手机号：</em><span>$!{user.customer.memberPhone}</span></li>
+			<li><em>昵称：</em><span>$!{user.customer.screenName}</span></li>
+			<li><em>妈豆：</em><span>$!{user.customer.mbeanCount}</span></li>
+			<li><em>优惠劵：</em><span>$!{user.customer.voucherCount}</span></li>
+			<li class="baby"><em>宝宝信息：</em>
+			#foreach($baby in $user.customer.babyInfo)
+				<span>$baby.babyAge #if($baby.babyGender == 1)（男）#else（女）#end</span>
+			#end
+			</li>
+		</ul>
+	</div>
+	<!-- 用户订单记录  @1e_200w_200h_0c_0i_0o_100q_1x.jpg -->
+	<div class="order">
+		<h2>消费记录</h2>
+		<div class="order-list" id="js-order-all">
+			#foreach($order in $user.order)
+			<div class="block">
+				<div class="header"><strong>订单号：${order.orderNo}</strong><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{order.orderNo}&orderState=$!{order.state}&all=all" target="_blank">订单详情</a></div>
+				<div class="content">
+					<div class="items">
+						<ul>
+							#foreach($item in $order.orderLines)
+							<li title="$!{item.itemName}"><a href="javascript:;" data-stylenumid="${item.goodsItem.goodsTemplateId}" data-itemnumid="$!{item.itemId}" target="_blank"><img src="http://img.mamhao.cn/$!{item.picName}@1e_200w_200h_0c_0i_0o_100q_1x.jpg" /><em>单价：#converAmount($!{item.payTotalPrice} $!{item.allocatedCount})</em></a></li>
+							#end
+						</ul>
+					</div>
+					<ul class="info">
+						<li><em>状态：</em>
+							#if($order.state == 0) 
+								<span class="label label-success">已完成</span>
+							#elseif ($order.state == 1)
+								<span class="label">已失效</span>
+							#elseif ($order.state == 2)
+							  <span class="label">已取消</span>
+							#elseif ($order.state == 3)
+								<span class="label label-warning">待付款</span>
+							#elseif ($order.state == 4)
+							  <span class="label label-inverse">待发货</span>
+							#elseif ($order.state == 5)
+								<span class="label label-warning">已发货</span>
+							#elseif ($order.state == 6)
+								<span class="label label-info">待评价</span>
+							#elseif ($order.state == 7)
+								<span class="label">初始状态</span>
+							#elseif ($order.state == 8)
+							  <span class="label label-important">已删除</span>
+							#elseif ($order.state == 9)
+							  <span class="label label-important">已全部退款退货</span>
+							#end
+						</li>
+						<li><em>时间：</em>$!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)</li>
+						<li><em>买家：</em>$!{order.consigneeName}</li>
+						<li><em>手机：</em>$!{order.consigneePhone}</li>
+						<li><em>实付款：</em>#formatAmount($!{order.orderPay.payPrice})</li>
+						<li><em>运费：</em>#formatAmount($!{order.orderPay.payFreightPrice})</li>
+					</ul>
+				</div>
+			</div>
+			#end
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var VM = {
+		areaId: '$!{request.getParameter("areaId")}',	// 区域id;
+		path: '$!{request.getContextPath()}'	// 工程名;
+	};
+	EOB.right.init();
+	// console.log();
+</script>

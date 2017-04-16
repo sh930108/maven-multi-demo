@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>运营管理子系统</title>
+##<link href="../../../../res/css/comm.css" rel="stylesheet" type="text/css" />
+##<link href="../../../../res/css/admin.css" rel="stylesheet" type="text/css" />
+<link href="$!{request.getContextPath()}/res/css/comm.css" rel="stylesheet" type="text/css" />
+<link href="$!{request.getContextPath()}/res/css/admin.css" rel="stylesheet" type="text/css" />
+
+<link href="$!{request.getContextPath()}/res/css/boxy.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">var root="$!{request.getContextPath()}";</script>
+</head>
+<body bgcolor="#FFFFCC">
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jQuery.js" charset="utf-8"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jquery.boxy.js" charset="utf-8"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jquery.json-2.2.min.js" charset="utf-8"></script>
+
+<div id="idPageHead">#parse("admin/com/head.vm")</div>
+<div id="idContent">
+    <div id="idLeftMenu">$screen_content</div>
+    <div id="idMainFrame">
+    <iframe id="mainFrame" name="mainFrame"  style="background:#FFF;" src="about:blank" frameborder="0" scrolling="auto">
+	
+	</iframe>
+    </div>
+</div>
+<div id="idPageFoot">#parse("admin/com/foot.vm")</div>
+<script type="text/javascript">
+	var oprWorkMsg = "【sorry，是否确认退出？】";
+	function getOprMsgWork() {
+		var url = "$!{request.getContextPath()}/message/get_opr_msg_work.htm";
+		jQuery.ajaxSetup({ 
+			async: false,
+			global: false
+		});
+		var result = true
+		jQuery.post(url,{},function(data){
+			result = data;
+		})
+		return result;
+	}
+window.onbeforeunload = onbeforeunload_handler;
+function onbeforeunload_handler(){
+	var result = getOprMsgWork();
+	if(result) {
+		return oprWorkMsg;
+	}else{
+		return;
+	}
+}
+$(document).ready(function(e) {
+	function sizeFit(){//计算map的宽高
+		var w = $("#idContent").width() - $("#idLeftMenu").width() - 10 - 10;
+		var h = $(window).height() - 60 - 20;
+		$("#mainFrame").width(w);
+		$("#mainFrame").height(h);
+		$("#idLeftMenu").height(h);
+	}
+	sizeFit();
+	$(window).resize(function(e){sizeFit();});
+});
+</script>
+</body>
+</html>

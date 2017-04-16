@@ -1,0 +1,248 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<div id="content-header">
+    <h1>后台维护 | 模拟支付</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>模拟支付</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form id="orderForm" name="orderForm" method="get"
+                          class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="row-fluid">
+                            <div>
+                                <div class="control-group">
+                                    <label class="control-label">支付类型：</label>
+
+                                    <div class="controls">
+                                        <select id="payType" class="span2">
+                                            <option value="0">支付宝V1.0</option>
+                                            <option value="1">银联支付</option>
+                                            <option value="2">微信支付</option>
+                                            <option value="3">妈豆支付</option>
+                                            <option value="4" selected>支付宝V1.1</option>
+                                            <option value="5">公众号支付</option>
+                                            <option value="6">测试支付宝</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="control-group">
+                                    <label class="control-label">商户订单号：</label>
+
+                                    <div class="controls">
+                                        <input id="orderBatchNo" type="text" class="span2">
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="control-group">
+                                    <label class="control-label">支付账户：</label>
+
+                                    <div class="controls">
+                                        <input id="buyerEmail" type="text" class="span2">
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="control-group">
+                                    <label class="control-label">交易流水号：</label>
+
+                                    <div class="controls">
+                                        <input id="tradNo" type="text" class="span2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="form-actions">
+                                <button class="btn btn-success" type="button" id="next">提交</button>
+                                <button class="btn btn-warning" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>提交转单\财务\调用接口消息</h5>
+                </div>
+                <div class="widget-content nopadding" id="paySuccessNoticeDiv">
+                    <form method="get" class="form-horizontal form-horizontal-inline row-fluid">
+                    <div class="row-fluid">
+                        <div>
+                            <div class="control-group">
+                                <label class="control-label">商户订单号：</label>
+
+                                <div class="controls">
+                                    <input name="orderBatchNo" type="text" class="span2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="control-group">
+                                <label class="control-label">交易流水号：</label>
+
+                                <div class="controls">
+                                    <input name="tradNo" type="text" class="span2">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="control-group">
+                                <label class="control-label">优惠券承担：</label>
+                                <div class="controls">
+                                    <select name="voucherCostBol">
+                                        <option value="false" selected>否</option>
+                                        <option value="true">是</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="button" id="commit">提交转单\财务\调用接口消息</button>
+                            <button class="btn btn-warning" type="reset">重置</button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>失效订单处理支付流程(支持该订单在一个月内的订单,目前只支持gb订单)</h5>
+                    <h7></h7>
+                </div>
+                <div class="widget-content nopadding" id="orderPayErroRepairDiv">
+                    <form method="get" class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="row-fluid">
+                            <div>
+                                <div class="control-group">
+                                    <label class="control-label">商户订单号：</label>
+                                    <div class="controls">
+                                        <input name="orderBatchNo" type="text" class="span2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <div class="form-actions">
+                                <button class="btn btn-success" type="button" id="orderPayErroRepair">提交失效订单处理支付</button>
+                                <button class="btn btn-warning" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <div class="widget-content tab-content">
+                            <table class="table table-hover with-check table-text-center table-order">
+                                <thead>
+                                <th class="text-left">返回值</th>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td class="text-left baobei" id="jsonStr"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    Matrix.Nav({"menu": 176, "cmenu": 179});
+
+    $("#next").bind("click", function () {
+        var payType = $("#payType").val();
+        if (payType == "" || payType == "") {
+            Toast.show("请选择支付类型");
+            return false;
+        }
+        var orderBatchNo = $("#orderBatchNo").val();
+        if (orderBatchNo == "" || orderBatchNo == "") {
+            Toast.show("请填写商户订单号");
+            return false;
+        }
+        var buyerEmail = $("#buyerEmail").val();
+        if (buyerEmail == "" || buyerEmail == "") {
+            Toast.show("请填写支付账户");
+            return false;
+        }
+        var tradNo = $("#tradNo").val();
+        if (tradNo == "" || tradNo == "") {
+            Toast.show("请填写交易流水号");
+            return false;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/manualPay/payNotify.do",
+            val: {"orderBatchNo": orderBatchNo, "payType": payType, "buyerEmail": buyerEmail, "tradNo": tradNo},
+            fun: function (result) {
+                result = eval(result);
+                var aToStr = JSON.stringify(result);
+                $("#jsonStr").empty();
+                $("#jsonStr").append(aToStr);
+            }
+        });
+    });
+
+
+    $("#commit").bind("click", function () {
+        var orderBatchNo = $("#paySuccessNoticeDiv input[name='orderBatchNo']").val();
+        if (orderBatchNo == "" || orderBatchNo == "") {
+            Toast.show("请填写商户订单号");
+            return false;
+        }
+        var tradNo = $("#paySuccessNoticeDiv input[name='tradNo']").val();
+        if (tradNo == "" || tradNo == "") {
+            Toast.show("请填写交易流水号");
+            return false;
+        }
+        var voucherCostBol = $("#paySuccessNoticeDiv input[name='voucherCostBol']").val();
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/manualPay/paySuccessNotice.do",
+            val: {"orderBatchNo": orderBatchNo, "voucherCostBol": voucherCostBol, "tradNo": tradNo},
+            fun: function (result) {
+                result = eval(result);
+                var aToStr = JSON.stringify(result);
+                $("#jsonStr").empty();
+                $("#jsonStr").append(aToStr);
+            }
+        });
+    });
+
+    $("#orderPayErroRepair").bind("click",function(){
+        var orderBatchNo = $("#orderPayErroRepairDiv input[name='orderBatchNo']").val();
+        if (orderBatchNo == "" || orderBatchNo == "") {
+            Toast.show("请填写商户订单号");
+            return false;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/manualPay/orderPayErroRepair.do",
+            val: {"orderBatchNo": orderBatchNo},
+            fun: function (result) {
+                result = eval(result);
+                var aToStr = JSON.stringify(result);
+                $("#jsonStr").empty();
+                $("#jsonStr").append(aToStr);
+            }
+        });
+    });
+
+</script>

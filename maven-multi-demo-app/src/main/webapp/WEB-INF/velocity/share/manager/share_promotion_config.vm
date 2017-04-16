@@ -1,0 +1,822 @@
+##微推广配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<style>
+    label{display:inline-block;}
+    input{margin:0 5px;}
+    input.short{width:50px}
+    .pt1x{padding-top:10px}
+    .pb1x{padding-bottom:10px}
+    .item-content .items input, .modal.brandSetting input {width: 36px;margin: 0 5px 0 0;text-align: center;font-size: 12px;}
+    .item-content .items strong, .modal.brandSetting strong {display: inline-block; margin-bottom: 5px;}
+    .item-content table label.checkAll,.item table tr td:nth-child(1){width:60px}
+    .item-content table label{width:150px; margin-bottom: 10px;}
+    .ova{ max-height: 400px; overflow: auto; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }
+    .widget-tabs-box .widget-box .widget-content{ border-left: 0; border-right: 0; }
+    .shop{border: 1px solid #ddd;margin-bottom: 10px;}
+    .form-horizontal .control-label {width: 130px;}
+    .form-horizontal .controls {margin-left: 150px;padding-top: 15px;}
+    .shop .controls label { width: 150px; margin-bottom: 0;}
+    .shop .icon-remove{margin: 5px 5px 0 0;}
+    .shop .catelog select{width: 160px;}
+    .shop .shopType{width: 160px;}
+    .modal.brandSetting {width: 660px;margin-left: -330px;}
+    .help-block{display: block;}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 148, "cmenu": 155});
+</script>
+<div id="content-header">
+    <h1>微推广管理 |微推广配置</h1>
+</div>
+
+<div class="container-fluid">
+    <hr/>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <ul class="nav nav-tabs role-list">
+                  #if("$!roles"!="")
+                     #foreach($!role in $!roles)
+                        <li #if($!request.getParameter('roleId')==$!role.roleId)  class="active" data-id="$!role.roleId" #end><a href="$!{request.getContextPath()}/config/toShareConfig.do?roleId=$!role.roleId&roleType=$!role.roleType">$!role.roleName</a></li>
+                     #end
+                  #end
+                </ul>
+                <div class="widget-content tab-content nopadding">
+                #if("$!roles"=="")
+                  暂无角色信息，无法进行相关配置。<a href="$!{request.getContextPath()}/share/role/list.do?flag=add">立即创建</a>
+                #else
+                    <!-- 选项卡4 -->
+                    <div class="tab-pane active">
+                        <form action="" class="form-horizontal">
+                            <div class="widget-content" style="border: 0;">
+                                <div class="widget-box">
+                                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                                        <h5>新用户注册佣金</h5>
+                                    </div>
+                                    <div class="widget-content nopadding">
+                                        <div class="control-group">
+                                            <label class="control-label"><strong>新用户注册佣金：</strong></label>
+                                            <div class="controls"><input class="validate fm-regCommission" data-validate="number|required" isnumber="新用户注册佣金应为数字" isrequired="新用户注册佣金不能为空" type="text" value="0" />元</label></div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label"><strong>奖励时间：</strong></label>
+                                            <div class="controls">截止<input class="validate fm-regLimitTime" data-validate="date|required" isrequired="新用户注册佣金的奖励时间不能为空" type="text" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d'});"/>前给予奖励。</label></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-box fanli">
+                                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                                        <h5>用户购物推广员返利</h5>
+                                    </div>
+                                    <div class="widget-content nopadding">
+                                        <div class="fm-limit-type-radio ">
+                                            <div class="control-group">
+                                                <label class='control-label'><strong>奖励时间：</strong></label>
+                                                <div class="controls">
+                                                    <label class="pb1x"><input type="radio" name="limitType" class="limit-type" value="1" checked/>截止<input type="text" class="fm-limitTime" data-validate="date|required" isrequired="用户购物推广员返利的奖励时间不能为空" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d'});"/>前给予奖励。</label><br/>
+                                                    <label><input type="radio" name="limitType" class="limit-type" value="2" />奖励没有时间的限制。</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="widget-content">
+                                        <strong>奖励详情：</strong>奖励时间内消费者产生购物，微推广人员可以获得订单商品实付金额的返利奖励。
+                                    </div>
+                                    <!-- 适用商品 start -->
+                                    <div class="widget-content item-content">
+                                        <label class="pt1x pb1x"><strong>适用总仓发货商品类目：</strong>（未勾选的项目，默认返利比例为0）</label>
+                                        <div class="ova">
+                                            <table class="table table-bordered">
+                                                #foreach($goodstype in $!goodsTypeData)
+                                                <tr>
+                                                    <td width="60">$!goodstype.get('firstname')</td>
+                                                    <td width="60">$!goodstype.get('secondName')</td>
+                                                    <td width="64">
+                                                        <a href="javascript:;" class="btn btn-primary btn-mini js-brand-setting">品牌配置</a>
+                                                        <div data-sid="$!goodstype.get('sid')" class="brandSetting modal form-horizontal fade" hidden>
+                                                            <div class="modal-header">
+                                                                <button type="button" class="close js-brand-close" data-dismiss="modal">×</button>
+                                                                <h3>品牌配置<span style="font-weight: normal;font-size: 14px;">(需点击页面底部按钮才能保存)</span></h3>
+                                                            </div>
+                                                            <div class="modal-body nopadding">
+                                                                <div class="control-group">
+                                                                    <label class="control-label"><strong>二级类目：</strong></label>
+                                                                    <div class="controls">$!goodstype.get('secondName')</div>
+                                                                </div>
+                                                                <div class="control-group">
+                                                                    <label class="control-label"><strong>商品品牌：</strong></label>
+                                                                    <div class="controls">
+                                                                        #foreach($!brand in $!hotbrands)
+                                                                        <label><strong>$!brand.bName</strong><br><input data-validate="number" isnumber="佣金应为数字" type="text" name="$!brand.bId" value=""/>%&nbsp;佣金</label>
+                                                                        #end
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer"><a href="javascript:;" class="btn btn-primary js-brand-check">确定</a> <a href="javascript:;" class="btn js-brand-reset">重置</a> <a href="javascript:;" class="btn js-brand-clear">清空</a> </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="items">
+                                                        #foreach($third in $!goodstype.get('third'))
+                                                        <label><strong>$!third.gtName</strong><br><input class="validate" data-validate="number" isnumber="佣金应为数字" type="text" name="$!third.gtId" value="" />%&nbsp;佣金</label>
+                                                        #end
+                                                    </td>
+                                                </tr>
+                                                #end
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <!-- 适用商品 end -->
+                                    <!-- 适用门店 start -->
+                                    <div class="widget-content shop-content">
+                                        <label class="pt1x pb1x"><strong>适用门店类目关联：</strong>（未勾选的项目，默认返利比例为0）</label>
+                                        <div class="shop-container"></div>
+                                        <div class="pt1x pb1x">
+                                            <a href="javascript:;" class="btn btn-success js-add-tpl">添加类目模板</a>
+                                        </div>
+                                    </div>
+                                    <!-- 适用门店 end -->
+
+                                    <!--适用门店类目关联模板-->
+                                    <div class="shop-tpl" hidden>
+                                        <div class="close js-remove"><span class="icon icon-remove"></span></div>
+                                        <!-- <div></div> -->
+                                        <div class="control-group">
+                                            <label class="control-label">商品类目：</label>
+                                            <div class="controls">
+                                                <div class="catelog">
+                                                    <select name="catelogFirst">
+                                                        <option value="0">请选择</option>
+                                                        #foreach($g in $glist)
+                                                        <option value="$g.gtId">$g.gtName</option>
+                                                        #end
+                                                    </select>
+                                                    <select name="catelogSec">
+                                                        <option value="0">请选择</option>
+                                                    </select>
+                                                    <select name="catelogThird" >
+                                                        <option value="0">请选择</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label">商品品牌：</label>
+                                            <div class="controls">
+                                                #foreach($!brand in $!hotbrands)
+                                                <label><input type="checkbox" name="$!brand.bId" value="$!brand.bId"/>$!brand.bName</label>
+                                                #end
+                                            </div>
+                                        </div>
+                                        <div class="control-group">
+                                            <label class="control-label">门店类目：</label>
+                                            <div class="controls">
+                                                <select class="shopType">
+                                                    <option value="0">请选择</option>
+                                                    <option value="1">运动</option>
+                                                    <option value="2">童装</option>
+                                                    <option value="3">用品</option>
+                                                    <option value="4">童车</option>
+													<option value="5">MC</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="widget-box">
+                                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                                        <h5>APP推广中心文案</h5>
+                                    </div>
+                                    <div class="widget-content nopadding">
+                                        <div class="control-group">
+                                            <label class="control-label">文案：</label>
+                                            <div class="controls"><textarea class="validate fm-awardInfo" data-validate="required" isrequired="APP推广中心文案输入不能为空！" style="vertical-align: top" placeholder="一段话编辑完成后，请使用符号 | 进行换行"></textarea></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-box">
+                                    <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                                        <h5>不参与购物返利的商品</h5>
+                                    </div>
+                                    <div class="widget-content nopadding">
+                                        <div class="control-group fm-unJoinGoodsType">
+                                            <label class="control-label">商品ID:</label>
+                                            <div class="controls">
+                                                <textarea class="fm-unJoniGoodsTemplateIds" placeholder="不参与返利的商品id，用“,”隔开。"></textarea>
+                                                <span class="help-block">不参与返利的商品id，用 “ , ” 隔开。</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="widget-box">
+                                     <div class="widget-title">
+                                        <span class="icon"> <i class="icon-align-justify"></i> </span>
+                                        <h5>新人注册优惠券</h5>
+                                    </div>
+                                    <div class="widget-content">
+                                        <div class="row-fluid">
+                                            <div id="fm-if-existVoucher">
+                                                <label>
+                                                     <input type="radio"  name="ifExistVoucher" class="if-exisVoucher" value="0" checked/>无优惠券
+                                                </label><br/>
+                                                <label>
+                                                     <input type="radio"  name="ifExistVoucher" class="if-exisVoucher" value="1"/>有优惠券
+                                                    <input type="text" class="fm-newMemberVoucherTemplateId" data-validate="required" maxlength="100" placeholder="请填写优惠券ID"/>
+                                                     <span class="label label-important">支持统一面额优惠券和礼包优惠券</span>
+                                                    <label id="getInfo"></label>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions"><a href="javascript:;" class="btn btn-primary js-submit">保存</a></div>
+                        </form>
+                    </div>
+                #end
+                </div>
+                <!-- 内容框 END -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <div class="model-iframe"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+<script type="text/javascript">
+    var VM = {
+        root_path: '$!{request.getContextPath()}', // root path
+        config: '$!{config}', // page data
+        roleId: '$!request.getParameter("roleId")', // role id
+        roleType: '$!request.getParameter("roleType")', // role type
+    }
+</script>
+<script type="text/javascript">
+
+(function ($) {
+    /*合并单元格*/
+    $.fn.rowspan = function (opt) {
+        var defaults = {td: 1};
+        var options = $.extend(defaults, opt);
+        return this.each(function () {
+            var tds = $(this).find("tbody td:nth-child(" + options.td + ")");
+            var current_td = tds.eq(0);
+            var k = 1;
+            tds.each(function (index, element) {
+                if ($(this).text() == current_td.text() && index != 0) {
+                    k++;
+                    $(this).remove();
+                    current_td.attr("rowspan", k);
+                    current_td.css("vertical-align", "middle");
+                } else {
+                    current_td = $(this);
+                    k = 1;
+                }
+            });
+        });
+    };
+    /*绑定三级联动*/
+    $.fn.myselect = function (opt) {
+        var defaults = {fval:0,sval:0,tval:0}; // 选框默认值
+        var v = $.extend(defaults,opt);
+        var o = this, _this = $(o);
+        if (v.fval) {
+            _this.find('select').eq(0).val(v.fval);
+            mychange.call(o,1,v.fval,v.sval);
+            if (v.sval) {
+                mychange.call(o,2,v.sval,v.tval);
+            }
+        }
+        _this.on('change', 'select', function () {
+            var $thas   = $(this),
+                _target = $thas.index() + 1,
+                _id     = $thas.val();
+            if (_target == 3) {return;}
+            mychange.call(o,_target,_id,0);
+        });
+    };
+    function mychange(target,id,val) {
+        var $o = $(this), $target = $o.find('select').eq(target);
+        if(id==0){
+            if (target == 1) {
+                $target.val(0);
+                $target.next('select').val(0);
+            }
+            return;
+        }
+        $.get(VM.root_path + '/goods/queryId.do', {
+            'id' : id
+        }, function(data) {
+            var str = '<option value="0">请选择</option>';
+            $.each(data, function(i, n) {
+                if(val){
+                    if(val==n.gtId){
+                        str += "<option value='"+n.gtId+"' selected >"+n.gtName+"</option>";
+                    }else{
+                        str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+                    }
+                }else{
+                    str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+                }
+            });
+            $target.html(str);
+            if (target == 1) {
+                $target.next('select').val(0);
+            }
+        });
+    }
+
+    var util = {
+        isNumber: function (val) {
+            if(/^(\d+[\s,]*)+\.?\d*$/.test(val)){
+                var arr = val.split('.');
+                if (arr.length == 2 && !arr[1]) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+
+    var page = {
+        info: {
+            vm: VM,
+            tpl: {template:'.shop-tpl', container:'.shop-container'},
+        },
+        ele: {},
+        init: function () {
+            var c = page.info, o = page.ele;
+            c.formData = {};
+            o.shopContent = $('.shop-content');
+            o.itemContent = $('.item-content');
+
+            /*jump to default link*/
+            if(c.vm.roleType === '' && $(".role-list li")[0] ){
+                window.location.href = $(".role-list li:first a").attr("href");
+            }
+            /*bind events*/
+            page.bindEvents();
+            /*合并单元格*/
+            o.itemContent.find('table').rowspan();
+            /*解析数据*/
+            page.parseData();
+        },
+        addTpl: function (total) {
+            // 添加类目模板
+            var o = page.ele, c = page.info, _target = c.tpl;
+            var t = total ? total : 1;
+            var _html = '<div class="shop">' + $(_target.template).html() + '</div>';
+            for (var i = 0; i < t; i++) {
+                $(_target.container).append(_html);
+            }
+            var shop_total = o.shopContent.find('.shop').length;
+            shop_total == 1 && o.shopContent.find('.js-remove').hide();
+            var first_remove = o.shopContent.find('.shop').first().find('.js-remove');
+            shop_total > 1 && first_remove.show();
+        },
+        /*初始化事件绑定*/
+        bindEvents: function () {
+            /*添加类目模板*/
+            var o = page.ele, c = page.info;
+            $('.js-add-tpl').on('click', function () {
+                page.addTpl();
+                o.shopContent.find('.catelog').last().myselect();
+            });
+            $(document.body).on('click', '.js-brand-clear', function() {
+                var modal = $(this).parents('.modal');
+                modal.find('input').val('');
+            });
+            $(document.body).on('click', '.js-brand-reset', function() {
+                var modal = $(this).parents('.modal');
+                var len = 0;
+                modal.find('.js-brand-clear').trigger('click');
+                $.each(c.brandSetting, function(k, v) {
+                    modal.find('input[name='+k+']').val(v);
+                });
+            });
+            $(document.body).on('click', '.js-brand-close', function() {
+                var modal = $(this).parents('.modal');
+                modal.find('.js-brand-reset').trigger('click');
+            });
+            $(document.body).on('click', '.js-brand-check', function() {
+                var modal = $(this).parents('.modal'),
+                    access = true;
+                $.each(modal.find('[isnumber]'), function(i, o) {
+                    var o = $(o), v = o.val();
+                    if (v && !util.isNumber(v)) {
+                        o.focus();
+                        Toast.show(o.attr('isnumber'));
+                        access = false;
+                        return false;
+                    }
+                });
+                if (!access) {return access;} else {modal.modal('hide');}
+            });
+            /*品牌配置*/
+            $(document.body).on('click', '.js-brand-setting', function () {
+                var _this = $(this).next('.modal');
+                _this.modal('show');
+                c.brandSetting = {};
+                $.each(_this.find('input'), function(i, e) {
+                    var e = $(e), v = e.val();
+                    if (v) {
+                        c.brandSetting[e.attr('name')] = v;
+                    }
+                });
+            });
+            /*删除模板*/
+            $(document.body).on('click', '.js-remove', function() {
+                var total = o.shopContent.find('.shop').length;
+                total > 1 && $(this).closest('.shop').remove();
+                total = o.shopContent.find('.shop').length;
+                total == 1 && o.shopContent.find('.js-remove').hide();
+            });
+            /*优惠券校验*/
+            $(document.body).on("blur", ".fm-newMemberVoucherTemplateId", function(){
+                var thas = $(this);
+                if($(".if-exisVoucher:checked").val() == 1){
+                    if(!isForm.isTrim(thas.val())){
+                        Matrix.JSON({
+                            val: {oid: thas.val(),voucherType:2},
+                            url: root + "/config/checkVoucherTemplate.do",
+                            fun: function(msg){
+                                if(!msg.success){
+                                    $("#fm-if-existVoucher").addClass("error");
+                                    thas.focus();
+                                    c.voucherErrorMsg = msg.msg;
+                                    Toast.show(c.voucherErrorMsg);
+                                }else{
+                                    $("#fm-if-existVoucher").removeClass("error");
+                                }
+                            }
+                        });
+                    }else{
+                        thas.focus();
+                        Toast.show("优惠券模板ID不能为空");
+                    }
+                }
+            });
+            /*提交表单*/
+            $(".js-submit").on("click", function (e) {
+                /*validate form*/
+                var access = true;
+                var roleType = c.vm.roleType;
+
+                // 奖励时间
+                var limitType = $(".limit-type:checked").val();
+                var fmLimitType = $(".fm-limitTime");
+                if (limitType == 1) {
+                    fmLimitType.addClass('validate');
+                } else {fmLimitType.removeClass('validate');}
+                // 优惠券
+                var ifExisVoucher=$(".if-exisVoucher:checked").val();
+                var fmVoucher = $(".fm-newMemberVoucherTemplateId");
+                if (ifExisVoucher == 1) {
+                    // 优惠券判断
+                    if($(".error").length){
+                        fmVoucher.focus();
+                        Toast.show(c.voucherErrorMsg);
+                        return false;
+                    }
+                    fmVoucher.addClass('validate');
+                } else {fmVoucher.removeClass('validate');}
+                // 校验
+                $.each($('.validate'), function() {
+                    var _this = $(this),
+                        vArr = _this.data('validate').split('|'),
+                        vDate = vArr.indexOf('date'),
+                        v = _this.val();
+                    for (var i = 0; i < vArr.length; i++) {
+                        if (vArr[i] == 'required' && !v) {
+                            if(vDate < 0) {
+                                _this.focus();
+                            } else {
+                                $(document.body).scrollTop(_this.parents('.widget-box').offset().top-50);
+                            }
+                            Toast.show(_this.attr('isrequired'));
+                            access = false;
+                            return false;
+                        } else if (vArr[i] == 'number' && v && !util.isNumber(v)) {
+                            _this.focus();
+                            Toast.show(_this.attr('isnumber'));
+                            access = false;
+                            return false;
+                        }
+                    }
+                    if (!access) {return access;}
+                });
+                if (!access) {return access;}
+
+                var shop = o.shopContent.find('.shop'),
+                    total = shop.length,
+                    shopTypes = [];
+                $.each(shop, function(index, obj) {
+                    var o = $(obj),
+                        selects = o.find('select'),
+                        shopType = o.find('.shopType'),
+                        curST = Number(shopType.val());
+                    if(!curST){
+                        Toast.show('请选择门店类目！');
+                        $(document.body).scrollTop(shopType.offset().top-50);
+                        access = false;
+                    } else {
+                        if (shopTypes.indexOf(curST) < 0) {
+                            shopTypes.push(curST);
+                        } else {
+                            Toast.show('门店类目不可重复');
+                            $(document.body).scrollTop(shopType.offset().top-50);
+                            access = false;
+                        }
+                    }
+                    if (!access) {return access;}
+                });
+                if (!access) {return access;}
+
+                var unJoniGoodsTemplateIdsVal = $('.fm-unJoniGoodsTemplateIds').val();
+                var unJoniGoodsTemplateIds = unJoniGoodsTemplateIdsVal.replace(/，/g, ',').split(',');
+                var uJGTs = c.formData.unJoniGoodsTemplateIds = [];
+                var ujgts_len = unJoniGoodsTemplateIds.length;
+                if (unJoniGoodsTemplateIdsVal) {
+                    for (var i = 0; i < ujgts_len; i++) {
+                        var v = unJoniGoodsTemplateIds[i];
+                        if(v && isForm.isImp(v)){
+                            uJGTs.push(v);
+                        } else {
+                            $('.fm-unJoniGoodsTemplateIds').focus();
+                            Toast.show('不参与购物返利的商品Id应为数字');
+                            access = false;
+                        }
+                    }
+                }
+                if (!access) {return access;}
+
+                if (c.vm.config != "" && !confirm("确认要修改吗？")) {
+                    return false;
+                }
+
+                /*post data*/
+                var data = page.getFormData();
+
+                // 无优惠劵时提交保存数据;
+                page.saveForm({
+                    "data": JSON.stringify(data),
+                    "roleId": Number(c.vm.roleId)
+                });
+            });
+        },
+        /*解析数据*/
+        parseData: function () {
+            var o = page.ele, c = page.info;
+            if (c.vm.config !== "") {
+                /*已有数据的情况*/
+                $(".js-submit").text("修改");
+                page.data = JSON.parse(c.vm.config);
+
+                $.each(page.data, function(k, v) {
+                    switch (k) {
+                        case "regCommission":
+                            $(".fm-" + k).val(v/100);
+                            break;
+                        case "regLimitTime":
+                        case "limitTime":
+                            $(".fm-" + k).val(v);
+                            break;
+                        case "type":
+                            $(".fm-limit-type-radio").find(":radio[value='" + v+ "']").trigger("click");
+                            break;
+                        case "ifExistVoucher":
+                            $("#fm-if-existVoucher").find(":radio[value='" + v+ "']").trigger("click");
+                            break;
+                        case "newMemberVoucherTemplateId":
+                            if(v!=""){
+                                $(".fm-newMemberVoucherTemplateId").val(v);
+                            }
+                            break;
+                        case "awardInfo":
+                            $(".fm-" + k).val(v.join('|'));
+                            break;
+                        case "unJoniGoodsTemplateIds":
+                                $(".fm-" + k).val(v.join(','));
+                            break;
+                        case "awardSetting":
+                            if (v.details.length>0) {
+                                var type_com = v.details[0].typecommissions || [],
+                                    brand_com = v.details[0].brandcommissions || [];
+                                for (var i = 0; i < type_com.length; i++) {
+                                    $('input[name='+type_com[i].typeId+']').val(type_com[i].commissions);
+                                }
+                                for (var i = 0; i < brand_com.length; i++) {
+                                    var brand_setting = $('[data-sid='+brand_com[i].typeId+']');
+                                    var share_com = brand_com[i].shareTypeCommissions;
+                                    for (var j = 0; j < share_com.length; j++) {
+                                        brand_setting.find($('input[name='+share_com[j].typeId+']')).val(share_com[j].commissions);
+                                    }
+                                }
+                            }
+                            break;
+                        case "shopsSetting":
+                            var shop_total = v.length;
+                            page.addTpl(shop_total);
+                            if (shop_total) {
+                                for (var i = 0; i < shop_total; i++) {
+                                    var _shop = o.shopContent.find('.shop').eq(i);
+                                    _shop.find('.catelog').myselect({
+                                        fval: v[i].fid,
+                                        sval: v[i].sid,
+                                        tval: v[i].tid
+                                    });
+                                    var brands = v[i].brands;
+                                    for (var j = 0; j < brands.length; j++) {
+                                        _shop.find('input[name='+brands[j]+']').attr('checked', true);
+                                    }
+                                    _shop.find('.shopType').val(v[i].shopTypeId);
+                                }
+                            } else {
+                                o.shopContent.find('.catelog').myselect();
+                            }
+                            break;
+                    }
+                });
+                if(!page.data.shopsSetting){
+                    page.addTpl();
+                    o.shopContent.find('.catelog').myselect();
+                }
+            } else {
+                page.addTpl();
+                o.shopContent.find('.catelog').myselect();
+            }
+        },
+        getFormData: function () {
+            var o = page.ele, c = page.info;
+            var limitType = $(".limit-type:checked").val(),
+                limitTime = '';
+            if(limitType == '1'){
+                limitTime=$('.fm-limitTime').val();
+            }
+            var ifExisVoucher=$(".if-exisVoucher:checked").val();
+            var newMemberVoucherTemplateId="";
+            if(ifExisVoucher=="1"){
+                newMemberVoucherTemplateId=$(".fm-newMemberVoucherTemplateId").val()
+            }
+
+            var roleId          = Number(c.vm.roleId); //角色ID
+            var roleName        = $(".role-list .active a").text() || 0; //角色名称
+            var regCommission   = Math.round(Number($.trim($(".fm-regCommission").val())) * 10000/100) || 0; //新用户注册佣金
+            var regLimitTime    = $(".fm-regLimitTime").val();   //注册佣金有效时间
+            var limitType       = Number(limitType); //购物获得佣金类型   1：按截止日职 limitTime 字段，2：按天数 days 字段
+            var awardInfo       = $(".fm-awardInfo").val().split("|") || 0;
+            var ifExistVoucher  = Number(ifExisVoucher);
+
+            var data = {
+                "roleId": roleId,
+                "roleName": roleName,
+                "regCommission": regCommission,
+                "regLimitTime": regLimitTime,
+                "type": limitType,
+                "limitTime":limitTime, //购物 获得佣金截止日期
+                // "days": days, //自注册日起90天内
+                "awardInfo": awardInfo,
+                "awardSetting": {
+                    "type": 0, //0:类目，1:品牌 // 已失效
+                    "details": []    //奖励设置
+                },
+                "shopsSetting": [], // 适用门店设置
+                "unJoniGoodsTemplateIds": c.formData.unJoniGoodsTemplateIds, //不参与购物返利的商品
+                "ifExistVoucher": ifExistVoucher,
+                "newMemberVoucherTemplateId": newMemberVoucherTemplateId, //新用户礼包优惠券模版ID
+            };
+
+            // awardSetting
+            var award_details = data.awardSetting.details;
+            $.each(o.itemContent.find('.items').find('input'), function() {
+                var _this = $(this),
+                    _val = _this.val();
+                if (_val) {
+                    !award_details.length && award_details.push({
+                        ids:[],
+                        typecommissions:[]
+                    });
+                    award_details[0].ids.push(_this.attr('name'));
+                    award_details[0].typecommissions.push({
+                        typeId: _this.attr('name'),
+                        commissions: _val
+                    });
+                }
+            });
+            var brandCom = o.itemContent.find('.brandSetting');
+            $.each(brandCom, function() {
+                var _this = $(this),
+                    _typeId = _this.data('sid'),
+                    _share_com = [];
+                $.each(_this.find('input'), function(i, v) {
+                     /* iterate through array or object */
+                    var _thas = $(v),
+                        _val = _thas.val();
+                    if (_val) {
+                        _share_com.push({
+                            typeId: _thas.attr('name'),
+                            commissions: _val
+                        });
+                    }
+                });
+                if (_share_com.length) {
+                    var ad_len = award_details.length;
+                    var brand_com;
+                    if(!ad_len) {
+                        award_details.push({brandcommissions:[]});
+                        brand_com = award_details[0].brandcommissions;
+                    } else {
+                        brand_com = award_details[0].brandcommissions;
+                        if (!brand_com) {
+                            brand_com = award_details[0].brandcommissions = [];
+                        }
+                    }
+                    brand_com.push({typeId:_typeId,shareTypeCommissions:_share_com});
+                }
+            });
+
+            // shopsSetting
+            var shop_setting = data.shopsSetting;
+            $.each(o.shopContent.find('.shop'), function(index,obj) {
+                var _this = $(this), _select = _this.find('.catelog select'),
+                    _id = 0, _type = 0, _len = _select.length,
+                    _ids = [
+                        Number(_select.eq(0).val()),
+                        Number(_select.eq(1).val()),
+                        Number(_select.eq(2).val())
+                    ], // 商品类目id
+                    _brands = [], _shopTypeId = Number(_this.find('.shopType').val());
+                // 判断type和id
+                if (_ids[0]) {
+                    if (!_ids[1]) {
+                        _type = 1;
+                        _id = _ids[0];
+                    } else if (!_ids[2]) {
+                        _type = 2;
+                        _id = _ids[1];
+                    } else {
+                        _type = 3;
+                        _id = _ids[2];
+                    }
+                }
+                // 获取商品品牌
+                $.each(_this.find('input[type=checkbox]:checked'), function(index, val) {
+                    _brands.push(Number($(this).val()));
+                });
+                shop_setting.push({
+                    type: _type,
+                    id: _id,
+                    fid: _ids[0],
+                    sid: _ids[1],
+                    tid: _ids[2],
+                    brands: _brands,
+                    shopTypeId: _shopTypeId
+                });
+            });
+
+            return data;
+        },
+        saveForm: function (data) {
+            Matrix.JSON({
+                showLoad: true,
+                type: "POST",
+                val: data,
+                url: "$!{request.getContextPath()}/config/saveShareConfig.do",
+                fun: function (data) {
+                    if (data.success) {
+                        Toast.show({
+                            template: "操作成功",
+                            callback: function () {
+                                console.log("操作成功");
+                                document.location.reload();
+                            }
+                        });
+                    } else {
+                        Toast.show(data.msg);
+                    }
+                }
+
+            });
+        }
+    };
+
+    page.init();
+
+})(jQuery);
+
+</script>

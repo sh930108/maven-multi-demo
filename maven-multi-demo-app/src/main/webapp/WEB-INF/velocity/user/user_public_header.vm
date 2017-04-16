@@ -1,0 +1,65 @@
+#parse("/admin/com/common.vm")
+#if($!{map})
+        <table class="table table-bordered with-check table-text-center">
+          <tr>
+            <th>昵称</th>
+            <th>CRM编号</th>
+            <th>身份证号</th>
+            <th>手机号码</th>
+            <th>宝宝信息</th>
+			  <th colspan="3">收货地址(默认收货地址)</th>
+          </tr>
+          <tr>
+            <td>$!{map.nickName}</td>
+            <td>$!{map.crmId}</td>
+            <td>$!{map.card}</td>
+            <td>$!{map.phone}</td>
+            <td>
+              #if("$!{map.babyBirthDay}"=="")
+              #else
+              $!{map.babyBirthDay}（$!{map.month}个月）
+              #end
+            </td>
+			 <td colspan="3">$!{map.address}</td>
+          </tr>
+          <tr>
+            <th>会员等级</th>
+            <th>妈豆余额</th>
+            <th>注册时间</th>
+          
+			<th >用户设备属性</th>
+			<th  style="color:red">平台消费金额</th>
+			<th  style="color:red">拉新用户数</th>
+          </tr>
+          <tr>
+            <td>$!{map.vipName}</td>
+            <td>$!{mbeanCount}</td>
+            <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$!{map.createTime})</td>
+			<td >$!{map.device}</td>
+			<td style="color:red">
+				#if(!$!{map.totalMoney})
+					￥0.00
+				#else
+					￥$!number.format("#0.00",$!{map.totalMoney})
+				#end
+			</td>
+			<td style="color:red">$!{map.count}</td>
+          </tr>
+          <tr>
+            <th>会员推荐码</th>
+            <th></th>
+            <th></th>
+			<th></th>
+			<th></th>
+			<th></th>
+          </tr>
+          <tr>
+            <td>$!{map.vipCode}	#if($!{map.vipValidTime}) 有效期至：#end $!date.format('yyyy-MM-dd HH:mm:ss ',$!{map.vipValidTime})</td>
+            <td></td>
+            <td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+          </tr>
+        </table>
+      #end

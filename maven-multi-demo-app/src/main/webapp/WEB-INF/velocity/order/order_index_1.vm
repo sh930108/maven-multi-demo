@@ -1,0 +1,288 @@
+﻿##订单首页--待付款和全部是需要显示子订单  展示父订单与子订单集合页面-
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+		<div id="content-header">
+	    <h1>
+      	#if($order.deliveryWay == 2)
+      	订单管理 | 自提订单
+        #elseif ($order.dealingType == 1)
+        订单管理 | 货到付款订单
+        #else
+       订单管理 | 所有订单
+		#end
+      </h1>
+	  </div>
+    <div class="container-fluid">
+    	<hr>
+      <div class="row-fluid">
+      	<div class="span12">
+        	<div class="widget-box">
+		        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          <h5>查询条件</h5>
+		        </div>
+            <div class="widget-content nopadding">
+            	#parse("order/order_head.vm")
+            </div>
+            <div class="widget-content">
+            	<div class="widget-box widget-tabs-box">
+              	<ul class="nav nav-tabs">
+					<li #if($tabId == 1) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=1&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">全部</a></li>
+			        <li #if($tabId == 2) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=2&orderState=3&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">待付款</a></li>
+			        <li #if($tabId == 3) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=3&orderState=4&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">待发货</a></li>
+					<li #if($tabId == 4) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=4&orderState=5&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">已发货</a></li>
+					<li #if($tabId == 5) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=5&orderState=0&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">已完成</a></li>
+					<li #if($tabId == 6) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=6&orderState=2&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">已取消</a></li>
+					<li #if($tabId == 7) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=7&orderState=1&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">已失效</a></li>
+					<li #if($tabId == 8) class="active" #end><a href="$!{request.getContextPath()}/order/index.do?tabId=8&deliveryWay=$!{order.deliveryWay}&dealingType=$!{order.dealingType}">退货退款</a></li>
+			    </ul>
+                <div class="widget-content">
+	              	<table class="table table-text-center table-order">
+		              	<thead>
+		                  <tr>
+		                    <th class="text-left">商品</th>
+		                    <th>单价(元)/数量</th>
+		                    <th>货源</th>
+		                    <th>实付款(元)</th>
+		                    <th>订单状态</th>
+		                    <th>操作</th>
+		                  </tr>
+		                </thead>
+                    #foreach($order in $orders)
+                    <tbody>
+                      <!-- 待付款状态  parentOrderNo不为null-->
+                      #if(!$order.parentOrderNo)
+						<tr class="sep-row"><td colspan="6"></td></tr>
+                          <tr class="order-hd">
+                            <td class="text-left first">
+                              <span class="dealtime" title="$!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)"><s class="icon-time"></s> $!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)</span>
+                              <span class="number">
+								订单号：$!{order.orderBatchNo}
+							   (
+                                #if($order.orderType == 1)
+									普通订单
+                                #elseif($order.orderType == 2)
+									妈豆订单
+                                #elseif($order.orderType == 3)
+                                    POS订单
+                                #elseif($order.orderType == 4)
+									扫码订单
+                                #end
+                                )
+							  </span>
+                            </td>
+                            <td class="text-left column" colspan="2">
+                              <span class="buyers">买家：$!{order.consigneeName}</span>
+                            </td>
+                            <td class="text-left column" colspan="2">
+                              <span class="phone">手机：$!{order.consigneePhone}</span>
+                            </td>
+                            <td class="text-right">#exitDiscount($!{order.orderPay.payTotalPrice} $!{order.orderPay.payPrice} $!{order.orderPay.payFreightPrice})</td>
+                         </tr>
+                      	#foreach($childOrder in $order.childOrders)
+							#foreach($orderLine in $childOrder.orderLines)
+		                      <tr class="order-bd">
+		                        <td class="text-left baobei">
+		                          <a href="javascript:;" class="pic"><img src="$!{goodsImagePath}/$!{orderLine.picName}" /></a>
+		                          <div class="desc">
+		                            <p><a href="javascript:;" class="baobei-name">$!{orderLine.itemName}</a></p>
+		                            <small>$!{orderLine.spec}</small>
+		                          </div>
+		                        </td>
+		                        <td class="price">
+		                          <p class="special-num">#converAmount($!{orderLine.payTotalPrice} $!{orderLine.allocatedCount})</p>
+		                          <p>(<span class="special-num">$!{orderLine.allocatedCount}</span>件)</p>
+		                        </td>
+                            #if($foreach.count == 1)
+		                        <td class="source" rowspan="$childOrder.orderLines.size()">
+		                          <p>
+                              #if($childOrder.deliveryWay == 1)
+                              	<span class="label label-success"><s class="icon-exclamation-sign"></s> 门店配送</span>
+                              #elseif($childOrder.deliveryWay == 2)
+                              	<span class="label label-warning"><s class="icon-exclamation-sign"></s> 上门自提</span>
+                              #elseif($childOrder.deliveryWay == 3)
+                              	<span class="label label-inverse"><s class="icon-exclamation-sign"></s> 快递配送</span>
+                              #end
+                              </p>
+                                <p>
+                                    #if($childOrder.warehouseType == 0)
+                                        $!childOrder.shopName
+                                    #else
+                                        $!childOrder.stockName
+                                    #end
+                                </p>
+		                        </td>
+		                        <td class="amount" rowspan="$childOrder.orderLines.size()">
+		                          <p class="special-num"><strong>#formatAmount($!{childOrder.orderPay.payPrice})</strong></p>
+		                          <p>(含运费：<span class="special-num">#formatAmount($!{childOrder.orderPay.payFreightPrice})</span>)</p>
+		                        </td>
+		                        <td class="status" rowspan="$childOrder.orderLines.size()">
+		                          <span class="label">
+									#if($!order.state == 1)
+										已失效
+									#elseif($!order.state == 2)
+										已取消
+									#elseif($!order.state == 3)
+										待付款
+									#elseif($!order.state == 8)
+										已删除
+									#end
+								</span>
+		                        </td>
+		                        <td class="operate" rowspan="$childOrder.orderLines.size()">
+		                        	#if($tabId == 1)
+										<!--标注 全部Tab-->
+										<p><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{childOrder.orderNo}&orderState=$!{order.state}&all=all">查看详情</a></p>
+									#else
+										<!--标注 非全部Tab-->
+										<p><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{childOrder.orderNo}&orderState=$!{order.state}">查看详情</a></p>
+									#end
+		                        </td>
+                            #end
+		                      </tr>
+                          #end
+                        #end
+                      #else
+                      <!-- 非待付款状态-->
+                        <tr class="sep-row"><td colspan="6"></td></tr>
+                        <tr class="order-hd">
+                          <td class="text-left first">
+                            <span class="dealtime" title="$!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)"><s class="icon-time"></s> $!date.format('yyyy-MM-dd HH:mm:ss',$!order.createdTime)</span>
+                            <span class="number">
+								订单号：$!{order.orderNo}
+								(
+                                #if($order.orderType == 1)
+									普通订单
+                                #elseif($order.orderType == 2)
+									妈豆订单
+                                #elseif($order.orderType == 3)
+                                    POS订单
+                                #elseif($order.orderType == 4)
+									扫码订单
+                                #end
+                                )
+							</span>
+                          </td>
+                          <td class="text-left column" colspan="2">
+                            <span class="buyers">买家：$!{order.consigneeName}</span>
+                          </td>
+                          <td class="text-left column" colspan="2">
+                            <span class="phone">手机：$!{order.consigneePhone}</span>
+                          </td>
+                          <td class="text-right">#exitDiscount($!{order.orderPay.payTotalPrice} $!{order.orderPay.payPrice} $!{order.orderPay.payFreightPrice})</td>
+                        </tr>
+						#set($refundCount = 0)
+						#foreach($orderLine in $order.orderLines)
+							#if($orderLine.type)
+								#set($refundCount = $refundCount + 1)
+							#end
+						#end
+                      	#foreach($orderLine in $order.orderLines)
+                        	<tr class="order-bd">
+		                        <td class="text-left baobei">
+		                          <a href="javascript:;" class="pic"><img src="$!{goodsImagePath}/$!{orderLine.picName}"/></a>
+		                          <div class="desc">
+		                            <p><a href="javascript:;" class="baobei-name">$!{orderLine.itemName}</a></p>
+		                            <small>$!{orderLine.spec}</small>
+		                          </div>
+		                        </td>
+                            <td class="price">
+		                          <p class="special-num">#converAmount($!{orderLine.payTotalPrice} $!{orderLine.allocatedCount})</p>
+		                          <p>(<span class="special-num">$!{orderLine.allocatedCount}</span>件)</p>
+		                        </td>
+                            #if($foreach.count == 1)
+		                        <td class="source" rowspan="$order.orderLines.size()">
+		                          <p>
+                              #if($order.deliveryWay == 1)
+                              	<span class="label label-success"><s class="icon-exclamation-sign"></s> 门店配送</span>
+                              #elseif($order.deliveryWay == 2)
+                              	<span class="label label-warning"><s class="icon-exclamation-sign"></s> 上门自提</span>
+                              #elseif($order.deliveryWay == 3)
+                              	<span class="label label-inverse"><s class="icon-exclamation-sign"></s> 快递配送</span>
+							  #end
+                              </p>
+								<p>
+									#if($order.warehouseType == 0)
+										$!order.shopName
+									#else
+										$!order.stockName
+									#end
+								</p>
+		                        </td>
+		                        <td class="amount" rowspan="$order.orderLines.size()">
+		                          <p class="special-num"><strong>#formatAmount($!{order.orderPay.payPrice})</strong></p>
+		                          <p>(含运费：<span class="special-num">#formatAmount($!{order.orderPay.payFreightPrice})</span>)</p>
+		                        </td>
+		                        <td class="status" rowspan="$order.orderLines.size()">
+                            	#if($order.state == 0) 
+                                <p><span class="label label-success">已完成</span>
+                              #elseif ($order.state == 1)
+                                <p><span class="label">已失效</span></p>
+                              #elseif ($order.state == 2)
+    							<p><span class="label">已取消</span></p>
+                              #elseif ($order.state == 3)
+                                <p><span class="label label-warning">待付款</span></p>
+                              #elseif ($order.state == 4)
+    							<p><span class="label label-inverse">待发货</span></p>
+                              #elseif ($order.state == 5)
+                                <p><span class="label label-warning">已发货</span></p>
+                              #elseif ($order.state == 6)
+                                <p><span class="label label-info">待评价</span></p>
+                              #elseif ($order.state == 7)
+                                <p><span class="label">初始状态</span></p>
+                              #elseif ($order.state == 8)
+								<p><span class="label label-important">已删除</span></p>
+							  #elseif ($order.state == 9)
+								<p><span class="label label-important">已全部退款退货</span></p>
+								#end
+								<p>#if($refundCount > 0 && $order.state != 9)(共有$refundCount件退款商品)#end</p>
+		                        </td>
+		                        <td class="operate" rowspan="$order.orderLines.size()">
+		                        	#if($tabId == 1)
+		                          <!--标注 全部Tab-->
+		                          <p><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{order.orderNo}&orderState=$!{order.state}&all=all">查看详情</a></p>
+		                          #else
+		                          <!--标注 非全部Tab-->
+		                          <p><a href="$!{request.getContextPath()}/order/orderDetail.do?orderNo=$!{order.orderNo}&orderState=$!{order.state}">查看详情</a></p>
+		                          #end
+		                          <p><a href="javascript:showRemark('$!{order.orderNo}','$!{order.remark}');">备注</a></p>
+		                        </td>
+                            #end
+                          </tr>
+                        #end
+                      #end
+                      #if($order.remark && $order.remark !="")
+                      <tr class="order-last">
+                        <td class="text-left" colspan="6"><span class="label label-success">商家备注：$!{order.remark}</span></td>
+                      </tr>
+                      #end
+                    </tbody>
+                    #end
+		              </table>
+                  <div class="pagination text-right">
+                    ##分页
+                    #parse("pagination.vm")
+                  </div>
+	              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+<script type="text/javascript">
+	Matrix.Nav({"menu": 116, "cmenu": 143});
+	//筛选按钮
+	$("#Choice").bind("click",function(){
+		$("#orderForm").attr("action","$!{request.getContextPath()}/order/index.do");
+		document.getElementById("orderForm").submit();
+	});
+	
+	function exportOrder(){
+	alert(1);
+		$("#orderForm").attr("action","$!{request.getContextPath()}/order/exportOrder.do");
+		document.getElementById("orderForm").submit();
+	};
+</script>
+

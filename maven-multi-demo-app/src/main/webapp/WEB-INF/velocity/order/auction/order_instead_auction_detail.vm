@@ -1,0 +1,152 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 116, "cmenu": 243});
+</script>
+<style>
+#content-header h1{float:left;}
+#content-header .back {float:right;margin:20px 20px 0 0;}
+</style>	
+<div id="content-header">
+	<h1>订单管理 | 代拍订单导入</h1>
+	<a class="btn btn-success back" href="javascript:history.go(-1);">返回</a>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>代拍订单详情列表</h5>
+				</div>
+				<div class="widget-box">
+					<div class="widget-content">
+						<div class="widget-box widget-tabs-box">
+							#set($fileName=$request.getParameter("fileName"))
+							<div class="control-group"><button type="button" class="btn btn-danger" onclick="auctionOrderHandler('${fileName}',null,this);">全部下单</button></div>
+							
+							<table class="table table-text-center table-order">
+								<thead>
+									<tr>
+										##<th>数据库主键</th>
+										##<th>文件名</th>
+										<th>行号</th>
+										<th>实际单价(单位分)</th>
+										<th>规格编码</th>
+										<th>件数</th>
+										<th>个人\公司</th>
+										<th>发票抬头</th>
+										<th>发票金额</th>
+										<th>收件人姓名</th>
+										<th>收件人电话</th>
+										<th>省</th>
+										<th>市</th>
+										<th>区</th>
+										<th>详细地址</th>
+										<th>配送方式</th>
+										<th>仓库编号</th>
+										<th>订单编号</th>
+										<th>gb小票号</th>
+										<th>地址编号</th>
+										<th>标记类型</th>
+										<th>备注</th>
+										<th>默认状态</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									#foreach($co in $dataList)
+									#set($index = $loopCounter + 1)
+									<tr data-co-id=$!{co.auctionOrderId}>
+										##<td>$!{co.auctionOrderId}</td>
+										##<td>$!{co.fileName}</td>
+										<td>$!{co.rowNo}</td>
+										<td>$!{co.price}</td>
+										<td>$!{co.itemNumId}</td>
+										<td>$!{co.count}</td>
+										<td>$!{co.invoiceType}</td>
+										<td>$!{co.invoiceHead}</td>
+										<td>$!{co.invoiceMoney}</td>
+										<td>$!{co.recipientName}</td>
+										<td>$!{co.recipientPhone}</td>
+										<td>$!{co.province}</td>
+										<td>$!{co.city}</td>
+										<td>$!{co.cityArea}</td>
+										<td>$!{co.detailAddress}</td>
+										<td>$!{co.distributionType}</td>
+										<td>$!{co.storageId}</td>
+										<td>$!{co.orderNo}</td>
+										<td>$!{co.tmlNumId}</td>
+										<td>$!{co.addressId}</td>
+										<td>
+											#if($!{co.markType} == 0)
+												正常
+											#elseif($!{co.markType} == 1)
+												CPS-代销
+											#elseif($!{co.markType} == 2)
+                                                CPS-经销
+											#elseif($!{co.markType} == 3)
+                                                CPS-赠品
+											#else
+												其他
+											#end
+										</td>
+										<td>$!{co.remark}</td>
+										<td>$!{co.nextStage}</td>
+										<td>
+										#if($!{co.nextStage}==4)
+										已完成
+										#else
+										<a class="btn btn-danger btn-mini" href="javascript:void(0)" onclick="auctionOrderHandler('$!{co.fileName}','$!{co.rowNo}',this);">代拍下单</a>
+										#end
+										</td>
+									</tr>
+									#end
+								</tbody>
+							</table>
+							
+							
+							##分页
+							#parse("pagination.vm")
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<link rel="stylesheet" href="$!{request.getContextPath()}/res/tool/easydialog/easydialog.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/tool/easydialog/easydialog.min.js"></script>
+
+<script type="text/javascript">
+	function auctionOrderHandler(fileName,rowNo,that) {
+		if($(that).hasClass('disabled')) return false;
+		$(that).addClass('disabled');
+			if (fileName == "") {
+				Toast.show("操作失误，请刷新重试");
+				return false;
+			} else {
+				Matrix.JSON({
+					timeout: 7200000,
+					showLoad: true,
+					type: "POST",
+					val: {
+						'fileName': fileName,
+						'rowNo': rowNo,
+					},
+					url: "$!{request.getContextPath()}/order/auction/auctionOrderHandler.do",
+					fun: function () {
+						Toast.show({
+							template: "更新成功",
+							callback: function () {
+								window.location.reload();
+							}
+						});
+					}
+				});
+			}
+		};
+</script>

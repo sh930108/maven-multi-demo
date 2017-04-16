@@ -1,0 +1,73 @@
+#set($layout="/admin/layout/login.vm")
+<style type="text/css">
+	.MA-login-all{ width:400px; position:absolute; left:50%; top:25%; margin-left:-200px; padding:20px; border-top:1px solid #3F4954; border-bottom:1px solid #3F4954;}
+	.MA-login-all h1{ text-align:center; font-size:20px; font-weight:normal; padding:0 0 15px; margin:0; color:#AAA;}
+	.MA-login-all ul{ list-style:none; margin:0; padding:0;}
+	.MA-login-all li{ padding:0; margin:0 0 20px; height:40px; line-height:40px; overflow:hidden; position:relative;}
+	.MA-login-all em{ position:absolute; left:0; top:0; width:60px; height:40px; background-color:#28B779; text-align:center;}
+	.MA-login-all .li-2 em{ background-color:#FFB848;}
+	.MA-login-all .li-3 em{ background-color:#2F96B4;}
+	.MA-login-all .li-3 img{ position:absolute; right:10px; top:10px; cursor:pointer;}
+	.MA-login-all s{ text-indent:-88em; position:absolute; left:50%; top:50%; margin:-7px 0 0 -7px; overflow:hidden;}
+	.MA-login-all input.error{ color:red !important;}
+	.MA-login-all input[type=text],
+	.MA-login-all input[type=password]{ float:left; width:100%; border:0; height:40px; line-height:30px; font-size:16px; color:#111; padding:0 10px 0 70px; margin:0; -moz-box-sizing:border-box; -webkit-box-sizing:border-box; box-sizing:border-box;}
+	.MA-login-all .checkbox{ margin-bottom:0; color:#EEE;}
+	.MA-login-all .checkbox input[type=checkbox]{ margin:0; float:left; margin:4px 5px 0 0;}
+	.MA-login-all .last{ text-align:center; height:auto; margin-bottom:0;}
+	.MA-login-all .last .btn{ width:200px; font-family:\5FAE\8F6F\96C5\9ED1;}
+	.MA-login-all .chrome{ position:absolute; width:100%; text-align:center; bottom:-30px; font-size:12px; color:#707070;}
+</style>
+<div class="MA-login-all">
+	<h1>妈妈好 | 运营管理系统</h1>
+  <form name='f' action='$!{request.getContextPath()}/j_spring_security_check' method='POST' id="login">
+  <ul>
+  	<li class="li-1"><em><s class="icon-user">用户名：</s></em><input type='text' name='j_username' id="username" maxlength="20" placeholder="请输入用户名"></li>
+    <li class="li-2"><em><s class="icon-lock">密码：</s></em><input type='password' name='j_password' id="password" maxlength="20" placeholder="请输入密码" /></li>
+    <li class="li-3"><em><s class="icon-barcode">验证码：</s></em><input type='text' name='j_captcha' id="captcha" maxlength="4"  placeholder="请输入验证码" /> <img id="captcha-img" src="$!{request.getContextPath()}/res/image.jsp" title="点击刷新验证码" /></li>
+    <li class="checkbox"><label for="checkbox"><input type='checkbox' name='_spring_security_remember_me' id="checkbox" /> 记住我</label></li>
+    <li class="last"><input name="submit" class="btn btn-success btn-large" type="submit" id="submit" value="立即登录"/></li>
+  </ul>
+  </form>
+  <div class="chrome">为了更好的体验推荐使用Google Chrome浏览器</div>
+</div>
+<script type="text/javascript">
+	var username = $("#username"),
+	password = $("#password"),
+	captcha = $("#captcha");
+	username.focus();
+    var loginError="$!loginError";
+      //Toast.show("loginError:"+loginError);
+    if(loginError=="yanzhengmError"){
+       Toast.show("您输入的验证码错误，请重新输入！！！");
+	   captcha.addClass("error").focus();
+    }else if(loginError=="userNotFound"){
+       Toast.show("您输入的用户名错误，请重新输入！！！");
+	   username.addClass("error").focus()
+    }else if(loginError=="passwordError"){
+       Toast.show("您输入的密码错误，请重新输入！！！");
+	   password.addClass("error").focus()
+    }
+	
+	
+	$("#submit").on("click", function(){
+		$("input").removeClass("error");
+		if(isForm.isTrim(username.val())){
+			Toast.show("请输入用户名");
+			username.addClass("error").focus()
+			return false;
+		}else if(isForm.isTrim(password.val())){
+			Toast.show("请输入密码");
+			password.addClass("error").focus()
+			return false;
+		}else if(isForm.isTrim(captcha.val())){
+			Toast.show("请输入验证码");
+			captcha.addClass("error").focus()
+			return false;
+		}
+		$("#login").submit();
+	});
+	$("#captcha-img").on("click", function(){
+		$(this).hide().attr('src','$!{request.getContextPath()}/res/image.jsp'+ '?'+ Math.random()).fadeIn();
+	});
+</script>

@@ -1,0 +1,152 @@
+﻿#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 208, "cmenu": 213});
+</script>
+
+<div id="content-header">
+<h1>妈妈圈 | 评论管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-list"></i> </span>
+                <h5>评论列表</h5>
+            </div>
+            <div class="widget-content">
+                <div class="widget-box widget-tabs-box">
+                    <ul class="nav nav-tabs">
+                        <li><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=0">被举报</a></li>
+                        <li><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=1">被过滤</a></li>
+                        <li><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=2">已通过</a></li>
+                        <li><a href="$!{request.getContextPath()}/mmq/comment/queryComplainCommentList.do?status=3">未通过</a></li>
+                        <li class="active"><a href="$!{request.getContextPath()}/mmq/comment/queryTopicComments.do">搜索评论</a></li>
+                    </ul>
+                    <div class="widget-content tab-content nopadding">
+                        <form action="$!{request.getContextPath()}/mmq/comment/queryTopicComments.do" class="form-horizontal form-horizontal-inline">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label class="control-label">账户昵称：</label>
+                                        <div class="controls">
+                                            <input type="text" placeholder="" class="span12" name="nickName" value="$!nickName">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span6">
+                                    <div class="control-group">
+                                        <label class="control-label">评论包含内容：</label>
+                                        <div class="controls">
+                                            <input type="text" placeholder="" class="span12" name="comment" value="$!comment">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-success" type="submit">筛选</button>
+                                <button class="btn btn-warning" type="reset">重置</button>
+                            </div>
+                        </form>
+                        <div>
+                            <table class="table table-hover with-check table-text-center">
+                                <thead>
+                                <tr>
+                                    <th><label for="checkAll"><input type="checkbox" id="checkAll" name="sample-checkbox-01" style="height: auto;"></label></th>
+                                    <th>话题ID</th>
+                                    <th>评论ID</th>
+                                    <th>作者</th>
+                                    <th>评论内容</th>
+                                    <th>发布时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                 #foreach($data in $datas)
+                                    <tr id="topicComment-$!data.get('commentId')-$!data.get('topicId')">
+                                      <td><label for="checkbox-01"><input type="checkbox" id="checkbox-01" value="$!data.get('commentId')-$!data.get('topicId')" name="cidandtid"></label></td>
+                                      <td>$!data.get('topicId')</td>
+                                      <td>$!data.get('commentId')</td>
+                                      <td>$!data.get('fromNickName')</td>
+                                      <td>$!data.get('commentt')</td>
+                                      <td>$!data.get('creatTime')</td>
+                                      <td><a class="btn btn-danger btn-mini btn-delete" href="javascript:;" tidcid="$!data.get('commentId')-$!data.get('topicId')">删除</a></td>
+                                  </tr>
+                                 #end
+                                </tbody>
+                            </table>
+                            #parse("/pagination.vm")
+                            <div class="form-horizontal">
+                                <div class="form-actions">
+                                    <a href="javascript:;" class="btn btn-danger" id="deleteTopicCommentsOn">批量删除</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+/*全选*/
+$("#checkAll").click(function () {
+		Matrix.CheckedAll($(".table-text-center"));
+});
+$(function() {
+	$('.btn-delete').click(function(){
+		 var tidcid = $(this).attr("tidcid");
+			if(confirm('确定删除该评论吗？')){
+			$.get('$!{request.getContextPath()}/mmq/comment/delTopicComments.do?tidcids='+tidcid,function(data){
+				Toast.show(data.msg);	
+				if(data.result == 1){
+					window.location.reload();
+				}
+			  });
+			}
+	});
+	
+});
+
+/*批量删除*/
+$('#deleteTopicCommentsOn').click(function () {
+		var ids = "";
+		$("input[name='cidandtid']:checked").each(function () {
+			ids += $(this).val() + ",";
+		});
+		if (ids != "") {
+		   if(confirm('确定删除选择的评论吗？')){
+			 Matrix.JSON({
+				url: "$!{request.getContextPath()}/mmq/comment/delTopicComments.do",
+				val: {tidcids: ids},
+				fun: function (data) {
+					if (data.result == 1) {
+					    Toast.show({
+							template: "删除成功",
+							callback: function () {
+								window.location.reload();
+							}
+						});
+						
+					} else {
+						Toast.show("删除失败");
+					}
+				}
+			});
+		  }
+		} else {
+			Toast.show("请选择您要删除的评论");
+		}
+		
+		/**$.get('$!{request.getContextPath()}/share/promoter/deletePromoter.do?id='+pid,function(data){
+				Toast.show(data.msg);	
+				if(data.result == 1){
+					$("#promoter-"+pid).remove();
+				}
+			  });**/
+});
+</script>

@@ -1,0 +1,214 @@
+##优惠卷
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+  Matrix.Nav({"menu": 26, "cmenu": 27});
+</script>
+<div id="content-header">
+    <h1>用户管理 | 优惠卷记录</h1>
+</div>
+
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box">
+        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+          <h5>用户信息</h5>
+        </div>
+		<div class="widget-content">
+			#parse("/user/user_public_header.vm")
+		</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box widget-tabs-box">
+          <ul class="nav nav-tabs">
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserIntegral.do?memberId=$memberId" >成长值记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserMbean.do?memberId=$memberId" >妈豆记录</a>
+            </li>
+            <li class="active">
+              <a href="$!{request.getContextPath()}/user/showUserVoucher.do?memberId=$memberId&type=1">优惠券记录</a>
+            </li>
+			 <li class="">
+              <a href="$!{request.getContextPath()}/user/showNewUser.do?memberId=$memberId&type=1">拉新用户记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showVipRecharge.do?memberId=$memberId">会员充值记录</a>
+            </li>
+          </ul>
+          <div class="widget-content tab-content">
+            <div class="span4">
+              <div class="control-group">
+                <label class="control-label">优惠券状态：</label>
+                <div class="controls">
+                  <select class="text_sketch" id="u330_input" onchange="javascript:changeType(this.value);">
+                    <option value="1" #if($type==1) selected #end>可使用</option>
+                    <option value="2" #if($type==2) selected #end>不可用</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- 选项卡 -->
+            <div id="tab2" class="tab-pane active">
+              <table class="table table-hover table-text-center">
+              #if($type==1)
+                <thead>
+                  <tr>
+                    <th>优惠券兑换码</th>
+                    <th>优惠券名称</th>
+                    <th>商品优惠券</th>
+                    <th>有效期</th>
+                    <th>获得时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  #foreach($data in $dataList)
+                    <tr>
+                      <td>$!{data.cdKey}</td>
+                      <td>满#formatAmount($!{data.voucherMoney})减#formatAmount($!{data.voucherAmount})</td>
+                      <td>
+                        #if($data.voucherType==0) 商品优惠券
+                        #elseif($data.voucherType==2)
+							新人礼包优惠券
+						#elseif($data.voucherType==3)
+							分享有礼优惠券
+                        #end
+                      </td>
+                      <td>
+                        $!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.beginDate})<br />$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.endDate})
+                      </td>
+                      <td>
+                        #if("$!{data.obtainTime}"=="")
+                        #else
+                          $!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.obtainTime})
+                        #end
+                      </td>
+                    </tr>
+                  #end
+                </tbody>
+              #else
+                <thead>
+                  <tr>
+                    <th>优惠券编码</th>
+                    <th>优惠券名称</th>
+                    <th>商品优惠券</th>
+                    <th>有效期</th>
+                    <th>获得时间</th>
+                    <th>使用时间（订单号）</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  #foreach($data in $dataList)
+                    <tr>
+                      <td>$!{data.cdKey}</td>
+                      <td>满#formatAmount($!{data.voucherMoney})减#formatAmount($!{data.voucherAmount})</td>
+                      <td>
+                        #if($data.voucherType==0) 商品优惠券
+                        #elseif($data.voucherType==2)
+							新人礼包优惠券
+						#elseif($data.voucherType==3)
+							分享有礼优惠券
+                        #end
+                      </td>
+                      <td>
+                        $!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.beginDate})<br />$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.endDate})
+                      </td>
+                      <td>
+                        #if("$!{data.obtainTime}"=="")
+                        #else
+                          $!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.obtainTime})
+                        #end
+                      </td>
+                      <td>
+                        #if("$!{data.useTime}"=="")
+                        #else
+                          $!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.useTime})
+                        #end
+                        <br/>
+                        ($!{data.orderNo})
+                      </td>
+                      <td>
+                        #if($data.status==3)
+                          <span class="label label-success">购物使用</span>
+                        #else
+                          #if($data.type==1)
+                            <span class="label label-important">过期失效</span>
+                          #end
+                        #end
+                      </td>
+                    </tr>
+                  #end
+                </tbody>
+              #end
+              </table>
+              #parse("/pagination.vm")
+            </div>
+            #if($code !=3 )
+				<a class="btn btn-success" data-toggle="modal" href="javascript:alert('很抱歉，您无权限操作此功能');">添加优惠券</a>
+			#else
+				<a class="btn btn-success" data-toggle="modal" href="#showReason">添加优惠券</a>
+			#end
+          </div>
+          <!-- 内容框 END -->
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal hide in" id="showReason" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>请填写您要操作的兑换码</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal form-horizontal-inline" method="get" action="#">
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">优惠券兑换码：</label>
+            <div class="controls">
+              <input type="text" placeholder="" class="" id="count">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer"><a href="javascript:;" class="btn btn-primary" id="submitReason">完成</a> </div>
+</div>
+
+<script type="text/javascript">
+	function changeType(type){
+		window.location.href="$!{request.getContextPath()}/user/showUserVoucher.do?memberId=$memberId&type="+type;
+	}
+
+	$('#submitReason').click(function(){
+		var reason = $('#count').val();
+		if(reason == "" || reason == undefined){
+			Toast.show("请填写优惠券兑换码");
+			 $('#count').focus();
+			 return;
+		}
+		$.post("$!{request.getContextPath()}/user/updaetVoucher.do", {
+			'memberId' :'$memberId',
+			'cdKey':$('#count').val()
+		}, function(data) {
+			if(data.success ==1){
+				Toast.show("操作成功");
+				window.location.reload();
+			}else if(data.success == 0){
+				Toast.show("兑换失败:"+data.errorMsg);
+			}
+			
+	    });	
+		
+	});
+</script>

@@ -1,0 +1,260 @@
+##会员权益配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 26, "cmenu": 221});
+</script>
+<div id="content-header">
+	<h1>用户管理 | 会员配置</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="widget-box widget-tabs-box">
+		<ul class="nav nav-tabs">
+			<li><a href="$!{request.getContextPath()}/purchase/baseConf/vipIndex.do">会费配置</a></li>
+			<li><a href="$!{request.getContextPath()}/purchase/baseConf/vipShareIndex.do">分享配置</a></li>
+			<li class="active"><a href="javascript:;">权益配置</a></li>
+		</ul>
+		<div class="widget-content tab-content nopadding">
+			<form action="$!{request.getContextPath()}/purchase/baseConf/vipRightIndex.do" class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+                        <label class="control-label">会员权益名称：</label>
+                        <div class="controls">
+                            <input id="" type="text" name="rightName" value="$!{request.getParameter('rightName')}" maxlength="5" />
+                        </div>
+                    </div>
+                    <div class="form-actions">
+	                    <button class="btn btn-success"  href="javascript:;">筛选</button>
+	                    <a href="javascript:;" class="btn btn-primary" id="js-add">新增</a>
+	                </div>
+				</div>
+            </form>
+            <!-- 编辑/新增权益弹窗 -->
+            <div class="modal hide in" id="myModal">
+            	<div class="modal-header">
+            		<button type="button" class="close" data-dismiss="modal">×</button>
+            		<h3>会员权益</h3>
+            	</div>
+            	<div class="modal-body">
+            		<form action="" class="form-horizontal" id="rightFrm">
+            			<input type="hidden" name="rightId" value="">
+            			<div class="control-group">
+	                        <label class="control-label">会员权益名称：</label>
+	                        <div class="controls">
+	                            <input id="" type="text" name="rightTitle" value="" placeholder="不超过5个字" maxlength="5"/>
+	                        </div>
+	                    </div>
+	                    <div class="control-group">
+	                        <label class="control-label">权益图片：<br>519px*240px</label>
+	                        <div class="controls">
+	                        	<span class="up-photo">
+	                        		<input type="hidden" id="rightPic-hidden" name="rightPic" value=""/>
+	                        		<div class="up-rightPic" id="rightPic-pic">
+	                        			<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	                        		</div>
+	                        		<div class="up-btn" data-id="rightPic"><a href="javascript:;" id="rightPic" class="btn">选择图片</a></div>
+	                        	</span>
+	                        </div>
+	                    </div>
+	                    <div class="control-group">
+	                        <label class="control-label">会员权益说明：</label>
+	                        <div class="controls">
+	                            <textarea name="rightDesc" id="" cols="30" rows="3" placeholder="不超过100字"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="control-group">
+	                        <label class="control-label">排序：</label>
+	                        <div class="controls">
+	                            <input id="" type="text" name="orderBy" value="" maxlength="2" />
+	                        </div>
+	                    </div>
+            		</form>
+            	</div>
+            	<div class="modal-footer"><a href="javascript:;" class="btn btn-success" id="save">保存</a><a href="javascript:;" class="btn" data-dismiss="modal">关闭</a> </div>
+            </div>
+		</div>
+        <div class="row-fluid">
+        	<div class="widget-content">
+            	<table class="table table-text-center">
+	              	<thead>
+						<tr>
+							<th>会员权益名称</th>
+							<th>权益图片</th>
+							<th width="500">会员权益说明</th>
+							<th>排序</th>
+							<th>操作</th>
+						</tr>
+	                </thead>
+	                <tbody>
+	                	#foreach($right in $data)
+	                	<tr data-id="$!{right.rightId}" data-right-title="$!{right.rightTitle}" data-right-pic="$!{right.rightPic}" data-right-desc="$!{right.rightDesc}" data-right-order="$!{right.orderBy}">
+	                		<td>$!{right.rightTitle}</td>
+	                		<td><img src="$imgpath$!{right.rightPic}" style="width:150px;"></td>
+	                		<td>$!{right.rightDesc}</td>
+	                		<td>$!{right.orderBy}</td>
+	                		<td>
+	                			<a href="javascript:;" class="btn btn-primary js-edit">编辑</a>
+	                			<a href="javascript:Equity.delete($!{right.rightId});" class="btn btn-danger">删除</a>
+	                		</td>
+	                	</tr>
+	                	#end
+	                </tbody>
+                </table>
+                #parse("/pagination.vm")
+        	</div>
+        </div>
+	</div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript">
+	var VM = {
+		rootpath:'$!{request.getContextPath()}',
+		imgpath:'$imgpath'
+	};
+
+	(function(){
+		var Equity = {
+			api:{
+				save : VM.rootpath + '/purchase/baseConf/saveVipRight.do',
+				delete : VM.rootpath + '/purchase/baseConf/deleteVipRight.do'
+			},
+			ele:{
+				modal:$('#myModal')
+			},
+			init:function(){
+				var self = this, o = self.ele;
+				$('#js-add').on('click',function(){
+					self.clear();
+					o.modal.modal('show');
+				});
+				$('#save').on('click',function(){
+					self.add();
+				});
+				$('.js-edit').on('click',self.edit);
+				$(".up-btn").each(function(){
+					var thas = $(this);
+					thas.children().uploadify({
+			　　		uploader: root + '/oss/uploadFiles.do',
+						formData:{type:9},
+						swf: root + '/res/uploadify/uploadify.swf',  
+						queueID: 'null', // 上传进度列表;
+						fileTypeDesc: "jpg",
+						fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+						multi: false,
+						wmode: "transparent",
+						buttonText: '选择图片',
+						width: "100%",
+						height: "100%",
+						onUploadStart: function(){
+							var id = this.button.parents(".up-btn").data("id");
+							$("#" + id + "-pic").html('');
+						},
+						onUploadSuccess: function(file,data,response) {
+							//上传完成时触发（每个文件触发一次）;
+							//console.log([file,data,response]);
+							var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+							if(!data.success){
+								 Toast.show(data.msg);
+								 $("#" + id + "-pic").html('<img src="'+ root +'/res/images/photo-default.png"/>');
+							}else{
+								var img = new Image();
+								img.src = "${imgpath}" + data.fileName;
+								// 不校验尺寸;
+								//$("#" + id + "-pic").html('<img src="http://bgo.oss-cn-hangzhou.aliyuncs.com/'+ data.fileName +'"/>');
+								//$("#" + id + "-hidden").val(data.fileName);
+								// 校验尺寸;
+								$(img).load(function(){
+									var size = [519, 240];
+									if(size[0] != this.width || size[1] != this.height){
+										Toast.show("请上传指定尺寸图片：" + size.join("x"));
+										$("#" + id + "-pic").html('<img src="'+ root +'/res/images/photo-default.png"/>');
+									}else{
+										$("#" + id + "-pic").html('<img src="${imgpath}'+ data.fileName +'"/>');
+										$("#" + id + "-hidden").val(data.fileName);
+									}
+								});
+							}
+						}
+					}); 
+				});
+			},
+			clear:function(){
+				$('input[type=text]').val("");
+				$('textarea').html("");
+				$('input[type=hidden]').val("");
+			},
+			/*新增*/
+			add:function(){
+				var p = {
+					"rightId" : $('input[name="rightId"]').val(),
+					"rightTitle" : $('input[name="rightTitle"]').val(),
+					"rightPic" : $('input[name="rightPic"]').val(),
+					"rightDesc" : $('textarea[name="rightDesc"]').val(),
+					"orderBy" : $('input[name="orderBy"]').val()
+				};
+				if(isForm.isTrim(p.rightTitle)){
+					$('input[name="rightTitle"]').focus();
+					return Toast.show("不能为空");
+				}
+				if(isForm.isTrim(p.rightPic)){
+					return Toast.show("不能为空");
+				}
+				if(isForm.isTrim(p.rightDesc)){
+					$('input[name="rightDesc"]').focus();
+					return Toast.show("不能为空");
+				}
+				if(isForm.isTrim(p.orderBy)){
+					$('input[name="orderBy"]').focus();
+					return Toast.show("不能为空");
+				}
+				if(!isForm.isImp(p.orderBy)){
+					$('input[name="orderBy"]').focus();
+					return Toast.show("请输入正确的格式!");
+				}
+				if(p.orderBy > 99){
+					$('input[name="orderBy"]').focus();
+					return Toast.show("排序值范围1~99");
+				}
+				console.log(p);
+				Equity.ajaxReq(p,Equity.api.save);
+			},
+			/*编辑*/
+			edit:function(){
+				var o = Equity.ele, right = $(this).closest('tr');
+				Equity.clear();
+				$('input[name="rightTitle"]').val(right.data("right-title"));
+				$('input[name="rightPic"]').val(right.data("right-pic"));
+				$('#rightPic-pic').children('img').attr('src',VM.imgpath + right.data("right-pic"));
+				$('[name="rightDesc"]').text(right.data("right-desc"));
+				$('input[name="orderBy"]').val(right.data("right-order"));
+				$('input[name="rightId"]').val(right.data("id"));
+				o.modal.modal('show');
+			},
+			/*删除*/
+			delete:function(rightId){
+				if(!rightId) return Toast.show("id为空");
+				if(confirm("是否确定删除该权益")) Equity.ajaxReq({"rightId":rightId},Equity.api.delete);
+			},
+			/**/
+            ajaxReq:function(params,url){
+                console.log(params);
+            	Matrix.JSON({
+		            val: params,
+		            url: url,
+		            type: 'post',
+		            fun: function (res) {
+		                if (res.success) {
+		                    setTimeout('window.location.reload()', Toast.show('操作成功'));
+		                } else {
+		                    Toast.show(res.msg);
+		                }
+		            }
+		        });
+            }
+		};
+
+		Equity.init();
+		window.Equity = Equity;
+	})(window);
+</script>

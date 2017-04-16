@@ -1,0 +1,153 @@
+#set($layout="/admin/layout/matrix.vm")
+<style>
+	.widget-title .btn{margin-top: 3px;}
+</style>
+<script type="text/javascript">
+	Matrix.Nav({
+		"menu" : 154,
+		"cmenu": 234
+	});
+</script>
+<script type="text/javascript" src="../../res/js/qrcode.js"></script>
+<div id="content-header">
+	<h1>微分销管理 |分享统计 | 详情</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<h5>基本信息</h5>
+					<div class="pull-right">
+						<a class="btn btn-primary" href="$!{request.getContextPath()}/cloud/weixinShare/list.do">返回</a>
+					</div>
+				</div>
+				<div class="widget-content nopadding">
+					<table class="table table-bordered table-text-center">
+						<tr>
+							<th>手机号</th>
+							<th>真实姓名</th>
+							<th>门店ID</th>
+						</tr>
+							<td>$!{mobile}</td>
+							<td>$!{realName}</td>
+							<td>$!{shopId}</td>
+						</tr>
+						<tr>
+							<th>角色名称</th>
+							<th>直属上级</th>
+							<th>成功分享次数</th>
+						</tr>
+						<tr>
+							<td>$!{roleName}</td>
+							<td>$!{orgName}</td>
+							<td>
+							   $!{count}
+							</td>
+						</tr>
+						
+					</table>
+
+				</div>
+			</div>
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i>
+					</span>
+					<ul class="nav nav-tabs">
+				       <li class="active"><h5>分享列表</h5></li>
+				    </ul>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" name="searchFrm"
+						action="$!{request.getContextPath()}/share/promoter/queryPromoter.do">
+						 <input type="hidden" name="mobile" value="$!{mobile}"/>
+					     <input type="hidden" name="realName" value="$!{realName}"/>
+						<input type="hidden" name="count" value="$!{count}"/>
+					    <input type="hidden" name="baseShopId" value="$!{baseShopId}"/>
+					    <input type="hidden" name="shopType" value="$!{shopType}"/>
+						<input type="hidden" name="memberId" value="$!{memberId}"/>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">时间：</label>
+									<div class="controls">
+										<input type="text" readonly="readonly" name="startTime" value="$!{startTime}" id="startDate" class="Wdate span5" type="text" size="20" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+										 至  
+										<input type="text" readonly="readonly" name="endTime" value="$!{endTime}" id="endDate" class="Wdate span5" type="text" size="20" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+									</div>
+								</div>
+							</div>
+							<div class="span2">
+								<div class="control-label" style="width: auto;">
+									<input type="button"  value="筛选"  class="btn btn-success btn-search">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+                  <div class="widget-content">
+					<table class="table table-hover with-check table-text-center">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>途径</th>
+								<th>时间</th>
+								<th>设备</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${datas}) #set($index = $loopCounter + 1)
+							<tr>
+								<td>$index</td>
+								<td>
+                #if($data.newOpenId == "shareTimeline:ok")
+                  微信朋友圈
+                #elseif($data.newOpenId == "sendAppMessage:ok")
+                  微信好友
+                #elseif($data.newOpenId == "shareQQ:ok")
+                  QQ好友
+                #else
+                  其它：$!{data.newOpenId}
+                #end
+								</td>
+								<td>
+								$!date.format('yyyy-MM-dd HH:mm:ss
+									',$!{data.shareTime})
+								</td>
+								<td>$!{data.userAgent}</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					#parse("/pagination.vm")
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+   $(".btn-search").click(function(){
+			if(checkFrm()){
+				searchFrm.action="$!{request.getContextPath()}/cloud/weixinShare/view.do";
+				searchFrm.submit();
+			}
+	});
+	function checkFrm(){
+		var start  = $("#startDate").val();
+		var end = $("#endDate").val();
+		if(start != "" && end !=""){
+			var startDate = new Date(start.replace(/\-/g, "\/"));  
+			var endDate = new Date(end.replace(/\-/g, "\/"));  
+			if(endDate < startDate){
+				Toast.show("您选择的结束日期小于开始日期，请重新选择。");
+				return false;
+			}
+		}
+		return true;
+	}
+</script>

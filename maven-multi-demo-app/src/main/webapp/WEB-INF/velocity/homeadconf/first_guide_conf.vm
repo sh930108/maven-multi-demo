@@ -1,0 +1,489 @@
+##一级导航投放
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 117, "cmenu": 231});
+</script>
+<div id="content-header">
+	<h1>一级导航投放 > $!{request.getParameter('bannerName')}</h1>
+</div>
+<hr>
+<div class="MA-have-all">
+	<a href="$!{request.getContextPath()}/homeAdConf/firstGuideSource.do?bannerId=$!{request.getParameter('bannerId')}&bannerName=$!{request.getParameter('bannerName')}" class="btn btn-success">一级导航资源位</a>
+	<a href="$!{request.getContextPath()}/homeAdConf/secondGuide.do?bannerId=$!{request.getParameter('bannerId')}&bannerName=$!{request.getParameter('bannerName')}" class="btn btn-success">二级导航</a>
+</div>
+
+<div class="MA-putin-all">
+	<!-- 顶部日期 -->
+	<div class="MA-have-hader">
+		<a href="javascript:;" class="arrow js-have-prev"></a>
+		<h2 class="js-have-title"> ~ </h2>
+		<a href="javascript:;" class="arrow arrow-r js-have-next"></a>
+	</div>
+	<!-- 投放主体 -->
+	<div class="MA-putin-main">
+		<!-- 昨天 -->
+		<div class="MA-putin-item">
+			<div class="MA-putin-block">
+				<!-- 日期 -->
+				<div class="title"><time>-</time><button class="btn btn-mini btn-primary js-sort"><s class="icon-arrow-left"></s>排序</button></div>
+				<div class="move js-h5 js-item" data-banner-type="23" data-banner-name="H5页面投放">
+					<div class="banner">
+						<div class="tools" data-banner-name="H5页面投放"><span class="label label-success js-show-config"><s class="icon-plus"></s>添加</span></div>
+						<strong class="name">H5页面投放</strong>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 今天 -->
+		<div class="MA-putin-item">
+			<div class="MA-putin-block">
+				<div class="title"><time>-</time><button class="btn btn-mini btn-primary js-sort"><s class="icon-arrow-left"></s>排序</button></div>
+				<div class="move js-h5 js-item"  data-banner-type="23" >
+					<div class="banner">
+						<div class="tools" data-banner-name="H5页面投放"><span class="label label-success js-show-config"><s class="icon-plus"></s>添加</span></div>
+						<strong class="name">H5页面投放</strong>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 明天 -->
+		<div class="MA-putin-item">
+			<div class="MA-putin-block">
+				<div class="title"><time>-</time><button class="btn btn-mini btn-primary js-sort"><s class="icon-arrow-left"></s>排序</button></div>
+				<div class="move js-h5 js-item"  data-banner-type="23" data-banner-name="H5页面投放">
+					<div class="banner">
+						<div class="tools" data-banner-name="H5页面投放"><span class="label label-success js-show-config"><s class="icon-plus"></s>添加</span></div>
+						<strong class="name">H5页面投放</strong>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 默认弹窗 -->
+<div class="modal modal-lg hide" id="modal-defult">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+					<div class="controls">
+						<span class="up-photo">
+							<input type="hidden" id="home-hidden" name="pic" value="" data-toast="广告图"/>
+							<div class="up-pic" id="home-pic">
+								<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+							</div>
+							<div class="up-btn" data-id="home"><a href="javascript:;" id="home" class="btn">选择图片</a></div>
+						</span>
+					</div>
+					<label class="control-label">落地类型：</label> <div class="controls"> <select class="span3" name="linkType"><option value="">请选择</option> <option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+					<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<!-- H5投放配置 -->
+<div class="modal modal-lg hide" id="modal-type-23">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">落地类型：</label> <div class="controls"> <select class="span3" name="linkType"><option value="3">H5链接</option></select> </div>
+					<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<!-- 吊顶栏 有ceilMore-->
+<div class="modal modal-lg hide" id="modal-type-19">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>吊顶栏</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label> 
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic19-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic19-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic19"><a href="javascript:;" id="pic19" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span8" name="linkType"> <option value="">请选择</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span8" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-ceilMore">
+							<label class="control-label">最后一张图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="more-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="more-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="more"><a href="javascript:;" id="more" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span8" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span8" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">商品ID：</label> <div class="controls"><textarea class="span3" name="styleNumIds" data-toast="商品ID" maxlength="" placeholder="请输入商品ID，以“,”分隔"></textarea></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<!-- 商品楼层/商品列表 -->
+<div class="modal modal-lg hide" id="modal-type-21">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>横排商品展示</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">文字横幅：<p class="js-pic-size">-</p></label>
+					<div class="controls">
+						<span class="up-photo">
+							<input type="hidden" id="pic21-hidden" name="pic" value="" data-toast="广告图"/>
+							<div class="up-pic" id="pic21-pic">
+								<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+							</div>
+							<div class="up-btn" data-id="pic21"><a href="javascript:;" id="pic21" class="btn">选择图片</a></div>
+						</span>
+					</div>
+					<label class="control-label">落地类型：</label> <div class="controls"> <select class="span3" name="linkType"><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+					<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">商品ID：</label> <div class="controls"><textarea class="span3" name="styleNumIds" data-toast="商品ID" maxlength="" placeholder="请输入商品ID，以“,”分隔"></textarea></div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<!-- 横排商品展示 商品Ids-->
+<div class="modal modal-lg hide" id="modal-type-24">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>横排商品展示</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">商品ID：</label> <div class="controls"><textarea class="span3" name="styleNumIds" data-toast="商品ID" maxlength="" placeholder="请输入商品ID，以“,”分隔"></textarea></div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">最后一张图：<p class="js-pic-size">-</p></label>
+					<div class="controls">
+						<span class="up-photo">
+							<input type="hidden" id="pic24-hidden" name="pic" value="" data-toast="广告图"/>
+							<div class="up-pic" id="pic24-pic">
+								<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+							</div>
+							<div class="up-btn" data-id="pic24"><a href="javascript:;" id="pic24" class="btn">选择图片</a></div>
+						</span>
+					</div>
+					<label class="control-label">落地类型：</label> <div class="controls"> <select class="span3" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+					<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<!-- 横排广告展示 多个落地类型配置-->
+<div class="modal modal-lg hide" id="modal-type-20">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">广告名称：</label>
+					<div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div>
+				</div>
+				<div class="control-group js-ceil-more">
+					<label class="control-label">最后一张广告图：<p class="js-pic-size">-</p></label>
+					<div class="controls">
+						<span class="up-photo">
+							<input type="hidden" id="pic20-11-hidden" name="pic" value="" data-toast="广告图"/>
+							<div class="up-pic" id="pic20-11-pic">
+								<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+							</div>
+							<div class="up-btn" data-id="pic20-11"><a href="javascript:;" id="pic20-11" class="btn">选择图片</a></div>
+						</span>
+					</div>
+					<label class="control-label">落地类型：</label> <div class="controls"> <select class="span3" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+					<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div>
+				</div>
+				
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-0-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-0-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-0"><a href="javascript:;" id="pic20-0" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-1-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-1-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-1"><a href="javascript:;" id="pic20-1" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-2-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-2-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-2"><a href="javascript:;" id="pic20-2" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-3-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-3-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-3"><a href="javascript:;" id="pic20-3" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-4-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-4-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-4"><a href="javascript:;" id="pic20-4" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-5-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-5-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-5"><a href="javascript:;" id="pic20-5" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-6-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-6-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-6"><a href="javascript:;" id="pic20-6" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-7-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-7-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-7"><a href="javascript:;" id="pic20-7" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row-fluid">
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-9-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-9-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-9"><a href="javascript:;" id="pic20-9" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+					<div class="span6">
+						<div class="control-group js-horizonAds">
+							<label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+							<div class="controls">
+								<span class="up-photo">
+									<input type="hidden" id="pic20-10-hidden" name="pic" value="" data-toast="广告图"/>
+									<div class="up-pic" id="pic20-10-pic">
+										<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+									</div>
+									<div class="up-btn" data-id="pic20-10"><a href="javascript:;" id="pic20-10" class="btn">选择图片</a></div>
+								</span>
+							</div>
+							<label class="control-label">落地类型：</label> <div class="controls"> <select class="span10" name="linkType"> <option value="">不显示</option><option value="1">无</option> <option value="2">商品ID</option> <option value="3">H5链接</option> <option value="6">众筹</option> <option value="7">类目主页</option> <option value="8">品牌商品列表</option> <option value="9">三级类目商品列表</option> </select> </div>
+							<label class="control-label">落地页：</label> <div class="controls"><input type="text" class="span10" name="linkTo" data-toast="落地页" maxlength="255"></div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">开始时间：</label> <div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /> </div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">结束时间：</label> <div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /> </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-have-save" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/yy/js/home-config.js"></script>
+<script type="text/javascript">
+	var VM = {
+		imgurl: "$!imgpath",
+		moduleType:1,
+		navId:'$!{request.getParameter("bannerId")}',
+		beginDate: '$!{request.getParameter("beginDate")}',
+		endDate:'$!{request.getParameter("endDate")}',
+		adsData:'$!{data}',
+	};
+	VM.adsData ? VM.adsData = JSON.parse(VM.adsData).cols : VM.adsData = [];
+	!VM.beginDate && (VM.beginDate = new Date(+new Date() - 24*60*60*1000).format('yyyy-MM-dd'));
+	!VM.endDate && (VM.endDate = new Date(+new Date() + 24*60*60*1000).format('yyyy-MM-dd'));
+	HOME_CONFIG.init(VM);
+</script>

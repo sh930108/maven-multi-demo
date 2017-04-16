@@ -1,0 +1,300 @@
+##话题列表
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+#set($queryTopicList="$!{request.getContextPath()}/mmq/topic/queryTopicList.do")
+#set($sortType = $request.getParameter("sortType"))   ##排序方式 1 阅读量 2 点赞数 3 评论数 4 置顶 5 频道ID
+#set($sort = $request.getParameter("sort"))     ##0 升序 1 降序
+#set($status=$request.getParameter('status'))   ##0未审核(被举报),1已审核,2审核不通过,3被过滤
+#set($topicType=$request.getParameter('topicType'))  ##话题类型，1为运营话题 0 普通话题
+#if(!${status})#set($status=1)#end
+#if(!${topicType})#set($topicType=1)#end
+#if(!${sort})#set($sort=1)#end
+<style>
+    .mt1x{margin-top: 10px;}
+    .mr1x{margin-right: 10px;}
+    .mb1x{margin-bottom: 10px;}
+    .ml1x{margin-left: 10px;}
+    .p0x{padding: 0;;}
+    .bd0{border: 0;}
+    .up-load-img:empty{display:none;}
+    .table th, .table td{padding: 10px 2px}
+    .table td .desc,.table td .title{display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp:1;-webkit-box-orient: vertical;word-break: break-word;}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 208, "cmenu": 211});
+</script>
+<div id="content-header">
+    <h1>妈妈圈 | 话题列表</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"> <i class="icon-align-justify"></i> </span>
+                <h5>话题列表</h5>
+            </div>
+            <div class="widget-content p0x">
+                <form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="">
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div class="control-group">
+                                <label class="control-label">归属频道名称：</label>
+
+                                <div class="controls">
+                                    <select class="span12" name="channelId">
+                                         <option value=""> 全部频道</option>
+                                        <option value="0" #if(0 == ${request.getParameter("channelId")}) selected #end> 无</option>
+                                    	 #foreach($channel in $channelList)
+                                        	<option value="$!{channel.channelId}" #if($!{channel.channelId} == ${request.getParameter("channelId")}) selected #end> $!{channel.name}</option>
+                                         #end
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span4">
+                            <div class="control-group">
+                                <label class="control-label">话题内容：</label>
+
+                                <div class="controls">
+                                    <input type="text" class="" name="content" maxlength="" value='$!{request.getParameter("content")}' placeholder="请输入话题关键字">
+                                </div>
+                            </div>
+                        </div>
+                        #if(${topicType}==0)
+                         <div class="span4">
+                            <div class="control-group">
+                                <label class="control-label">作者昵称：</label>
+                                <div class="controls">
+                                    <input type="text" class="" name="nickName" maxlength="" value='$!{request.getParameter("nickName")}' placeholder="请输入昵称关键字">
+                                </div>
+                            </div>
+                        </div>
+                       #end
+                    </div>
+
+                    <div class="row-fluid">
+                        <div class="form-actions">
+                            <input type="hidden" name="topicType" value="${topicType}">
+                            <input type="hidden" name="status" value="${status}">
+                            ##排序类型
+                            <input type="hidden" name="sortType" id="sortType" >
+                            <input type="hidden" name="sort" id="sort" value="1">
+                            <button class="btn btn-primary" type="submit">筛选</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="widget-content p0x">
+                <div class="widget-box widget-tabs-box bd0">
+
+                    <div class="widget-content">
+                        <div class="widget-box widget-tabs-box">
+                            <!-- 选项卡 -->
+                            <ul class="nav nav-tabs">
+                                <li#if(${topicType}==1) class="active"#end><a href="${queryTopicList}?topicType=1">运营话题</a></li>
+                                <li#if(${topicType}==0) class="active"#end><a href="${queryTopicList}?topicType=0">用户话题</a></li>
+                            </ul>
+
+                            <div class="widget-content tab-content">
+                                #if(${topicType}==0)
+                                <!-- 选项卡 -->
+                                <ul class="nav nav-tabs">
+                                    <li#if(${status}==1) class="active"#end><a href="${queryTopicList}?topicType=0&status=1">正常话题</a></li>
+                                    <li#if(${status}==0) class="active"#end><a href="${queryTopicList}?topicType=0&status=0">被举报</a></li>
+                                    <li#if(${status}==3) class="active"#end><a href="${queryTopicList}?topicType=0&status=3">被过滤</a></li>
+                                    <li#if(${status}==2) class="active"#end><a href="${queryTopicList}?topicType=0&status=2">未通过</a></li>
+                                </ul>
+                                #end
+
+                                <div class="widget-content tab-content">
+                                    <div class="mb1x">
+                                        #if(${topicType}==1)
+                                            <button class="btn btn-success js-add" type="button">添加</button>
+                                            <button class="btn btn-danger js-del-batch" type="button">批量删除</button>
+                                        #end
+                                        #if(${status}==3)
+                                            <button class="btn btn-success js-allow" type="button">审核通过</button>
+                                        #end
+                                        #if(${status}==0)
+                                            <button class="btn btn-success js-refuse" type="button">审核不通过</button>
+                                        #end
+                                        #if(${status}!=1)
+                                            <button class="btn btn-danger js-del-batch" type="button">批量删除</button>
+                                        #end
+                                    </div>
+                                    <div class="tab-pane active">
+                                        <table class="table table-hover table-text-center topic-list">
+                                            <tr>
+                                                <th>批量操作</th>
+                                                <th>话题id</th>
+                                                <th>话题内容</th>
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="5">归属频道<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                <th>作者</th>
+                                            ##排序方式 1 阅读量 2 点赞数 3 评论数 4 置顶 5 频道ID 6 被举报次数 7推荐
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="1">阅读量<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="2">点赞数<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="3">评论数<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                #if(${status}==0)
+                                                    <th><a href="javascript:;" class="js-sort" data-sort-type="6">被举报次数<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                #end
+                                                <th>创建时间</th>
+                                                #if(${topicType}==1 || (${topicType}==0 && ${status}==1))
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="4">设为置顶<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                <th><a href="javascript:;" class="js-sort" data-sort-type="7">设置推荐<span>#if($sort==0)↑#else↓#end</span></a></th>
+                                                #end
+                                                <th>操作</th>
+                                            </tr>
+                                            #foreach($topic in $result)
+                                                <tr data-id="$!{topic.topicId}">
+                                                    <td>
+                                                        <input type="checkbox" name="" >
+                                                    </td>
+                                                    <td>$!{topic.topicId}</td>
+                                                    <td width="20%"><div class="desc" title="$!{topic.firstTopicComment}">$!{topic.firstTopicComment}</div></td>
+                                                    <td>#if(!$!{topic.channelName})无#else$!{topic.channelName}#end</td>
+                                                    <td>$!{topic.author}</td>
+                                                    <td>#converCount($!{topic.readAmount},10000)</td>
+                                                    <td>#converCount($!{topic.likeAmount},10000)</td>
+                                                    <td>#converCount($!{topic.commentAmount},10000)</td>
+                                                    #if(${status}==0)
+                                                        <td>$!{topic.complainNum}</td>
+                                                    #end
+                                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{topic.createTime})</td>
+                                                    #if(${topicType}==1 || (${topicType}==0 && ${status}==1))
+                                                        <td>
+                                                            #if($!{topic.hot}==1)
+                                                                <button class="btn btn-mini btn-warning js-cancel-top">取消置顶</button>
+                                                            #else
+                                                                <button class="btn btn-mini btn-success js-set-top">置顶</button>
+                                                            #end
+                                                        </td>
+                                                        <td>
+                                                            #if($!{topic.recommend}==1)
+                                                                <button class="btn btn-mini btn-warning js-cancel-recommend">取消推荐</button>
+                                                            #else
+                                                                #if($!{topic.channelId}&&$!{topic.channelId}!=0)
+                                                                <button class="btn btn-mini btn-success js-set-recommend">推荐</button>
+                                                                #else
+                                                                <button class="btn btn-mini disabled">推荐</button>
+                                                                #end
+                                                            #end
+                                                        </td>
+                                                    #end
+                                                    <td>
+                                                        <a class="btn btn-mini btn-success" href="$!{request.getContextPath()}/mmq/comment/queryTopicDetail.do?topicId=$!{topic.topicId}">查看</a>
+                                                        #if(${topicType}==1)<button type="button" class="btn btn-mini btn-primary js-edit">编辑</button>#end
+                                                        #if(${topicType}==1 || (${topicType}==0 && ${status}!=1))<button type="button" class="btn btn-mini btn-danger js-del">删除</button>#end
+                                                    </td>
+                                                </tr>
+                                            #end
+                                        </table>
+                                        #parse("pagination.vm")
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div aria-hidden="false" id="topicModal" class="modal hide modal-lg fade">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>添加话题</h3>
+    </div>
+    <form method="post" action="">
+        <div class="modal-body">
+            <div class="form-horizontal">
+                <div class="row-fluid">
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>话题描述：</label>
+                        <div class="controls">
+                            <input type="text" class="span10 topicTitle" name="topicTitle" maxlength="30" placeholder="最多30个汉字"></input>
+                            <span class="label label-info">(备注:APP客户端通知推送内容)</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>选择频道：</label>
+                        <div class="controls">
+                            <select class="span4 channelId" name="channelId">
+                                <option value=""> 全部频道</option>
+                                <option value="0"> 无</option>
+                                #foreach($channel in $channelList)
+                                    <option value="$!{channel.channelId}"> $!{channel.name}</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">话题文字：</label>
+                        <div class="controls">
+                            <textarea class="span10 firstTopicComment unnecessary" rows="5" name="firstTopicComment" id="" maxlength="2000"></textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">话题图片：</label>
+                        <div class="controls">
+                            <ul class="thumbnails up-load-img main"></ul>
+                            <div class="option">
+                                <div>
+                                        <span class="up-photo">
+                                            <input name="stylePic" id="stylePic-hidden" type="hidden" value=""/>
+                                            <div class="up-btn mult-up-btn" data-id="stylePic">
+                                                <a href="javascript:;" id="stylePic" class="btn">上传图片</a>
+                                            </div>
+                                        </span>
+                                </div>
+                                <div><span class="label label-info">(最多可上传18张图片)</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>是否置顶:</label>
+                        <div class="controls clearfix">
+                            <label class="fl mr1x">
+                                <input class="" type="radio" name="hot" value="1"/>是
+                            </label>
+                            <label class="fl mr1x">
+                                <input class="" type="radio" name="hot" value="0" checked/>否
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>是否推送:</label>
+                        <div class="controls clearfix">
+                            <label class="fl mr1x">
+                                <input class="" type="radio" name="topicPush" value="1"/>是
+                            </label>
+                            <label class="fl mr1x">
+                                <input class="" type="radio" name="topicPush" value="0" checked/>否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success submit js-modal-submit" type="button">确定</button>
+            <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script>
+    var VM = {
+        "rootPath": '$!{request.getContextPath()}',
+        "goodsImagePath": '$!{goodsImagePath}',
+        "imgpath": '$!{imgpath}',
+        "topicImagePath": '$!{topicImagePath}',
+        "sort": $!{sort},
+        "topicType": $!{topicType},
+    }
+</script>
+<script src="http://s.mamhao.cn/admin/yy/js/topic-list.js"></script>

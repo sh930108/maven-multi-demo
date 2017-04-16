@@ -1,0 +1,196 @@
+##运费配置列表
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 117, "cmenu": 194});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 退货运费配置</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>列表</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/V1/gb/mailprice/list.do">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">发货省：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="deliverPrvName" value="$!{mailPrice.deliverPrvName}" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">收货省：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="receiptPrvName" value="$!{mailPrice.receiptPrvName}" >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit" id="next">筛选</button>
+                            <button class="btn btn-success" type="reset">重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-content">
+                    <table class="table table-hover with-check table-text-center">
+                        <thead>
+                        <tr>
+                            <th>发货省</th>
+                            <th>收货省</th>
+                            <th>大件价格</th>
+                            <th>小件价格</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            #foreach($data in ${list})
+                            <tr>
+                                <td>$!data.deliverPrvName</td>
+                                <td>$!data.receiptPrvName</td>
+                                <td>#formatAmount($!data.bigPrice)</td>
+                                <td>#formatAmount($!data.smallPrice)</td>
+                                <td>
+                                    <a class="btn btn-danger btn-mini" href="javascript:void(0);" onclick="javascript:getMailPrice('$!data.id');">修改</a>
+                                </td>
+                            </tr>
+                            #end
+                        </tbody>
+                    </table>
+                    #parse("/pagination.vm")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form id="msg-form" class="form-horizontal model">
+            <input type="hidden" name="id"/>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>发货省：</label>
+                <div class="controls">
+                    <input type="text" name="deliverPrvName" value="$!{deliverPrvName}" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>收货省：</label>
+                <div class="controls">
+                    <input type="text" name="receiptPrvName" value="$!{receiptPrvName}" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>大件价格：</label>
+                <div class="controls">
+                    <input type="text" name="bigPrice" value="$!{bigPrice}">(单位分)
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>小件价格：</label>
+                <div class="controls">
+                    <input type="text" name="smallPrice" value="$!{smallPrice}">(单位分)
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="javascript:save();">确定</button>
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function getMailPrice(id){
+        if(isForm.isTrim(id)){
+            Toast.show("输入参数有误");
+            return false;
+        }
+
+        $.ajax({
+            url: '$!{request.getContextPath()}/V1/gb/mailprice/get.do',
+            data: {id: id},
+            type: 'post',
+            cache: false,
+            success: function (data) {
+                $(".model input[name='id']").val(data.id);
+                $(".model input[name='deliverPrvName']").val(data.deliverPrvName);
+                $(".model input[name='receiptPrvName']").val(data.receiptPrvName);
+                $(".model input[name='bigPrice']").val(data.bigPrice);
+                $(".model input[name='smallPrice']").val(data.smallPrice);
+                var self = $(".js-tmp-modal");
+                self.find(".modal-header h3").text("修改退货运费配置");
+                self.modal("show");
+            },
+            error: function () {
+                Toast.show("系统异常！");
+            }
+        });
+    }
+
+    function save(){
+        /*表单验证*/
+        var _form = $("#msg-form"),
+                id = _form.find("[name='id']"),
+                bigPrice = _form.find("[name='bigPrice']"),
+                smallPrice = _form.find("[name='smallPrice']");
+        if(isForm.isTrim(id.val())){
+            Toast.show("系统异常！");
+            return false;
+        }
+        if(isForm.isTrim(bigPrice.val())){
+            showEmptyTips(bigPrice);
+            return false;
+        }
+        if(isForm.isTrim(smallPrice.val())){
+            showEmptyTips(smallPrice);
+            return false;
+        }
+        if(!isForm.isNUM(bigPrice.val())){
+            showEmptyTips(bigPrice);
+            return false;
+        }
+        if(!isForm.isNUM(smallPrice.val())){
+            showEmptyTips(smallPrice);
+            return false;
+        }
+        /*ajax提交数据*/
+        $.ajax({
+            url: '$!{request.getContextPath()}/V1/gb/mailprice/save.do',
+            type: 'post',
+            data: $("#msg-form").serialize(),
+            success: function (data) {
+                if (data == "success") {
+                    Toast.show({
+                        template: "修改成功",
+                        second: 1000,
+                        callback: function () {
+                            window.location.reload();
+                        }
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Toast.show("[服务器异常]" + XMLHttpRequest.status);
+            }
+        });
+    }
+
+</script>

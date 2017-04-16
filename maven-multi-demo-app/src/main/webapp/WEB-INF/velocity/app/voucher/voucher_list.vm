@@ -1,0 +1,98 @@
+#set ($layout ="/admin/layout/modal.vm")
+#parse("/admin/com/common.vm")
+<table class="table table-hover table-text-center">
+    <tbody >
+        <tr>
+            <td>
+                <label class="help-inline">发行量：<span class="badge badge-info">$circulation</span> #if($type == 0 or $type == 3)张#else份#end</label>
+                <label class="help-inline">已领取：<span class="badge badge-success">$receivedCnt</span> #if($type == 0 or $type == 3)张#else份#end</label>
+                #if($type == 0 or $type == 3)
+                    <label class="help-inline">已使用：<span class="badge badge-important">$usedCnt</span> 张</label>
+                #else
+                    <label class="help-inline">总面额：<span class="badge badge-important">#formatAmount($totalDenomination)</span>元</label>
+                #end
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<style type="text/css">
+    .display-type > div{ margin: 5px 0 0; text-align: center; }
+    .display-type .input-box{ position: relative; display: inline-block;}
+    .display-type .input-box input{ height: 24px; }
+    .display-type .input-box:before { content:''; position: absolute; width: 100%; height: 100%; left: 0; top: 0; cursor: pointer; z-index: 1; }
+</style>
+<table class="table table-hover table-text-center">
+    <thead>
+    <tr>
+        <th width="180px">面额</th>
+        <th width="280px">使用条件</th>
+        <th width="280px">有效期</th>
+        #if($templateType == 0)
+        <th width="280px">操作</th>
+        #end
+##        #if($type == 1)<th width="180px">已领取/发行量</th>#end
+    </tr>
+    </thead>
+    <tbody >
+    #foreach($data in $list)
+    #set($index = $loopCounter + 1)
+    <tr>
+        <td>#formatAmount($data.denominationAmount) 元</td>
+        <td>
+            #if($data.discountType == 0)
+                消费金额满 #formatAmount($data.consumptionAmount) 元
+            #else
+                不限（代金券）
+            #end
+        </td>
+        <td>
+            #if($data.effectiveType == 0)
+                $!date.format('yyyy-MM-dd',$data.effectiveStartTime)<br />$!date.format('yyyy-MM-dd',$data.effectiveEndTime)
+            #else
+                领取 $!data.effectiveDelayDays 天内有效
+            #end
+        </td>
+        #if($templateType == 0)
+            <td class="display-type" data-index="$data.indexOfGroup">
+                <div><div class="input-box" data-type="detail"><input type="checkbox" #if( $data.displayInDetail ) checked #end name="displayInDetail">商品详情显示</div></div>
+                <div><div class="input-box" data-type="list"><input type="checkbox" #if( $data.displayInList ) checked #end name="displayInList">搜索列表显示</div></div></td>
+        #end
+##        #if($type == 1)<td>$!{data.receivedCnt}/$!{data.circulation}</td>#end
+    </tr>
+    #end
+    </tbody>
+</table>
+<script type="text/javascript">
+    var VM = {
+        tid: "$!{request.getParameter('tid')}"
+    }
+</script>
+<script type="text/javascript">
+    var display_api = {
+        detail:'/app/coupon/display/detail/change.do',
+        list:'/app/coupon/display/list/change.do'
+    }
+    $('.display-type div.input-box').on('click', function() {
+        var _this = $(this);
+        var _cb = _this.find('input[type=checkbox]');
+        var isCed = _cb.attr('checked');
+        var type = _this.data('type');
+        var api = display_api[type];
+
+        var tid = VM.tid;
+        var index = _this.parents('td').data('index');
+        var params = {
+                tid: tid,
+                indexOfGroup:index
+        };
+        $.get( root + api, params, function(res){
+            Toast.show(res.msg);
+            // console.log(isCed)
+            if(res.success){
+                if (!isCed) {_cb.attr('checked', true);}
+                else {_cb.attr('checked', false);}
+            }
+        });
+    });
+</script>

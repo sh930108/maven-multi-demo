@@ -1,0 +1,411 @@
+##投放系统主页面
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 184});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 投放系统 #if($data.role == 1)| <a href="$!{request.getContextPath()}/homeBanner/getBannerMgr.do" class="btn btn-success">管理广告资源位</a>#end</h1>
+</div>
+<hr>
+<div class="MA-have-all">
+  	<!-- 日历 -->
+    <div class="MA-have-hader">
+    	<a href="javascript:;" class="arrow js-have-prev"></a>
+    	<h2 class="js-have-title">-</h2>
+      <a href="javascript:;" class="arrow arrow-r js-have-next"></a>
+    </div>
+    <!-- 数据表 -->
+    <div class="MA-have-content">
+    	<table class="table">
+      	<thead>
+        	<tr class="js-have-header">
+          	<td width="200"></td>
+          	<td>-</td>
+          	<td>-</td>
+          	<td>-</td>
+          	<td>-</td>
+          	<td>-</td>
+          	<td>-</td>
+          	<td>-</td>
+          </tr>
+        </thead>
+        <tbody id="js-have-table">
+        	<!-- <tr>
+          	<th>----模版----</th>
+            <td><a href="javascript:;" class="label">已过期</a></td>
+            <td><a href="javascript:;" class="label label-info">已上线</a></td>
+            <td><a href="javascript:;" class="label label-success">已审核</a></td>
+            <td><a href="javascript:;" class="label label-important">待审核</a></td>
+            <td><a href="javascript:;" class="label label-warning">已拒绝</a></td>
+            <td><a href="javascript:;"><s class="icon-plus"></s></a></td>
+            <td>-</td>
+          </tr> -->
+          #foreach($rows in ${data.rows})
+          <tr>
+          	<th>$rows.bannerName</th>
+            #foreach($leafs in $rows.bannerLeafs)
+            <td title="$!{leafs.name}" data-json='{"title": "$!{rows.bannerName}", "weight": "$!{rows.weight}", "status": "$!{leafs.status}", "name": "$!{leafs.name}", "bannerId": "$!{rows.bannerId}", "type": "$!{rows.bannerType}", "id": "$!{leafs.id}", "role": "$!{leafs.roleType}", "cellDate": "$!{leafs.cellDate}", "isDefault": "$!{rows.hasDefault}"}'> 
+            #if($leafs.status == 1 && $leafs.roleType == 2)
+            	<a href="javascript:;"><s class="icon-plus"></s></a>
+            #elseif($leafs.status == 2)
+            	<a href="javascript:;" class="label label-important">待审核</a>
+            #elseif($leafs.status == 3)
+            	<a href="javascript:;" class="label label-success">已审核</a>
+            #elseif($leafs.status == 4)
+            	<a href="javascript:;" class="label label-warning">已拒绝</a>
+            #elseif($leafs.status == 5)
+            	<a href="javascript:;" class="label label-info">已上线</a>
+            #elseif($leafs.status == 6)
+            	<a href="javascript:;" class="label">已下线</a>
+            #elseif($leafs.status == 7)
+            	<a href="javascript:;" class="label">已过期</a>
+            #end
+            </td>
+            #end
+          </tr>
+          #end
+        </tbody>
+      </table>      
+    </div>
+  </div>
+
+
+
+<!-- 首页banner、闪屏广告、ICON广告区域 -->
+<div class="modal modal-lg hide" id="js-have-home">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+  <div class="modal-body">
+    <div class="form-horizontal">
+    	<div class="form-arr-item">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="home-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="home-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="home"><a href="javascript:;" id="home" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+        <div class="control-group js-oldPic">
+	        <label class="control-label">1.2版本广告图：<p class="js-pic-size" data-size="750x280"></p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="oldHome-hidden" name="oldPic" value="" data-toast="1.2版本广告图"/>
+	            <div class="up-pic" id="oldHome-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="oldHome"><a href="javascript:;" id="oldHome" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+	      <div class="control-group"><label class="control-label">开始时间：</label><div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /></div></div>
+	      <div class="control-group"><label class="control-label">结束时间：</label><div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="status-2">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveHome();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-3">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveHome();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-4">
+    	<input type="text" class="js-under-content span4" placeholder="拒绝理由，20个内" maxlength="20" />
+    	<button class="btn btn-danger js-have-under">拒绝</button>
+      <button class="btn btn-success js-have-by">审核通过</button>
+    </div>
+    <div class="status-5">
+    	<button class="btn btn-danger js-have-under">撤销</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+    <div class="status-6">
+    	<button class="btn btn-danger js-have-under">下线</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 钻展信息、小蛮腰坑位 -->
+<div class="modal modal-lg hide MA-have-diamond" id="js-have-diamond">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+  <div class="modal-body">
+    <div class="form-horizontal">
+    	<div class="form-arr-item">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="diamond-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="diamond-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="diamond"><a href="javascript:;" id="diamond" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+	      <div class="control-group"><label class="control-label">开始时间：</label><div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /></div></div>
+	      <div class="control-group"><label class="control-label">结束时间：</label><div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /></div></div>
+	      <div class="control-group"><label class="control-label">人群定向：</label><div class="controls">
+	      	<div><label class="notepad-inline"><input name="isAges" type="radio" value="-2" checked="checked" />全部可见</label></div>
+	        <dl><dt><label class="notepad-inline"><input type="radio" name="isAges" value="1" />以下部分可见</label></dt><dd class="row-fluid js-ages-list none">
+	        	<label class="notepad-inline span3"><input type="checkbox" value="-1-0" /> 孕妈咪</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="0-3" /> 0～3月</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="3-6" /> 3～6月</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="6-12" /> 6～12月</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="12-36" /> 1～3岁</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="36-84" /> 3～7岁</label>
+	          <label class="notepad-inline span3"><input type="checkbox" value="84-" /> 7岁以上</label>
+	        </dd></dl>
+	      </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+  	<div class="status-2">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveDiamond();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-3">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveDiamond();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-4">
+    	<input type="text" class="js-under-content span4" placeholder="拒绝理由，20个内" maxlength="20" />
+    	<button class="btn btn-danger js-have-under">拒绝</button>
+      <button class="btn btn-success js-have-by">审核通过</button>
+    </div>
+    <div class="status-5">
+    	<button class="btn btn-danger js-have-under">撤销</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+    <div class="status-6">
+    	<button class="btn btn-danger js-have-under">下线</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 类目广告 -->
+<div class="modal modal-lg hide MA-have-category" id="js-have-category">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+  <div class="modal-body">
+    <div class="form-horizontal">
+    	<div class="form-arr-item">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="category-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="category-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="category"><a href="javascript:;" id="category" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">主题文案：</label><div class="controls"><input type="text" class="span3" name="title" data-toast="主题文案" maxlength="4" placeholder="最多不超过4字"></div></div>
+	      <div class="control-group"><label class="control-label">副标题文案：</label><div class="controls"><input type="text" class="span3" name="subTitle" data-toast="副标题文案" maxlength="8" placeholder="最多不超过8字"></div></div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+	      <div class="control-group"><label class="control-label">开始时间：</label><div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /></div></div>
+	      <div class="control-group"><label class="control-label">结束时间：</label><div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /></div></div>
+      </div>
+      <div class="isDefault js-is-default"><span class="btn btn-primary" >编辑默认广告 <span class="caret"></span></span></div>
+      <div class="form-arr-item none js-default-block">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：</label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="category-default-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="category-default-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="category-default"><a href="javascript:;" id="category-default" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">主题文案：</label><div class="controls"><input type="text" class="span3" name="title" data-toast="主题文案" maxlength="4" placeholder="最多不超过4字"></div></div>
+	      <div class="control-group"><label class="control-label">副标题文案：</label><div class="controls"><input type="text" class="span3" name="subTitle" data-toast="副标题文案" maxlength="8" placeholder="最多不超过8字"></div></div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+      </div>
+    </div>
+  </div>
+	<div class="modal-footer">
+  	<div class="status-2">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveCategory();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-3">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveCategory();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-4">
+    	<input type="text" class="js-under-content span4" placeholder="拒绝理由，20个内" maxlength="20" />
+    	<button class="btn btn-danger js-have-under">拒绝</button>
+      <button class="btn btn-success js-have-by">审核通过</button>
+    </div>
+    <div class="status-5">
+    	<button class="btn btn-danger js-have-under">撤销</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+    <div class="status-6">
+    	<button class="btn btn-danger js-have-under">下线</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+  </div>
+</div>
+
+<!-- 黄金坑位 -->
+<div class="modal modal-lg hide MA-have-gold" id="js-have-gold">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>-</h3></div>
+  <div class="modal-body">
+    <div class="form-horizontal">
+    	<div class="form-arr-item">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：<p class="js-pic-size">-</p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="gold-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="gold-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="gold"><a href="javascript:;" id="gold" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+        <div class="control-group js-oldPic" hidden>
+	        <label class="control-label">1.2版本广告图：<p class="js-pic-size" data-size="594x462"></p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="oldGold-hidden" name="oldPic" value="" data-toast="1.2版本广告图"/>
+	            <div class="up-pic" id="oldGold-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="oldGold"><a href="javascript:;" id="oldGold" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+        <div class="control-group js-monthlyBuyPic" hidden>
+	        <label class="control-label">会员购页面图片：<p class="js-pic-size" data-size="344x200"></p></label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="monthlyBuyGold-hidden" name="monthlyBuyPic" value="" data-toast="会员购页面图片"/>
+	            <div class="up-pic" id="monthlyBuyGold-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="monthlyBuyGold"><a href="javascript:;" id="monthlyBuyGold" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">主题文案：</label><div class="controls"><input type="text" class="span3" name="title" data-toast="主题文案" maxlength="4" placeholder="最多不超过4字"></div></div>
+	      <div class="control-group"><label class="control-label">副标题文案：</label><div class="controls"><input type="text" class="span3" name="subTitle" data-toast="副标题文案" maxlength="8" placeholder="最多不超过8字"></div></div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="5">妈豆商品</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+        <div class="js-beans-block none">
+	        <div class="control-group"><label class="control-label">限购：</label><div class="controls"><input type="text" class="span3" name="limitBuy" data-toast="限购" maxlength="10"></div></div>
+          <div class="beans-table">
+          	<table class="table table-text-center">
+            	<thead>
+              	<tr><th width="80">规格一</th><th width="80">规格一</th><th>单品编码</th><th>指导价</th><th>活动价</th><th>可用库存</th></tr>
+              </thead>
+              <tbody>
+              	<tr><td colspan="6">请填写妈豆商品ID</td></tr>
+              </tbody>
+            </table>
+          </div>
+	        <div class="control-group"><label class="control-label">倒计时(开抢时间)：</label><div class="controls"><input class="span3" type="text" name="buyBeginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'HH:mm:ss'})" data-toast="倒计时(开抢时间)" /></div></div>
+	        <div class="control-group"><label class="control-label">倒计时(结束时间)：</label><div class="controls"><input class="span3" type="text" name="buyEndTime" maxlength="25" onfocus="WdatePicker({dateFmt:'HH:mm:ss'})" data-toast="倒计时(结束时间)" /></div></div>
+        </div>
+	      <div class="control-group"><label class="control-label">开始时间：</label><div class="controls"><input class="span3" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="开始时间" /></div></div>
+	      <div class="control-group"><label class="control-label">结束时间：</label><div class="controls"><input class="span3" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" data-toast="结束时间" /></div></div>
+      </div>
+      <div class="isDefault js-is-default"><span class="btn btn-primary" >编辑默认广告 <span class="caret"></span></span></div>
+      <div class="form-arr-item none js-default-block">
+	      <div class="control-group"><label class="control-label">广告名称：</label><div class="controls"><input type="text" class="span3" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="广告名称"></div></div>
+	      <div class="control-group">
+	        <label class="control-label">广告图：</label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="gold-default-hidden" name="pic" value="" data-toast="广告图"/>
+	            <div class="up-pic" id="gold-default-pic">
+	               <img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+	            </div>
+	            <div class="up-btn" data-id="gold-default"><a href="javascript:;" id="gold-default" class="btn">选择图片</a></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label">主题文案：</label><div class="controls"><input type="text" class="span3" name="title" data-toast="主题文案" maxlength="4" placeholder="最多不超过4字"></div></div>
+	      <div class="control-group"><label class="control-label">副标题文案：</label><div class="controls"><input type="text" class="span3" name="subTitle" data-toast="副标题文案" maxlength="8" placeholder="最多不超过8字"></div></div>
+	      <div class="control-group"><label class="control-label">落地类型：</label><div class="controls"><select class="span3" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="6">众筹</option><option value="7">类目主页</option><option value="8">品牌商品列表</option><option value="9">三级类目商品列表</option></select></div></div>
+	      <div class="control-group"><label class="control-label">落地页：</label><div class="controls"><input type="text" class="span3" name="linkTo" data-toast="落地页" maxlength="255"></div></div>
+        <div class="js-beans-block none">
+	        <div class="control-group"><label class="control-label">限购：</label><div class="controls"><input type="text" class="span3" name="limitBuy" data-toast="限购" maxlength="10"></div></div>
+          <div class="beans-table">
+          	<table class="table table-text-center">
+            	<thead>
+              	<tr><th width="80">规格一</th><th width="80">规格一</th><th>单品编码</th><th>指导价</th><th>活动价</th><th>可用库存</th></tr>
+              </thead>
+              <tbody>
+              	<tr><td colspan="6">请填写妈豆商品ID</td></tr>
+              </tbody>
+            </table>
+          </div>
+	        <div class="control-group"><label class="control-label">倒计时(开抢时间)：</label><div class="controls"><input class="span3" type="text" name="buyBeginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'HH:mm:ss'})" data-toast="倒计时(开抢时间)" /></div></div>
+	        <div class="control-group"><label class="control-label">倒计时(结束时间)：</label><div class="controls"><input class="span3" type="text" name="buyEndTime" maxlength="25" onfocus="WdatePicker({dateFmt:'HH:mm:ss'})" data-toast="倒计时(结束时间)" /></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+	<div class="modal-footer">
+  	<div class="status-2">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveCategory();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-3">
+	  	<button class="btn btn-success js-have-save" onclick="MA.have.saveCategory();">完成</button>
+	    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>  
+    </div>
+    <div class="status-4">
+    	<input type="text" class="js-under-content span4" placeholder="拒绝理由，20个内" maxlength="20" />
+    	<button class="btn btn-danger js-have-under">拒绝</button>
+      <button class="btn btn-success js-have-by">审核通过</button>
+    </div>
+    <div class="status-5">
+    	<button class="btn btn-danger js-have-under">撤销</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+    <div class="status-6">
+    	<button class="btn btn-danger js-have-under">下线</button>
+      <button class="btn btn-success js-have-edit">修改</button>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/home-ad.js"></script>
+<script type="text/javascript">
+	MA.have.init({
+		today: "$!{data.currentDate}",
+		beginDate: "$!{request.getParameter('beginDate')}",
+		endDate:  "$!{request.getParameter('endDate')}",
+		imgurl: "$imgpath"
+	});
+</script>

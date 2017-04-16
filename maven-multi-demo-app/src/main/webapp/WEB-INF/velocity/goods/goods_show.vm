@@ -1,0 +1,291 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 27});
+</script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/kindeditor.js"></script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/lang/zh_CN.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+
+<div id="content-header">
+    <h1>编辑商品详情</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+
+		<div class="widget-box">
+			<div class="widget-title"> <span class="icon"> <i class="icon-arrow-right"></i> </span>
+				<h5>选择商品品类 > 编辑基本信息 > 编辑商品详情</h5>
+			</div>
+
+			<div class="widget-content">
+				<!-- <form class="form-horizontal " action="$!{request.getContextPath()}/gb/goods/saveGoodsDetailInfo.do" method="post" onsubmit="return submitForm();"> -->
+				<form class="form-horizontal " method="post" action="$!{request.getContextPath()}/gb/goods/saveGoodsDetailInfo.do" id="js-submit-form">
+					<input type="hidden" value="$goods.series" id="gtId" name="series"/>
+					<input type="hidden" value="$goods.styleNumId" id="gtNo" name="styleNumId"/>
+					##<input type="hidden" value="$!{goods.online}" name="online"/>
+					<div class="row-fluid">
+						<div class="control-group">
+							<label class="span2"><input type="radio" name="styleCheckStatus" value="0" #if($goods.styleCheckStatus==0) checked #end/>无质检担保</label>
+              <label class="span2"><input type="radio" name="styleCheckStatus" value="1" #if($goods.styleCheckStatus==1) checked #end />有质检担保</label>
+						</div>
+					</div>
+					<div id="styleCheckStatus-1">
+						<div id="showCheck" #if($goods.styleCheckStatus==0) style="display: none;" #end>
+
+						<div class="mt-20 alert alert-success"><strong>质检担保</strong><br>妈妈好对该商品提供的检测进行担保。</div>
+						<div class="control-group">
+							<label class="control-label">上传质检报告：</label>
+							<div class="controls">
+								<span class="up-photo">
+									<input name="files" id="stylePic-hidden" type="hidden" value=""/>
+									<div class="up-btn mult-up-btn" data-id="stylePic">
+										<a href="javascript:;" id="stylePic" class="btn">上传图片</a>
+									</div>
+								</span>
+								<ul class="thumbnails up-load-img">
+								#foreach($pic in $checkPics)
+									#if("$!pic"=="")
+									#else
+									<li>
+										<img src="$goodsImagePath/$!{goods.styleId}/$!pic">
+										<div class="actions">
+											<a class="js-remove" href="javascript:;" pic="$!pic">
+												<i class="icon-remove"></i>
+											</a>
+										</div>
+									</li>
+									#end
+								#end
+								</ul>
+							</div>
+						</div>
+                        </div>
+					</div>
+					<div class="mt-20 alert alert-success"><strong>好妈妈说</strong></div>
+					<br>
+					<div class="control-group">
+						<textarea class="span6" name="styleMomCare" id="styleMomCare" rows="5" style="width:800px;height:200px;" cols="1000">$!{goods.styleMomCare}</textarea>
+						<br><br>
+						<div style="display:none;" id="js-editor-textarea">
+							$!{goods.styleHtml}
+						</div>
+						<textarea id="editor" name="content" style="width:800px;height:500px;"></textarea>
+					</div>
+					<div class="form-actions">
+						<input type="hidden" id="ht" name="html"/>
+						<button class="btn btn-success js-submit-btn" type="button">发布审核</button>
+						<a href="javascript:;" class="btn btn-primary" onclick="preview(this);">预览</a>
+					</div>
+				</form>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+<script>
+    var series = $("input[name='series']").val();
+    var styleNumId = $("input[name='styleNumId']").val();
+    var editor;
+    var gtId = $('#gtNo').val();
+		// 先处理编辑器内容;
+		var editorIMG = $("#js-editor-textarea");
+		editorIMG.find("img").each(function(){
+			var thas = $(this);
+            if(thas.attr("alt") && thas.attr("alt").indexOf("http://") != -1){
+			    thas.attr("src", thas.attr("alt")).removeAttr("alt");
+            }
+		});
+		$("#editor").val(editorIMG.html());
+		// 启用编辑器;
+    KindEditor.ready(function (K) {
+        editor = K.create('textarea[name="content"]', {
+            uploadJson: '$!{request.getContextPath()}/gb/goods/request.do?gtId=' + gtId,
+            fileManagerJson: 'kindeditor/jsp/file_manager_json.jsp',
+            allowFileManager: true,
+            allowImageRemote: false,
+            afterBlur: function () {
+                this.sync();
+            },
+            afterCreate: function () {
+                var self = this;
+                K.ctrl(document, 13, function () {
+                    self.sync();
+                    document.forms['example'].submit();
+                });
+            }
+        });
+    });
+
+    function preview(obj) {
+        var checkStatus = $('input[name=styleCheckStatus]:checked').val();
+        editor.sync();
+        var htm = editor.html();
+        $('#ht').val(String(htm));
+        // 同步数据后可以直接取得textarea的value
+        //var html = editEditorImage(htm);
+        //$('#ht').val(String(html));
+
+
+        //console.log(String(html));
+        //return false;
+        //$('#ht').val(htm);
+        Matrix.JSON({
+            showLoad: true,
+            type: "post",
+            val: {gtId: $('#gtNo').val(), html: String(htm), momCare: $('#styleMomCare').val(), checkStatus: checkStatus},
+            url: root + "/gb/goods/saveGoodsDetailUrl.do",
+            fun: function () {
+                Mobile.show({
+                    title: "商品详情",
+                    href: "$!{request.getContextPath()}/gb/goods/previewGoodsInfo.do?tepId=" + styleNumId
+                });
+            }
+        });
+    }
+	
+	
+	
+    //文件上传  商品主图,可上传多张
+    $(".mult-up-btn").each(function () {
+        var thas = $(this);
+        thas.children().uploadify({
+            uploader: '$!{request.getContextPath()}/gb/goods/uploadGoodsCheckPic.do',
+            swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+            queueID: 'null', // 上传进度列表;
+            fileTypeDesc: "jpg",
+            fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            multi: true,
+            queueSizeLimit: 100,
+            uploadLimit: 100,
+            wmode: "transparent",
+            buttonText: '选择图片',
+            width: "100%",
+            height: "100%",
+            formData: {'gtId': styleNumId},
+            overrideEvents: ['onSelectError'],
+            onUploadStart: function (file, e) {
+                // 进行中;
+                //if ($(".thumbnails li").length == 100) {
+                  //  Toast.show("最多只能上传5张图片");
+                 //   thas.children().uploadify('cancel');
+               // } else {
+                    $('.thumbnails').append('<li data-index="' + file.index + '"></li>');
+               // }
+            },
+            onUploadSuccess: function (file, data, response) {
+                //上传完成时触发（每个文件触发一次）;
+                var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                if (data.success == 0) {
+                    Toast.show("质检图片已经有5张了，请删除以后再上传");
+                } else {
+                    var url = "$goodsImagePath/$!{goods.styleId}/" + data.fileName;
+                    var html = '<img alt="" src="' + url + '"><div class="actions"><a class="js-remove" href="javascript:;" pic="' + data.fileName + '"><i class="icon-remove"></i></a></div>';
+                    $("#" + id + "-hidden").val(data.fileName);
+                    $('.thumbnails li[data-index=' + file.index + ']').append(html);
+                }
+                //$("#" + id + "-hidden").val(data.fileName);
+            },
+            onSelectError: function (file, errorCode, errorMsg) {
+                if (errorCode == -100) {
+                    Toast.show("最多只能上传100张图片");
+                    return false;
+                } else if (errorCode == -110) {
+                    Toast.show("文件 [" + file.name + "] 大小超出系统限制的大小！");
+                    return false;
+                } else if (errorCode == -120) {
+                    Toast.show("文件 [" + file.name + "] 大小异常！");
+                    return false;
+                } else {
+                    Toast.show("文件 [" + file.name + "] 类型不正确！");
+                    return false;
+                }
+
+            }
+        });
+    });
+		
+		
+    function submitForm() {
+        editor.sync();
+        var htm = editor.html();
+				$('#ht').val(htm);
+				console.log(htm);
+				editEditorImage(htm);
+				return false;
+    }
+		
+		function editEditorImage(html){
+			var jsdiv = $(".js-editor-html");
+			if(!jsdiv.length){
+				$("body").append('<div class="js-editor-html" style="display:none;"></div>');
+				jsdiv = $(".js-editor-html");
+			}
+			jsdiv.html(html);
+			jsdiv.find("img").each(function(){
+				var thas = $(this);
+				thas.attr("alt", thas.attr("src")).attr("src", "http://s.mamhao.cn/common/images/placeholder-2.png");
+			});
+			return jsdiv.html();
+		}
+
+
+    function sleep(numberMillis) {
+        var now = new Date();
+        var exitTime = now.getTime() + numberMillis;
+        while (true) {
+            now = new Date();
+            if (now.getTime() > exitTime)
+                return;
+        }
+    }
+
+
+    $('input[name=styleCheckStatus]').click(function () {
+        var value = $('input[name=styleCheckStatus]:checked').val();
+        if (value == 1) {
+            $('#showCheck').slideDown();
+        } else {
+            $('#showCheck').slideUp();
+        }
+    });
+
+    // 删除图片
+    $(".thumbnails").delegate(".js-remove", "click", function (e) {
+        $.get("$!{request.getContextPath()}/gb/goods/updateGoodsCheckPic.do", {
+            'gtId': styleNumId,
+            'picName': $(this).attr("pic")
+        }, function (data) {
+            $(e.currentTarget.parentElement.parentElement).remove();
+            Toast.show("删除成功");
+        });
+    });
+	
+	//表单验证
+	$(".js-submit-btn").on("click", function () {
+        /*表单验证*/
+		editor.sync();
+      	var styleMomCare = $('#styleMomCare'), //好妈妈说
+		form = $("#js-submit-form"), ht = $('#ht'), htm = editor.html();
+		ht.val(String(htm));
+		
+		
+        if( isForm.isTrim(styleMomCare.val()) ){
+           Toast.show("好妈妈说不能为空");
+    	   styleMomCare.focus();
+           return false;
+        }
+    	
+    	if( isForm.isTrim(ht.val()) ){
+           Toast.show("图文详情不能为空");
+           return false;
+        }
+		
+		form.submit();
+  	});
+	
+	
+</script>

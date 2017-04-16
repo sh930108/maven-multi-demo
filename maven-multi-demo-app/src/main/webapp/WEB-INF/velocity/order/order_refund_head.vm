@@ -1,0 +1,278 @@
+<form id="orderForm" name="orderForm" method="get" class="form-horizontal form-horizontal-inline row-fluid">
+	<div class="row-fluid">
+  	<div class="span5">
+      <div class="control-group">
+        <label class="control-label">订单号：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="orderNo" value="$!{order.orderNo}">
+        </div>
+      </div>
+    </div>
+    <div class="span6">
+      <div class="control-group">
+        <label class="control-label">下单时间：</label>
+        <div class="controls">
+          <input id="beginTime" class="span3" type="text" name="beginTimeStr" value="$!date.format('yyyy-MM-dd HH:mm',$!order.beginTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+          <span class="notepad-inline">至</span>
+          <input id="endTime" class="span3" type="text" name="endTimeStr" value="$!date.format('yyyy-MM-dd HH:mm',$!order.endTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+          <a class="btn btn-primary" id="lately07" href="javascript:void(0);">最近7天</a>
+          <a class="btn btn-primary" id="lately30" href="javascript:void(0);">最近30天</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span5">
+      <div class="control-group">
+        <label class="control-label">收货人：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="consigneeName" value="$!{order.consigneeName}">
+        </div>
+      </div>
+    </div>
+    <div class="span5">
+      <div class="control-group">
+        <label class="control-label">收货人手机：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="consigneePhone" value="$!{order.consigneePhone}">
+        </div>
+      </div>
+    </div>
+  </div>
+	<div class="row-fluid">
+  	<div class="span3">
+      <div class="control-group">
+        <label class="control-label">退款状态：</label>
+        <div class="controls">
+          <select name="refundStatus" class="span10">
+            <option value="" #if ($order.refundStatus == "") selected #end>全部</option>
+            <option value="0" #if ($order.refundStatus == 0) selected #end>等待商家处理</option>
+            <option value="1" #if ($order.refundStatus == 1) selected #end>等待买家处理</option>
+            <option value="4" #if ($order.refundStatus == 4) selected #end>等待客服介入</option>
+            <option value="2" #if ($order.refundStatus == 2) selected #end>同意退款</option>
+            <option value="3" #if ($order.refundStatus == 3) selected #end>退款关闭</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="span3">
+      <div class="control-group">
+        <label class="control-label">物流方式：</label>
+        <div class="controls">
+          <select name="deliveryWay" class="span12">
+            <option value="" #if ($order.deliveryWay == "") selected #end>全部</option>
+            <option value="1" #if ($order.deliveryWay == 1) selected #end>门店配送</option>
+            <option value="2" #if ($order.deliveryWay == 2) selected #end>上门自提</option>
+            <option value="3" #if ($order.deliveryWay == 3) selected #end>快递配送</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="span3">
+      <div class="control-group">
+        <label class="control-label">付款方式：</label>
+        <div class="controls">
+          <select name="dealingType" class="span12">
+            <option value="" #if ($order.dealingType == "") selected #end>全部</option>
+            <option value="1" #if ($order.dealingType == 1) selected #end>线上支付</option>
+			<!--<option value="2" #if ($order.dealingType == 2) selected #end>验货支付</option>-->
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row-fluid">
+  	<div class="span5">
+        <div class="control-group">
+            <label class="control-label">仓储名称：</label>
+            <div class="controls">
+                <input type="text" class="span12" name="warehouseName" value="$!{order.warehouseName}">
+            </div>
+        </div>
+    </div>
+      <div class="span3">
+          <div class="control-group">
+              <label class="control-label">下单用户id：</label>
+              <div class="controls">
+                  <input type="text" class="span4" name="memberId" value="$!{order.memberId}">
+              </div>
+          </div>
+      </div>
+      <div class="span3">
+          <div class="control-group">
+              <label class="control-label">CRM编号：</label>
+              <div class="controls">
+                  <input type="text" class="span4" name="gbUserId" value="$!{order.gbUserId}">
+              </div>
+          </div>
+      </div>
+
+  </div>
+  <div class="control-group">
+    <label class="control-label">门店区域：</label>
+    <div class="controls">
+      <select id="prv" name="orderProvince" class="span2" onchange="showCity(this.value)"><option value="">全部</option></select> 	
+			<select id="city" name="orderCity" class="span2" onchange="showArea(this.value)"><option value="">全部</option></select> 
+      <select id="area" name="orderDistrict" class="span2" onchange="showShop(this.value)"><option value="">全部</option></select>
+      <select id="shop" name="orderShopId" class="span2"><option value="">全部</option></select>
+    </div>
+  </div>
+    <div class="control-group">
+        <span class="span3">
+            <div class="control-group">
+                <label class="control-label">订单转单：</label>
+                <div class="controls">
+                    <label class="notepad-inline"><input name="shiftStatus" type="checkbox" value="0"/> 非转单</label>
+                    <label class="notepad-inline"><input name="shiftStatus" type="checkbox" value="1"/> 转单</label>
+                </div>
+            </div>
+        </span>
+    </div>
+  <!--Tab标签-->
+	<input id="tabID" name="tabId" type="hidden" value="${tabId}"/>
+  <!--最近几天-->
+	<input type="hidden" id="latelyDay" name="latelyDay">
+  <div class="form-actions">
+  	<button id="Choice" type="button" class="btn btn-success">筛选</button>
+    <button type="reset" class="btn btn-warning">重置</button>
+    <!--<button id="export" type="button" class="btn btn-danger">订单导出</button>-->
+	<div class="btn-group tip-right" data-original-title="由于订单数据量大，导出速度比较慢，请点击“生成订单数据”，稍后再进行数据下载(导出excel表格)。">
+      <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">订单导出 <span class="caret"></span></button>
+      <ul class="dropdown-menu" id="exportOrder"></ul>
+    </div>
+  </div>
+</form>
+<!--保存省、市、区、门店信息-->
+<input type="hidden" id="loc_province_value" value="$!{order.orderProvince}"/>
+<input type="hidden" id="loc_city_value" value="$!{order.orderCity}"/>
+<input type="hidden" id="loc_town_value" value="$!{order.orderDistrict}"/>
+<input type="hidden" id="loc_warehouse_value" value="$!{order.orderShopId}"/>
+
+<!-- 备注 -->
+<div class="modal hide" id="remark-info" aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>备注信息</h3></div>
+  <div class="modal-body nopadding">
+   	<div class="form-horizontal">
+    	<div class="control-group"><label class="control-label">备注信息：</label>
+        <div class="controls">
+			<input type="hidden" id="order-no" />
+			<input type="hidden" id="order-item" />
+			<textarea id="order-remark" name=""></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer"><a class="btn btn-success js-save" href="javascript:setRemark();">保存</a> <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a> </div>
+</div>
+
+<input type="hidden" id="shiftStatus" value="$!{order.shiftStatus}"/>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script type="text/javascript">
+	//省市区初始化方法
+	//var pro = $("#loc_province_value").val();
+	//var city = $("#loc_city_value").val();
+	//var town = $("#loc_town_value").val();
+	//var shop = $("#loc_warehouse_value").val();
+	var pro = Matrix.tools.search("orderProvince");
+	getPrv(pro);
+
+    var shiftStatus = $("#shiftStatus").val();
+    if (shiftStatus != "") {
+        shiftStatus = JSON.parse(shiftStatus);
+        for (var i = 0; i < shiftStatus.length; i++) {
+            var shift = shiftStatus[i];
+            $("input[name=shiftStatus][value=" + shift + "]").attr("checked", 'checked');//选择复选框
+        }
+    }
+
+	//最近7天绑定单击事件
+	$("#lately07").bind("click",function(){
+		$("#latelyDay").val("7");
+		$("#Choice").click();
+	});
+	
+	//最近30天绑定单击事件
+	$("#lately30").bind("click",function(){
+		$("#latelyDay").val("30");
+		$("#Choice").click();
+	});
+	
+	var remarkPOP = $("#remark-info");
+	function showRemark(orderNo,itemId){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {orderNo: orderNo,itemId:itemId},
+			url: root + "/order/getOrderLineRemark.do",
+			fun: function(msg){
+				$("#order-remark").val(msg);
+				$("#order-no").val(orderNo);
+				$("#order-item").val(itemId);
+				remarkPOP.modal("show");
+			}
+		});
+	};
+	function setRemark(){
+		var name = $("#order-remark"), orderNo = $("#order-no").val(), itemId = $("#order-item").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {orderNo: orderNo, itemId: itemId, remark: name.val()},
+			url: root + "/order/updateOrderLineRemark.do",
+			fun: function(msg){
+				remarkPOP.modal("hide");
+				Toast.show('操作成功!');
+				window.location.reload();
+			}
+		});
+	};
+	
+	//获取正在导出的导出数据
+	function buildingOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/order/queryRefundFinishingNotice.do",
+			fun: function(result){
+				var result = eval(result);
+				if(result != null){
+					//数据正在导出中
+					var html = '<li><a href="javascript:void(0)">正在生成订单数据，请稍后下载（数据更新时间：'+getLocalTime(result.createTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}else{
+					var html = '<li><a href="javascript:exportOrder();">生成订单数据（后台生成数据，稍后才能进行导出）</a></li>';
+					$("#exportOrder").append(html);		
+				}
+			}
+		});
+	}
+	buildingOrderExport();
+	
+	//导出按钮
+	function exportOrder(){
+		$("#orderForm").attr("action","$!{request.getContextPath()}/order/exportRefundOrder.do");
+		document.getElementById("orderForm").submit();
+	};
+	
+	//获取订单下载列表
+	function buildOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/order/queryRefundFinishNotice.do",
+			fun: function(result){
+				if(result != ""){
+					//数据已完成导出
+					var html = '<li><a href="'+root+"/"+result.message+'">订单数据下载（数据更新时间：'+getLocalTime(result.updateTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}
+			}
+		});
+	}
+	buildOrderExport();
+	
+	//日期函数
+	function getLocalTime(nS) {   
+        return new Date(parseInt(nS)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");    
+    } 
+</script>

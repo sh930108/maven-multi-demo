@@ -1,0 +1,106 @@
+##资金查询
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+    Matrix.Nav({
+        "menu": 124,
+        "cmenu": 193
+    });
+</script>
+<div id="content-header">
+    <h1>财务管理 | 财务报表查询</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <div class="widget-title">
+                    <ul class="nav nav-tabs">
+                        <li>
+                            <a href="$!{request.getContextPath()}/finacialreport/companylist.do?platformSource=1">分公司/总仓</a>
+                        </li>
+                        <li class="active"><a href="$!{request.getContextPath()}/finacialreport/mmhlist.do">妈妈好平台</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="widget-content nopadding">
+                    <form class="form-horizontal form-horizontal-inline" method="get" id="form"
+                          action="$!{request.getContextPath()}/finacialreport/mmhlist.do">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="control-group">
+                                    <label class="control-label">日期：</label>
+
+                                    <div class="controls">
+                                        <input id="startTime" name="start" value="$!{request.getParameter('start')}"
+                                               class="Wdate" type="text" size="20"
+                                               onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')}',dateFmt:'yyyy-MM-dd'})"/>
+                                        <span>至</span>
+                                        <input id="endTime" name="end" value="$!{request.getParameter('end')}"
+                                               class="Wdate" type="text" size="20"
+                                               onfocus="WdatePicker({minDate:'#F{$dp.$D(\'startTime\')}',dateFmt:'yyyy-MM-dd'})"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit" id="commit">筛选</button>
+                            <button class="btn btn-primary" type="reset" id="clearCondition">重置</button>
+                            <a class="btn btn-danger"
+                               href="$!{request.getContextPath()}/finacialreport/exportMMHlist.do">导出</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="javascript:void(0);)">妈妈好平台</a>
+                            </li>
+                        </ul>
+                        <table class="table table-text-center">
+                            <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>对象</th>
+                                <th>妈豆(抵用额)</th>
+                                <th>优惠券(妈妈好)</th>
+                                <th>邮费</th>
+                                <th>实际收入</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>$!{request.getParameter('start')}</br>
+                                    -</br>
+                                    $!{request.getParameter('end')}</td>
+                                <td>妈妈好平台</td>
+                                <td>#formatAmount($!{finacialStatement.payMadouPrice})</td>
+                                <td>#formatAmount($!{finacialStatement.payCouPonMmhPrice})</td>
+                                <td>#formatAmount($!{finacialStatement.payFreightPrice})</td>
+                                <td>
+                                    #set($temp = $math.sub($finacialStatement.payFreightPrice,$finacialStatement.payMadouPrice))
+                                    #set($temp1 = $math.sub($temp,$finacialStatement.payCouPonMmhPrice))
+                                    #formatAmount($!number.format("#0.00",$temp1))
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="payPriceIdsTemp" value=$!{fstatement.payPriceIds}/>
+
+<script type="text/javascript">
+    $(function () {
+
+
+    });
+</script>

@@ -1,0 +1,120 @@
+##妈妈好扫码活动活动配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>
+      活动管理 | 扫码活动配置
+    </h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+               <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>1元购-门店码</h5> <h6>（针对门店和仓库设计，每个门店或仓库对应一个唯一的二维码，订单归属到指定门店或仓库（不经过pos））</h6>
+                </div>
+                <div class="widget-content nopadding">
+	                	<form  method="post" action="$!{request.getContextPath()}/scan/save.do" class="form-horizontal form-horizontal-inline row-fluid">
+							  <div class="form-actions">
+								  <div class="span3">
+								      ACT_ID： <input type="text" class="span5"  name="actId" value="$!{dto.actId}">
+	        					  </div>
+	        					  <div class="span8">
+							                         活动时间：
+								      <input id="startTime" class="span3" type="date" name="startTime" value="$!{dto.startTime}" />
+							                          至
+							          <input id="endTime" class="span3" type="date" name="endTime" value="$!{dto.endTime}" /> 
+							      </div>
+	        					   <br/> <br/>
+	        					  <div class="row-fluid">
+	        					  <div class="span3">
+								      商品ID(itemNumId)： <input type="text" class="span5"  name="itemId" value="$!{dto.itemId}">
+	        					  </div>
+	        					  <div class="span3">
+								      活动价格： <input type="text" class="span5"  name="price" value="$!{dto.price}">
+	        					  </div>
+	        					  <div class="span3">
+								      每人限购数量： <input type="text" class="span5"  name="limit" value="$!{dto.limit}">
+	        					  </div>
+	        					   <div class="span3">
+								      总库存： <input type="text" class="span5"  name="stock" value="$!{dto.stock}">
+	        					  </div>
+	        					  </div>
+	        					   <br/>
+							      <button type="submit" class="btn btn-success">保存设置</button>
+							  </div>
+						</form>
+						  <div class="form-actions">
+						  <div class="row-fluid">
+							   <div class="span12">
+								      <div class="control-group">
+								        <label class="control-label">活动类型：<font color="red">1元购(扫门店或仓库码，购买指定商品)</font></label> 
+								      </div>
+								      <div class="control-group">
+								        <label class="control-label">活动时间：<font color="red">$!{dto.startTime} 00:00:01 至 $!{dto.endTime} 23:59:59 </font></label>
+								      </div><br/>
+								       <div class="control-group">
+								         <label class="control-label">活动商品：</label>
+								         <label class="control-label">
+										         名称： <font color="red">$!{dto.itemName} </font>
+										         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										         总库存： <font color="red">$!{dto.stock} </font>件
+										         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										         销售数量： <font color="red">$!{dto.buyCount} </font>件
+										         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										         剩余库存： <font color="red">$!{dto.surplus} </font>件
+										         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								         </label>
+								      </div>
+								      <br/>
+								       <div class="control-group">
+								         <label class="control-label">
+										         购买价格： <font color="red">$!{dto.price} </font>元
+										         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										         每人限购： <font color="red">$!{dto.limit} </font>件
+								         </label>
+								      </div>
+								       <br/>
+								      【 <a href="$!{request.getContextPath()}/scan/index.do">点我刷新一下</a>】
+							    </div>
+						  </div>
+						  </div>
+                </div>
+               <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>二维码操作</h5>
+                </div>
+                <div class="widget-content nopadding">
+                		<form  method="post" action="$!{request.getContextPath()}/scan/addzxing.do" class="form-horizontal form-horizontal-inline row-fluid">
+                		 <div class="form-actions">
+								  <div class="span3">
+								      门店编号：<input type="text" class="span5"  name="shopId" value="$!{shopId}">
+	        					  </div>&nbsp;&nbsp;&nbsp;
+	        					   <div class="span3">
+								     仓库编号：<input type="text" class="span5"  name="storageId" value="$!{storageId}">
+	        					  </div>
+	        					  <button type="submit" class="btn btn-success">生成二维码</button>
+	        					  <br/>
+	        					  <font color="red">$!{errMsg}</font>
+	        					  <hr/>
+	        					  <a href="$!{zxingimgpath}">点我下载二维码</a>
+	        					  <hr/>
+	        					  <img src="$!{zxingimgpath}"/> 
+                		  </div>
+						</form>
+						 
+                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	Matrix.Nav({"menu": 161, "cmenu": 192});
+
+</script>

@@ -1,0 +1,175 @@
+##成长值
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+  Matrix.Nav({"menu": 26, "cmenu": 27});
+</script>
+<div id="content-header">
+    <h1>用户管理 | 成长值记录</h1>
+</div>
+
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box">
+        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+          <h5>用户信息</h5>
+        </div>
+        <div class="widget-content">
+			#parse("/user/user_public_header.vm")
+		</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box widget-tabs-box">
+          <ul class="nav nav-tabs">
+            <li class="active">
+              <a href="$!{request.getContextPath()}/user/showUserIntegral.do?memberId=$memberId" >成长值记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserMbean.do?memberId=$memberId" >妈豆记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserVoucher.do?memberId=$memberId&type=1">优惠券记录</a>
+            </li>
+			 <li class="">
+              <a href="$!{request.getContextPath()}/user/showNewUser.do?memberId=$memberId&type=1">拉新用户记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showVipRecharge.do?memberId=$memberId">会员充值记录</a>
+            </li>
+          </ul>
+          <div class="widget-content tab-content">
+            <!-- 选项卡 -->
+            <div id="tab1" class="tab-pane active">
+              <table class="table table-hover table-text-center">
+                <thead>
+                  <tr>
+                    <th>订单号</th>
+                    <th>成长值</th>
+                    <th>时间</th>
+                    <th>备注</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  #foreach($data in $dataList)
+                      <tr>
+                        <td>$!{data.relativeNo}</td>
+                        <td>
+                        #if($data.mathOperator==0)
+                          -$!{data.integrealNum}
+                        #else
+                          +$!{data.integrealNum}
+                        #end
+                        </td>
+                        <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.createDate})</td>
+                        <td>
+                        #if($!{data.integralType}==0)
+                          订单交易
+                        #elseif($!{data.integralType}==1)
+                          年度消耗
+                        #elseif($!{data.integralType}==2)
+                          退货
+                        #else
+                          平台操作
+                        #end
+                        </td>
+                      </tr>
+                  #end
+                </tbody>
+              </table>
+              #parse("/pagination.vm")
+            </div>
+			#if($code !=3 )
+				<a class="btn btn-success" data-toggle="modal" href="javascript:alert('很抱歉，您无权限操作此功能');">修改成长值</a>
+			#else
+				<a class="btn btn-success" data-toggle="modal" href="#showReason">修改成长值</a>
+			#end
+          </div>
+          <!-- 内容框 END -->
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal hide in" id="showReason" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>请填写您要操作的成长值</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal form-horizontal-inline" method="get" action="#">
+      <div class="row-fluid">
+          <div class="span4">
+            <div class="control-group">
+              <label class="control-label">原有成长值：</label>
+              <div class="controls">
+                <span class="notepad-inline">$!{integralCount}</span>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">操作类型：</label>
+            <div class="controls">
+              <select name="" id="operType"><option value="0">平台减少</option><option value="1">平台增加</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">修改成长值：</label>
+            <div class="controls">
+              <input type="text" placeholder="" class="" id="count">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer"><a href="javascript:;" class="btn btn-primary" id="submitReason">完成</a> </div>
+</div>
+
+<script type="text/javascript">
+  $('#submitReason').click(function () {
+    var reason = $.trim($('#count').val());
+    if (isForm.isTrim(reason) || !isForm.isImp(reason)) {
+      Toast.show("成长值不能为空且必须为正整数");
+      $('#count').focus();
+      return false;
+    }
+    var count = Number("$!{integralCount}");
+    var type = $("#operType").val();
+    if (type == 0) {
+      if (count == undefined || count < reason) {
+        Toast.show("您要操作的数量大于用户原有的数值，请修改");
+        $('#count').focus();
+        return false;
+      }
+    }
+    Matrix.JSON({
+      showLoad: true,
+      type: "POST",
+      val: {
+        'memberId': '$memberId',
+        'operType': type,
+        'count': reason
+      },
+      url: "$!{request.getContextPath()}/user/updateIntegralCount.do",
+      fun: function () {
+        Toast.show("操作成功");
+        window.location.reload();
+      }
+    });
+
+  });
+</script>
+
+

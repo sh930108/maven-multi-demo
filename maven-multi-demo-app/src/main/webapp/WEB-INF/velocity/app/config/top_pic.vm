@@ -1,0 +1,429 @@
+##App配置管理-首页顶图
+
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 119});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 配置管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+                <ul class="nav nav-tabs">
+                    ##<li ><a href="$!{request.getContextPath()}/appconf/index.do">启动广告</a></li>
+                    ##<li class="active"><a href="$!{request.getContextPath()}/appconf/list.do?confType=0">首页顶图</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=1&valid=0">妈豆尊享</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/list.do?confType=2">万众瞩目</a></li>
+                    ##<li><a href="$!{request.getContextPath()}/appconf/iconMaintain.do">图标维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/goodsType/list.do">类目维护</a></li>
+                    <li><a href="$!{request.getContextPath()}/appconf/list.do?confType=3">为您优选</a></li>
+                    <li><a href="$!{request.getContextPath()}/appconf/getOptimization4uPageList.do">为您优选-新版</a></li>
+                    <li><a href="$!{request.getContextPath()}/shopservice/list.do">实体店服务标签</a></li>
+
+                </ul>
+                <div class="widget-content tab-content">
+                    <div class="app-home-ad">
+						<form name="tableFrm" action="$!{request.getContextPath()}/appconf/list.do?confType=0" method="get">
+						<input type="hidden"  name="confType" value="0" />
+                        <table class="table table-hover table-text-center">
+                            <thead>
+                                <tr>
+                                    <th>
+										<select name='orderBy' onchange="queryList()">
+											<option>全部</option>
+                    						<option value="1">坑位1</option>
+                    						<option value="2">坑位2</option>
+                    						<option value="3">坑位3</option>
+                    						<option value="4">坑位4</option>
+                    						<option value="5">坑位5</option>
+                    					</select>
+									</th>
+									<th>广告名称</th>
+                                    <th width="260">广告图</th>
+                                    <th>落地类型</th>
+                                    <th>落地页</th>
+									<th>开始时间</th>
+									<th>结束时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                #foreach($data in ${list})
+                                <tr>
+                                    <td>坑位$data.orderBy</td>
+                                    <td>$data.title</td>
+                                    <td>
+                                        <div class="photo">
+                                            #if(${data.pic} != "")
+                                            <img src="$imgpath$data.pic"  alt="$!{data.title}"/>
+                                            #end
+                                        </div>
+                                    </td>
+									<td>
+										#if($data.style.styleNumId)
+											商品
+										#elseif($data.link)
+											链接
+										#else
+											无
+										#end
+									</td>
+                                    <td>
+										#if($data.style.styleNumId)
+											$data.style.styleNumId
+										#elseif($data.link)
+											<a href="$!{data.link}" target="_blank" class="link-blank" title="$!{data.link}">$!{data.link}</a>
+										#else
+											无
+										#end
+									</td>
+                                    <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.beginTime})</td>
+									<td>$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.endTime})</td>
+									<td><span class="status" start="$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.beginTime})" now="$!date.format('yyyy-MM-dd HH:mm:ss',$!{now})" end="$!date.format('yyyy-MM-dd HH:mm:ss',$!{data.endTime})"></span></td>
+                                    <td>
+										<a href="javascript:online(${data.id})" class="btn btn-primary btn-mini" lang="online">上线</a>
+										<a href="javascript:offline(${data.id})" class="btn btn-primary btn-mini" lang="offline">下线</a>
+                                        <a href="#addModal" class="btn btn-primary btn-mini" onclick="openModal(this,${data.id})" lang="edit">修改</a>
+                                        <a href="javascript:deleteById(${data.id});" class="btn btn-danger btn-mini" onclick="return checkDel('是否删除？');" lang="delete">删除</a>
+                                    </td>
+                                </tr>
+                                #end
+                                <tr>
+                                    <td colspan="5" style="text-align:left;">
+                                        <a class="btn btn-primary" href="#addModal" data-toggle="modal">添加</a>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        </form>
+                        ##分页
+                        #parse("/pagination.vm")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="width: 600px;" aria-hidden="false" id="addModal" class="modal hide in">
+    <div class="modal-header">
+        <button data-dismiss="modal" class="close" type="button">×</button>
+        <h3>添加首页顶图</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal form-horizontal-inline" method="get" id="frm">
+            <input type="hidden" name="confType" value="0"/>
+            <input id="gfId" type="hidden" name="id">
+				
+            <div class="control-group">
+                <label class="control-label"><i>*</i>广告坑位：</label>
+                <div class="controls">
+					<select name='orderBy'>
+						<option value="1">坑位1</option>
+						<option value="2">坑位2</option>
+						<option value="3">坑位3</option>
+						<option value="4">坑位4</option>
+						<option value="5">坑位5</option>
+					</select>	
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>广告名称：</label>
+                <div class="controls">
+                    <input type="text" placeholder="最多不超过20个字" name="title">
+                </div>
+            </div>
+				
+            <div class="control-group">
+                <label class="control-label"><i>*</i>广告图：<br>（750*280px）</label>
+                <div class="controls">
+                    <span class="up-photo">
+                        <input name="pic" id="pic-hidden" type="hidden" value=""/>
+                        <span id="picName"></span>
+                        <div class="up-pic" id="pic-pic">
+                            <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+                        </div>
+                        <div class="up-btn" data-id="pic"><a href="javascript:;" id="pic" class="btn">选择图片</a></div>
+                    </span>
+                </div>
+            </div>
+			
+            <div class="control-group">
+                <label class="control-label"><i>*</i>落地类型：</label>
+                <div class="controls">
+					<select name='destPage'>
+						<option value="-1">无</option>
+						<option value="0">商品（ID）</option>
+						<option value="1">链接</option>
+					</select>	
+                </div>
+            </div>
+			
+            <div class="control-group">
+                <label class="control-label">落地页：</label>
+                <div class="controls">
+                    <input type="text" name="destPageVal">
+                </div>
+            </div>
+			
+            <div class="control-group">
+                <label class="control-label"><i>*</i>开始时间：</label>
+                <div class="controls">
+                    <input type="text" id='beginTime' name="beginTime" value="" placeholder='请输入开始时间' onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'endTime\')}'});" >
+                </div>
+            </div>
+			
+            <div class="control-group">
+                <label class="control-label"><i>*</i>结束时间：</label>
+                <div class="controls">
+                    <input type="text" id="endTime" name="endTime" value="" placeholder='请输入结束时间' onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'beginTime\')}'});" >
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a class="btn btn_info btn_submit" href="javascript:;">完成</a>
+        <a class="btn btn_info" href="javascript:;" id="cancel">取消</a>  
+    </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/JSON.js"></script>
+<script type="text/javascript">
+
+	/*筛选*/
+    function queryList() {
+        tableFrm.submit();
+    }
+	
+    //文件上传
+    $(".up-btn").each(function () {
+        var thas = $(this);
+        thas.children().uploadify({
+            uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',
+            swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+            queueID: 'null', // 上传进度列表;
+            fileTypeDesc: "jpg",
+            fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            multi: false,
+            wmode: "transparent",
+            buttonText: '选择图片',
+            width: "100%",
+            height: "100%",
+            onUploadStart: function () {
+                var id = this.button.parents(".up-btn").data("id");
+                $("#" + id + "-pic").html('');
+            },
+            onUploadSuccess: function (file, data, response) {
+                //上传完成时触发（每个文件触发一次）;
+                var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                if (!data.success) {
+                    Toast.show(data.msg);
+                    $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+                } else {
+					deleteFileByName($("#" + id + "-hidden").val());
+                    $("#" + id + "-pic").html('<img src="$imgpath' + data.fileName + '"/>');
+                    $("#" + id + "-hidden").val(data.fileName);
+                }
+            }
+        });
+    });
+
+
+    $(function () {
+		//保存
+        $(".btn_submit").on("click", function () {
+			if(isForm.isTrim($("input[name='title']").val())){
+				Toast.show("请填写广告名称");
+                return false;
+			}
+            if (isForm.isTrim($("#pic-hidden").val())) {
+                Toast.show("请上传图片");
+                return false;
+            }
+			if($("select[name='destPage']").val() != -1 && isForm.isTrim($("input[name='destPageVal']").val())){
+				Toast.show("请填写落地页");
+                return false;
+			}
+			if(isForm.isTrim($("input[name='beginTime']").val())){
+				Toast.show("请填写开始时间");
+                return false;
+			}
+			if(isForm.isTrim($("input[name='endTime']").val())){
+				Toast.show("请填写结束时间");
+                return false;
+			}
+			
+			if($("select[name='destPage']").val() == 0 && !checkStyleNumId($("input[name='destPageVal']").val())){
+				//检查款式是否已存在
+    			return false;
+			}
+			
+            $.ajax({
+                url: root + '/appconf/saveGoodsConf.do',
+                type: 'post',
+                dataType: 'json',
+                data: $("#frm").serialize(),
+                success: function (ret) {
+                    if (ret.success) {
+                        window.location.reload();
+                    } else {
+                        Toast.show(ret.msg);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                }
+            });
+
+        });
+
+        //取消
+        $("#cancel,.close").on("click", function () {
+            $("#gfId").val("");
+            $('.up-pic img').attr("src", "$!{request.getContextPath()}/res/images/photo-default.png");
+			$("input[name='title']").val("");
+			$("select[name='destPage']").val("");
+			$("input[name='destPageVal']").val("");
+			$("input[name='beginTime']").val("");
+			$("input[name='endTime']").val("");
+            $('#addModal').modal('hide');
+        });
+		
+		//列表状态
+		$(".status").each(function(index){
+			var now = $(this).attr("now");
+			var strat = $(this).attr("start");
+			var end = $(this).attr("end");
+			console.log("now:"+now+" start:"+strat+" end:"+end);
+			if(now > end){
+				$(this).append("已过期");
+				$(this).parent("td").next("td").find("a[lang='online']").css("display","none");
+				$(this).parent("td").next("td").find("a[lang='offline']").css("display","none");
+				$(this).parent("td").next("td").find("a[lang='edit']").css("display","block");
+				$(this).parent("td").next("td").find("a[lang='delete']").css("display","block");
+			}else if(now < strat){
+				$(this).append("排期中");
+				$(this).parent("td").next("td").find("a[lang='online']").css("display","block");
+				$(this).parent("td").next("td").find("a[lang='offline']").css("display","none");
+				$(this).parent("td").next("td").find("a[lang='edit']").css("display","block");
+				$(this).parent("td").next("td").find("a[lang='delete']").css("display","block");
+			}else{
+				$(this).append("上线中");
+				$(this).parent("td").next("td").find("a[lang='online']").css("display","none");
+				$(this).parent("td").next("td").find("a[lang='offline']").css("display","block");
+				$(this).parent("td").next("td").find("a[lang='edit']").css("display","none");
+				$(this).parent("td").next("td").find("a[lang='delete']").css("display","none");
+			}
+		})
+    });
+
+    function openModal(obj, id) {
+        if (id) {
+            $.getJSON(root + "/appconf/getGoodsConfById.do?jsoncallback=?",
+                    {
+                        id: id
+                    }, function (ret) {
+						ret = eval(ret); 
+                        if (ret.success) {
+                            $("#gfId").val(ret.data.id);
+							$("select[name='orderBy']").val(ret.data.orderBy);
+							$("input[name='title']").val(ret.data.title);
+                            $('.up-pic img').attr("src", "$imgpath" + ret.data.pic);
+                            $('#pic').val(ret.data.pic);
+                            $("input[name=pic]").val(ret.data.pic);
+							$("input[name='beginTime']").val(new Date(ret.data.beginTime).format("yyyy-MM-dd hh:mm:ss"));
+							$("input[name='endTime']").val(new Date(ret.data.endTime).format("yyyy-MM-dd hh:mm:ss"));
+							var type = -1;
+							if(typeof(ret.data.link) != "undefined"){
+								type = 1;
+								$("input[name='destPageVal']").val(ret.data.link);
+							}else if (typeof(ret.data.style) != "undefined" && typeof(ret.data.style.styleNumId) != "undefined"){
+								type = 0;
+								$("input[name='destPageVal']").val(ret.data.style.styleNumId);
+							}
+							$("select[name='destPage']").val(type);
+                        } else {
+                            Toast.show(ret.msg);
+                        }
+                    });
+        }
+        $('#addModal').modal('show');
+    }
+
+    function deleteById(id) {
+        $.getJSON(root + "/appconf/delGoodsConfById.do?jsoncallback=?",
+            {
+                id: id
+            }, function (ret) {
+                Toast.show(ret.msg);
+                window.location.reload();
+            });
+    }
+	
+	//上线
+	function online(id){
+    	$.getJSON(root + "/appconf/onlineGoodsConf.do?jsoncallback=?",
+            {
+                id: id
+            }, function (ret) {
+                Toast.show(ret.msg);
+                window.location.reload();
+            });
+	}
+	
+	//下线
+	function offline(id){
+	 $.getJSON(root + "/appconf/offlineGoodsConf.do?jsoncallback=?",
+                {
+                    id: id
+                }, function (ret) {
+                    Toast.show(ret.msg);
+                    if (ret.success) {
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                });
+	}
+	
+	//验证商品id是否已存在
+    function checkStyleNumId(styleNumId){
+		var flag = false; 
+    	if (styleNumId && !isNaN(styleNumId)) {
+			$.ajax({
+                url: root + '/appconf/getItemsByStyleNumId.do',
+                type: 'post',
+                data: {"styleNumId":styleNumId},
+				async: false,
+                success: function (ret) {
+                     if (ret.success && ret.count > 0) {
+					 	flag = true;
+					 } else {
+                        Toast.show("没有找到该商品下的规格详细信息，请检查商品ID是否正确以及是否有规格信息！", 2000);
+                     }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                }
+            });
+        } else {
+            Toast.show("输入的商品ID为空，或有误！");
+			return false;
+        }
+		return flag;
+    }
+	
+</script>
+
+
+
+
+

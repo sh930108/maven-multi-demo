@@ -1,0 +1,129 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 116, "cmenu": 243});
+</script>
+<style>.app-ad-block .uploadify{margin-bottom:0;}</style>
+<div id="content-header">
+	<h1>订单管理 | 代拍订单导入</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>代拍订单查询列表</h5>
+				</div>
+				<div class="widget-content nopadding form-horizontal">
+						<div class="form-actions app-ad-block" >
+							<button type="button" name="files" class="file_upload" id="importXls">代拍订单导入</button>
+							<span class="label label-important">请慎重，确保导入的数据类型准确！</span>
+							<div class="form-actions">
+							注意点：
+							<div style="color:red">
+							1.文件名不能重复！！！
+							2.文件内的行号不能随意修改，即不能随便更换每行的数据，一旦生成不能删除，否则数据会混乱！！！
+							</div>
+							3.（
+							<span >实际单价：数字(以分为单位)|</span>
+							<span >itemNumId：数字|</span>
+							<span >件数：数字；</span>
+							<span >收货人电话号码：数字|</span>
+							<span style="color:red">收货地址-省：必须与数据库一致|</span>
+							<span style="color:red">收货地址-市：必须与数据库一致|</span>
+							<span style="color:red">收货地址-区县：必须与数据库一致|</span>
+							<span >仓库(仓库id)：数字；</span>
+							）
+						</div>
+						</div>
+				</div>
+				<div class="widget-box">
+					<div class="widget-content">
+						<div class="widget-box widget-tabs-box">
+							<table class="table table-text-center table-order">
+								<thead>
+									<tr>
+										<th>文件名</th>
+										<th>文件内订单数量</th>
+										<th>文件内未下单订单数量</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									#foreach($co in $dataList)
+									#set($index = $loopCounter + 1)
+									<tr data-co-id=$!{co.id}>
+										<td>$!{co.fileName}</td>
+										<td>$!{co.count}</td>
+										<td>$!{co.count2}</td>
+										<td>
+										<a class="btn btn-danger btn-mini" href="$!{request.getContextPath()}/order/auction/orderInsteadAuctionDetail.do?fileName=$!{co.fileName}">查看详情</a>
+										</td>
+									</tr>
+									#end
+								</tbody>
+							</table>
+							
+							
+							##分页
+							#parse("pagination.vm")
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="$!{request.getContextPath()}/res/uploadify/uploadify.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script>
+	$(function () {
+
+		$('#importXls').uploadify({
+			'uploader': '$!{request.getContextPath()}/order/auction/uploadOrderInsteadAuctionExcel.do',
+			'swf': '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+			'cancelImg': '$!{request.getContextPath()}/res/uploadify/uploadify-cancel.png',
+            'folder': 'uploads',//您想将文件保存到的路径
+            'queueID': 'fileQueue',//与下面的id对应
+            'queueSizeLimit': 1,
+            'formData': {'gtId': ''},
+			'fileTypeExts': '*.xls;*.xlsx', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+			'fileTypeDesc': '商品主图',
+			'fileDataName': 'file',
+			'auto': true,
+			'multi': true,
+			'simUploadLimit': 1,
+			'buttonText': '代拍订单导入',
+            'onUploadSuccess': function (file, data, response) {//上传完成时触发（每个文件触发一次）
+            	//Toast.show("更新状态成功");
+            	//window.location.reload();
+            	alert(data);
+            	window.location.reload();
+            },
+            'onSelectError': function (file, errorCode, errorMsg) {
+            	switch (errorCode) {
+            		case -100:
+            		Toast.show("上传的文件数量已经超出系统限制的" + $('#importXls').uploadify('settings', 'queueSizeLimit') + "个文件！");
+            		break;
+            		case -110:
+            		Toast.show("文件 [" + file.name + "] 大小超出系统限制的" + $('#importXls').uploadify('settings', 'queueSizeLimit') + "大小！");
+            		break;
+            		case -120:
+            		Toast.show("文件 [" + file.name + "] 大小异常！");
+            		break;
+            		case -130:
+            		Toast.show("文件 [" + file.name + "] 类型不正确！");
+            		break;
+            	}
+            }
+        });
+});
+
+	
+</script>
+<link rel="stylesheet" href="$!{request.getContextPath()}/res/tool/easydialog/easydialog.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/tool/easydialog/easydialog.min.js"></script>

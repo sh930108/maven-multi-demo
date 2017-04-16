@@ -1,0 +1,27 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 208, "cmenu": 214});
+</script>
+<div id="content-header">
+    <h1>敏感词管理 | 添加敏感词</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title">
+                <span class="icon"> <i class="icon-align-justify"></i> </span>
+                <h5>添加敏感词</h5>
+            </div>
+            <div class="widget-content nopadding">
+                <div class="form-horizontal">
+                    <div class="row-fluid">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

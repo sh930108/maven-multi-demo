@@ -1,0 +1,215 @@
+##添加配置
+
+#parse("/admin/com/common.vm")
+
+<div class="content">
+			<div class="title">
+				<title_1>配置管理</title_1>
+				<title_2>配置信息</title_2>
+			</div>
+	<article>
+		<form method="post" name="configFrm">
+		  <div class="form0">
+				<div class="form_group0">
+								<div class="form_group_left">配置类别：</div>
+								<div class="form_group_right">
+									<select id="confTypeId" name="confType">
+									</select>
+								</div>
+				  </div>
+				<div class="form_group0" id="groupNO" style="display:none;">
+								<div class="form_group_left">分组：</div>
+								<div class="form_group_right">
+									<select name="groupNo" id="groupNoId"></select>
+								</div>
+				</div>
+			   <div class="form_group0">
+								<div class="form_group_left">配置排序：</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="orderBy" value="" />
+								</div>
+				</div>
+				<div class="form_group0">
+								<div class="form_group_left">配置标题：</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="title" value="" />
+								</div>
+				</div>
+				<div class="form_group0" id="goodsId" style="display:none;">
+								<div class="form_group_left">商品ID：</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="goodsId" value="" />
+									<br/><div id="goodsIdred"></div>
+								</div>
+				</div>
+				
+				<div class="form_group0" id="beansCount" style="display:none;">
+								<div class="form_group_left">妈豆数量：</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="beans" value="" />
+								</div>
+				</div>
+				<div class="form_group0" id="goodsStock" style="display:none;">
+								<div class="form_group_left">活动商品库存：</div>
+								<div class="form_group_right">
+									<input id="" class="input_formheader" type="text" name="stock" value="" />
+								</div>
+			    </div>
+			    <div class="form_group0">
+								<div class="" style="height:40px;line-height:40px;margin: 0 20px 0 0;float: left;width:105px;text-align: right;padding: 0px;">
+								   预设活动时间：
+								</div>
+								<div class="form_group_right">
+								  <input id="beginTime" class="input_formheader" type="text" name="beginTime" value="" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'beginTime\')}'});"/>
+								  &nbsp;-
+								  <input id="endTime" class="input_formheader" type="text" name="endTime" value="" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'endTime\')}'});"/>
+					          </div>
+									
+				</div>
+				<div class="form_group0" style="display:none;" id="link">
+								<div class="form_group_left">配置链接：</div>
+								<div class="form_group_right">
+									<input id=""  style="width:350px;height:20px;border: 1px solid #DDDDDD;font-size: 12px;" type="text" name="link" value="$!{goodsConfig.link}" />
+									<br/><p_red>（若不进行链接跳转，则不填写）</p_red>
+								</div>
+				</div>
+				 <div style="width:100%" class="form_group0">
+								<div class="form_group_left">配置内容：</div>
+								<div style="float: left;width:380px;padding: 0px;">
+								<input id="" style="width:350px;height:20px;border: 1px solid #DDDDDD;font-size: 12px;" type="text" name="content" value=""/>
+							    </div>
+				 </div>
+				 <div style="width:100%" class="form_group0">
+								<div class="form_group_left">备注：</div>
+								<div style="float: left;width:380px;padding: 0px;">
+								<input id="" style="width:350px;height:20px;border: 1px solid #DDDDDD;font-size: 12px;" type="text" name="remark" value=""/>
+							    </div>
+				 </div>
+				<div style="width:100%" class="form_group0">
+								<div class="form_group_left">上传图片：</div>
+								<div style="float: left;width:380px;padding: 0px;">
+								    <input name="pic" type="hidden" />
+									<form  method="POST" enctype="multipart/form-data">
+										<input type="file" name="file" id="file"  accept="image/png,image/jpeg"/> 
+										<button type="button" class="btn_small" onclick="upload('pic')">上传</button> 
+										<br/><p_red>（不上传，则不修改图片/图标）</p_red>
+									</form>
+								</div>
+				</div>
+			 <div  class="form_group0">
+					<button type="button" class="btn_next" onclick="javascript:configSubmit(1);">取消</button>
+					<button type="button" class="btn_next" onclick="javascript:configSubmit(2);">确定</button>
+				</div>
+			</div>
+			</form>
+		</article>
+  </div>
+<script type="text/javascript">
+$(document).ready(function () {
+		//获取配置类别 
+		$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",
+			{
+				'fdName':'conf_type',
+				'tbName':'t_goods_conf'
+			},function(ret){
+				if(ret.success){
+					var opt = "<option value>全部</option>";
+					var data = ret.data;
+					$.each(data,function(i,o){
+						opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+					});
+					$("#confTypeId").append(opt);
+				}else{
+					
+				}
+			});
+			//获取分组
+		$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",
+			{
+				'fdName':'group_no',
+				'tbName':'t_goods_conf'
+			},function(ret){
+				if(ret.success){
+					var opt = "<option value>全部</option>";
+					var data = ret.data;
+					$.each(data,function(i,o){
+						opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+					});
+					$("#groupNoId").append(opt);
+				}else{
+					
+				}
+			});
+			//绑定配置类别事件
+		$("#confTypeId").on("change",function(){
+		  var confTypeid=$(this).val();
+		  if(confTypeid==0){//妈豆商品
+		     $("#beansCount").css("display", "block");
+		     $("#goodsStock").css("display", "block");
+		     $("#goodsId").css("display","block");
+		     $("#goodsIdred").css("display","none");
+		     
+		     $("#groupNO").css("display","none");
+		     $("#link").css("display","none");
+		  }else if(confTypeid==1){//推广商品
+		    $("#groupNO").css("display","block");
+		    $("#goodsId").css("display","block");
+		    $("#goodsIdred").css("display","none");
+		    
+		    $("#link").css("display","none");
+		    $("#beansCount").css("display", "none");
+		    $("#goodsStock").css("display", "none");
+		    
+		  }else if(confTypeid==2){//运营位
+		   $("#link").css("display","block");
+		   $("#goodsId").css("display","block");
+		   $("#goodsIdred").html("<p_red>（若不添加商品，则不填写）</p_red>");
+		   $("#goodsIdred").css("display","block");
+		   
+		   $("#groupNO").css("display","none");
+		   $("#beansCount").css("display", "none");
+		   $("#goodsStock").css("display", "none");
+		  }
+		  
+		});
+});
+  function configSubmit(option){
+    if(option==1){
+      window.location.href="$!{request.getContextPath()}/goodsConf/list.do";
+    }else{
+      configFrm.action="$!{request.getContextPath()}/goodsConf/save.do";
+       configFrm.submit();
+    }
+   
+  }
+  
+  
+  function upload(obj){
+		//上传文件
+		$.ajaxFileUpload({
+			url : '$!{request.getContextPath()}/oss/uploadFile.do',//处理上传文件类
+			secureuri : false,
+			fileElementId : 'file',//file控件id
+			dataType : 'json',
+			success : function(data, status) {
+				if (typeof (data.error) != 'undefined') {
+					if (data.error != '') {
+						Toast.show(data.error);
+					}
+				} else {
+					if(!data.success){
+						Toast.show(data.msg);
+					}else{
+						$("input[name="+obj+"]").val(data.fileName);
+						var url = "$imgpath" + data.fileName;
+						$("input[name="+obj+"]").after("<img src="+url+" width=100 height=80>");
+					}
+				}
+			},
+			error : function(data, status, e) {
+				Toast.show(e);
+			}
+		});
+		return false;
+	}
+</script>

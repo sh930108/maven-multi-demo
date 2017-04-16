@@ -1,0 +1,75 @@
+#set ($layout ="/admin/layout/im.vm")
+#set($styleNumId = $!{request.getParameter("styleNumId")})
+<div class="IM-goods-all">
+	<h1>妈妈好客服商品查询</h1>
+	<div class="IM-goods-block clearfix">
+		<div class="goods-info">
+			<iframe src="$!{request.getContextPath()}/gb/goods/previewGoodsInfo.do?tepId=$styleNumId" frameborder="0" width="100%" height="100%" scrolling="auto"></iframe>
+		</div>
+		<div class="goods-tab" id="js-goods-tab-all">
+			<ul class="tab" id="js-tab-all">
+				<li data-type="info" class="hover">基本信息</li>
+				<li data-type="sku">SKU信息</li>
+				<li data-type="size">尺码小助手</li>
+				<li data-type="stock">库存查询</li>
+			</ul>
+			<!-- 基本信息 -->
+			<div class="block in">
+				<ol>
+					<li><em>商品ID：</em>$!{goods.styleNumId}</li>
+					<li><em>款式编码：</em>$!{goods.styleId}</li>
+					<li><em>原价：</em>$!{goods.retailPrice}</li>
+					<li><em>促销价：</em>$!{goods.proPrice}</li>
+					<li><em>自定义价：</em></li>
+					<li><em>所属类目：</em>$!{goods.firstType} $!{goods.secondType} $!{goods.thirdType}</li>
+					<li><em>总销量：</em>$!{goods.totalSale}</li>
+					<li><em>上架时间：</em>$!{goods.onlineTime}</li>
+					<li><em>用户所在区域：</em>$!{goods.prvName} $!{goods.cityName} $!{goods.areaName}</li>
+				</ol>
+			</div>
+			<!-- SKU信息 -->
+			<div class="block">
+				<div class="table">
+					<table width="100%" border="0" cellpadding="0" cellspacing="0">
+						<thead>
+							<tr>
+								<th>规格ID</th>
+								<th>图片</th>
+								<th>颜色</th>
+								<th>尺码</th>
+								<th>SKU编码</th>
+								<th>原价</th>
+								<th>促销价</th>
+							</tr>
+						</thead>
+						<tbody id="js-sku-list">
+							<tr><td colspan="7"><div class="loading">数据加载中...</div></td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- 尺码小助手 -->
+			<div class="block">
+				<div class="size" id="js-size-all">
+					<div class="loading">数据加载中...</div>
+				</div>
+			</div>
+			<!-- 库存查询 -->
+			<div class="block">
+				<div class="stock" id="js-stock-all">
+					<div class="loading">数据加载中...</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var VM = {
+		styleNumId: '$!{request.getParameter("styleNumId")}',	// styleNumId;
+		itemNumId: '$!{request.getParameter("itemNumId")}',	// itemNumId;
+		areaId: '$!{request.getParameter("areaId")}',	// 区域id;
+		path: '$!{request.getContextPath()}'	// 工程名;
+	};
+	EOB.goods.init();
+	// config
+</script>

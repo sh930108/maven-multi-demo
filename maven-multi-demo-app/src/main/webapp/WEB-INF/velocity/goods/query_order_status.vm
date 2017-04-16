@@ -1,0 +1,178 @@
+##
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 176, "cmenu": 177});
+</script>
+<style>
+    .form-horizontal-inline .control-label{width: 150px;}
+    .form-horizontal-inline .controls{margin-left: 160px;}
+</style>
+<div id="content-header">
+    <h1>后台维护 | 订单状态查询</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>查询订单状态$!{request.getParameter('queryType')}</h5>
+                </div>
+                <div class="widget-content nopadding">
+						#if($!{request.getParameter('queryType')}==0)
+							<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/alipay/query/queryMamahao.do">
+						#elseif($!{request.getParameter('queryType')}==1)
+							<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/alipay/query/querylaia.do">
+						#elseif($!{request.getParameter('queryType')}==2)
+							<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/alipay/query/queryTestMamahao.do">
+						#elseif($!{request.getParameter('queryType')}==3)
+							<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/tencent/query/queryTencentQuery.do">
+						#elseif($!{request.getParameter('queryType')}==4)
+							<form class="form-horizontal form-horizontal-inline" method="get" id="frm" action="$!{request.getContextPath()}/union/query/queryUnionPay.do">
+						#else
+							
+						#end
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">订单批次号：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="orderNo" value="$!{request.getParameter('orderNo')}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">交易流水号：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="tradeNo" value="$!{request.getParameter('tradeNo')}">
+                                    </div>
+                                </div>
+                            </div>
+							#if($!{request.getParameter('time')} !="")
+							<div class="span4"  id="time">
+                                <div class="control-group">
+                                    <label class="control-label">交易时间：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="银联查询时间必填，请查找订单创建时间" class="span12" name="time" value="$!{request.getParameter('time')}">
+                                    </div>
+                                </div>
+                            </div>
+							#else
+								<div class="span4" style="display:none" id="time">
+                                <div class="control-group">
+                                    <label class="control-label">交易时间：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="银联查询时间必填，请查找订单创建时间" class="span12" name="time" value="$!{request.getParameter('time')}">
+                                    </div>
+                                </div>
+                            </div>
+							#end
+                        </div>
+                        <div class="row-fluid">
+							<div class="span10">
+                                <div class="control-group">
+                                    <label class="control-label">查询类型：</label>
+                                    <div class="controls">
+										<input type="radio" value="0" checked #if($!{request.getParameter('queryType')}==0) checked #end name="queryType"/>妈妈好
+										<input type="radio" value="1" name="queryType" #if($!{request.getParameter('queryType')}==1) checked #end/>来啊商贸
+										<input type="radio" value="2" name="queryType" #if($!{request.getParameter('queryType')}==2) checked #end/>测试支付宝
+										<input type="radio" value="3" name="queryType" #if($!{request.getParameter('queryType')}==3) checked #end/>微信支付
+										<input type="radio" value="4" name="queryType" #if($!{request.getParameter('queryType')}==4) checked #end/>银联支付
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span2" style="float:right">
+                                <div class="form-actions">
+                                    <button class="btn btn-success" type="submit" id="next">查询</button>
+									<button class="btn btn-warning" type="reset">重置</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <div class="widget-content tab-content">
+                            <table class="table table-hover with-check table-text-center table-order">
+                                <thead>
+                                    <th class="text-left">KEY</th>
+                                    <th style="width: 150px;">VALUE</th>
+                                </thead>
+                                <tbody>
+                                        #foreach($data in ${map.entrySet()})
+                                        #set($index = $loopCounter + 1)
+                                        <tr >
+                                            <td class="text-left baobei">
+												$!{data.key}
+                                            </td>
+                                            <td>$!{data.value}</td>
+                                        </tr>
+										#end
+                                </tbody>
+                                
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>商品库存</h3>
+    </div>
+    <div class="modal-body nopadding">
+        <div class="model-iframe"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+<script>
+$('#next').click(function () {
+	var styleNumId = $("input[name='styleNumId']");
+	if(styleNumId.val() && !isForm.isImp(styleNumId.val())){
+		Toast.show("请输入正确的款式编号");
+		return false;
+	}
+	$('#frm').submit();
+});
+
+
+$("input[name=queryType]").click(function(){
+	var value = $(this).val();
+	if(value==0){
+		$("#time").hide();
+		$('#frm').attr("action","$!{request.getContextPath()}/alipay/query/queryMamahao.do");
+	}else if(value==1){
+		$("#time").hide();
+		$('#frm').attr("action","$!{request.getContextPath()}/alipay/query/querylaia.do");
+	}else if(value == 2){
+		$("#time").hide();
+		$('#frm').attr("action","$!{request.getContextPath()}/alipay/query/queryTestMamahao.do");
+		
+	}else if(value==3){
+		$("#time").hide();
+		$('#frm').attr("action","$!{request.getContextPath()}/tencent/query/queryTencentQuery.do");
+		
+	}else if(value==4){
+		$("#time").show();
+		$('#frm').attr("action","$!{request.getContextPath()}/union/query/queryUnionPay.do");
+		
+	}
+});
+
+
+
+</script>

@@ -1,0 +1,164 @@
+##仓储列表
+<div class="content">
+	<div class="title">
+		<title_1>仓储管理</title_1>
+	</div>
+	<article>
+        <form accept="$!{request.getContextPath()}/warehouse/listdata.do" method="get">
+          <input type="hidden" name="verifyStatus" value="$!verifyStatus" id="verifyStatus"/>
+    	  <div class="form">
+    		<div class="form_content" style="width:100%">
+    		<div class="form_row">
+    			<div class="form_group_left">所在区域</div>
+    			<div class="form_group_right">
+    				 <select id="loc_province" name="warehouseAddrProvince" class="select_formheader"></select> 	
+    		         <select id="loc_city" name="warehouseAddrCity" class="select_formheader"></select> 
+    		         <select id="loc_town" name="warehouseAddrDistrict" class="select_formheader"></select>
+    				 <select id="companyID" name="companyId" class="select_formheader" onchange="javascript:showWarehouse();">
+    				   <option value="">分公司名称</option>
+    				 </select>
+    				 <select id="warehouseID" name="warehouseId" class="select_formheader">
+    				   <option value="">仓储名称</option>
+    				 </select>
+        			
+    			</div>
+    			</div>
+    				<div class="form_row3">
+    					<div class="form_group">
+    						<div class="form_group_left">手机号码</div>
+    						<div class="form_group_right">
+    							<input id="" class="input_formheader" type="text" name="warehouseContactPhone" value="" />
+    						</div>
+    					</div>
+    					<div class="form_group">
+    						<div class="form_group_left">仓储名称</div>
+    						<div class="form_group_right">
+    							<input id="" class="input_formheader" type="text" name="warehouseName" value="" />
+    						</div>
+    					</div>
+    				</div>
+    				
+    			</div>
+    
+    			<div class=" line_end">
+    				<button type="submit"  class="btn_saixuan ">筛选</button>
+    			</div>
+    		</div>
+		</form>	
+	</article>
+		
+	<article>
+	<div class="menu_commodity">
+			<ul>
+				<li id="one1"><a href="$!{request.getContextPath()}/warehouse/listdata.do">全部</a></li>
+				<li id="one2"><a href="$!{request.getContextPath()}/warehouse/listdata.do?verifyStatus=0">待审核</a></li>
+				<li id="one3"><a href="$!{request.getContextPath()}/warehouse/listdata.do?verifyStatus=2">已通过</a></li>
+				<li id="one3"><a href="$!{request.getContextPath()}/warehouse/listdata.do?verifyStatus=1">已拒绝</a></li>
+			</ul>
+   </div>
+		<table class="table_normal" width=100%;>
+			<tr>
+				<th min-width="200px">
+					<p class="commodity_titleth">仓储名称</p>
+				</th>
+				<th width="180px">区域</th>
+				<th width="180px">管理员姓名</th>
+				<th width="180px">联系方式</th>
+				<th width="180px">所属分公司</th>
+				<th width="180px">状态</th>
+				<th width="180px">操作</th>
+			</tr>
+			#foreach($!data in ${dataList})
+			<tr>
+				<td>
+				 <a class="btn_p" href="$!{request.getContextPath()}/warehouse/view.do?warehouseid=$!data.get('warehouse_id')">$!data.get('warehouse_name')</a>
+				</td>
+				<td>$!data.get('province')/$!data.get('city')/$!data.get('name')</td>
+				<td>$!data.get('warehouse_manager_name')</td>
+				<td>$!data.get('warehouse_contact_phone')</td>
+				<td>$!data.get('company_name')</td>
+				
+				<td>
+					#if($!data.get('verify_status') == 0)
+						待审核
+					#elseif($!data.get('verify_status')== 1)
+						已拒绝
+					#elseif($!data.get('verify_status') == 2)
+						已通过
+					#end
+				</td>
+				</td>
+				<td>
+				  <div class="commodity_operat">
+				    #if($!data.get('verify_status') == 0)
+						<a class="btn_p" href="$!{request.getContextPath()}/warehouse/view.do?warehouseid=$!data.get('warehouse_id')">查看仓储信息</a>	
+					#elseif($!data.get('verify_status')== 1)
+						<a class="btn_p" href="$!{request.getContextPath()}/warehouse/view.do?warehouseid=$!data.get('warehouse_id')">查看仓储信息</a>
+					#elseif($!data.get('verify_status') == 2)
+						<a class="btn_p" href="javascript:Toast.show('hello,此功能暂时不能使用。');">查看</a>
+					#end	
+				 </div>
+			  </td>
+			</tr>
+			#end
+			
+		</table>
+		
+		##分页
+		#parse("pagination.vm")
+	</article>
+</div>
+<script type="text/javascript">
+$(function(){
+		showLocation(); //省市区
+		//获取地市下分公司数据	
+		$("#loc_town").on("change",function(){
+			var district_ = $(this).val();
+			$.getJSON("$!{request.getContextPath()}/company/getCompanyNoPage.do?jsoncallback=?",
+				{
+					companyAddrDistrict : district_
+				},
+				function(ret){
+    				if(!ret.success || ret.total ==0){
+						Toast.show(ret.msg);
+    				}else{
+    					var data = ret.data;
+    					var opts = "<option value=''>分公司名称</option>";
+    					$.each(data,function(i,o){
+    						opts += "<option value="+o.companyId+">"+o.companyName+"</option>";
+    					});
+    					$("#companyID").html(opts);
+    				}
+			});
+		});	
+			
+		
+		
+	});
+</script>
+<script>
+  function showWarehouse(){
+			var companyId = $("#companyID").val();
+			var verifyStatus=$("#verifyStatus").val();
+			Toast.show("compayid:"+companyId+" status:"+verifyStatus);
+			$.getJSON("$!{request.getContextPath()}/warehouse/getWarehouseNoPage.do?jsoncallback=?",
+				{
+					companyId:companyId,
+					verifyStatus:verifyStatus,
+					shopFg:true
+				},
+				function(ret){
+    				if(!ret.success || ret.total == 0){
+						Toast.show(ret.msg);
+    				}else{
+    					var data = ret.data;
+    					var opts = "<option value=''>仓储名称</option>";
+    					$.each(data,function(i,o){
+    						opts += "<option value="+o.warehouseId+">"+o.warehouseName+"</option>";
+    					});
+    					$("#warehouseID").html(opts);
+    				}
+			});
+		
+  }
+</script>  

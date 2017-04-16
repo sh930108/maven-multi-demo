@@ -1,0 +1,359 @@
+##资金查询
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({
+	"menu" : 124,
+	"cmenu" : 180
+});
+</script>
+<div id="content-header">
+	<h1>财务管理 | 资金查询</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i></span>
+					<h5>资金列表</h5>
+				</div>
+				<!-- 筛选条件 -->
+				<div class="widget-content">
+				 <div class="widget-box widget-tabs-box">
+				   <ul class="nav nav-tabs">
+				     <li class="active">
+				      <a>分公司/总仓</a>
+				     </li>
+					 <li>
+					  <a href="$!{request.getContextPath()}/fs/mmhCapitalQuery.do">妈妈好平台</a>
+					 </li>
+				   </ul>
+				   <div class="widget-content">
+					<form class="form-horizontal" method="get" action="$!{request.getContextPath()}/fs/capitalQuery.do" id="form">
+						<input type="hidden" name="platformSource" value="$!platformSource" id="platformSource"/>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">日期：</label>
+									<div class="controls">
+										<input type="text" maxlength="50" name="startPayTime" value="$!fstatement.startPayTime" id="startPayTime" placeholder="请输入开始时间"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+									       至<input type="text" maxlength="50" name="endPayTime" value="$!fstatement.endPayTime" id="endPayTime" placeholder="请输入结束时间"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startPayTime\')}'});">
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">对象：</label>
+									<div class="controls">
+										<select id="t1" name="type" onchange="javascript:showType(this.value)">
+                                                <option value="">全部</option>
+    											<option #if($!{request.getParameter('type')}==1) selected #end value="1">分公司</option>
+    											<option #if($!{request.getParameter('type')}==2) selected #end value="2">总仓</option>
+                                        </select>
+                                        <select id="t2" name="typeId">
+                                                <option value="">全部</option>
+                                        </select>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						#if($!platformSource==1)
+						  <div class="row-fluid">
+						   <div class="span6">
+								<div class="control-group">
+									<label class="control-label">支付方式：</label>
+									<div class="controls">
+										<input type="checkbox" id="payType0" name="payTypeIds" value="0" 
+										  #foreach($payType in $!fstatement.payTypeIds)
+										    #if($!payType==0)
+										      checked
+										      break;
+										    #end
+										  #end
+										 >支付宝v1.0
+										<input type="checkbox" id="payType4" name="payTypeIds" value="4"
+										 #foreach($payType in $!fstatement.payTypeIds)
+										    #if($!payType==4)
+										      checked
+										      break;
+										    #end
+										  #end>支付宝v1.1
+										<input type="checkbox" id="payType2" name="payTypeIds" value="2"
+										   #foreach($payType in $!fstatement.payTypeIds)
+										    #if($!payType==2)
+										      checked
+										      break;
+										    #end
+										  #end
+										>APP微信支付
+										<input type="checkbox" id="payType1" name="payTypeIds" value="1"
+										  #foreach($payType in $!fstatement.payTypeIds)
+										    #if($!payType==1)
+										      checked
+										      break;
+										    #end
+										  #end
+										>银联支付
+									</div>
+								</div>
+							</div>
+						 </div>
+						#end
+						
+						
+						<div class="form-actions">
+							<button type="button" id="commit" class="btn btn-success" onclick="javascript:butonCommit(1);">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							<a class="btn btn-primary" href="javascript:;" id="add_shop" onclick="javascript:butonCommit(2);">导出</a>
+						</div>
+					</form>
+				 </div>
+				<!--资金列表-->
+				<div class="widget-content">
+					<div class="widget-box widget-tabs-box">
+						<ul class="nav nav-tabs">
+							<li class="#if($!platformSource==1) active #end">
+							  <a href="#if($!platformSource==1)javascript:;#else$!{request.getContextPath()}/fs/capitalQuery.do?platformSource=1 #end">APP收入</a>
+							</li>
+							<li class="#if($!platformSource==2) active #end">
+							 <a href="#if($!platformSource==2)javascript:;#else$!{request.getContextPath()}/fs/capitalQuery.do?platformSource=2 #end">微分销收入</a>
+							</li>
+						</ul>
+					  <div class="widget-content tab-content">
+							<table class="table table-hover table-bordered table-text-center">
+								<thead>
+									<tr>
+										<th>日期</th>
+										<th>对象</th>
+										<th>支付方式</th>
+										<th>收入/元</th>
+										<th>退款/元</th>
+										<th>实际收入</th>
+									</tr>
+								</thead>
+							   <tbody>
+							       #set($rowNum=0)
+							       #set($typeId=0)
+							       #set($typename='')
+							       #set($payTypes='')
+							       #set($payMoneys=0)
+							       #set($refundMoneys=0)
+							       #set($realMoneys=0)
+								  #foreach($data in $!datas)
+								     #set($rowNum=$!rowNum+1)
+								     #if($typeId==0)
+								         #set($typeId=$!data.typeId)
+								         #set($typename=$!data.typeName)
+								         
+								         #set($payTypes=$!data.payTypeId+",")
+								         #set($payMoneys=$!data.payMoney+",")
+								         #set($refundMoneys=$!data.refundMoney+",")
+								         #set($realMoneys=$!data.RealMoney+",")
+								     #else
+								       #if($typeId!=$!data.typeId)
+								         <tr>
+										  <td>$!fstatement.startPayTime -- $!fstatement.endPayTime</td>
+										  <td>$typename</td>
+										  <td>
+										  #foreach($!payType in $payTypes.split(","))
+										     #if($!payType==0)
+										                    支付宝V1.0 <br/>
+										     #elseif($!payType==1)
+										                     银联支付 <br/>
+										     #elseif($!payType==2)
+										        APP微信支付 <br/>
+										     #elseif($!payType==3)
+										                        妈豆支付<br/>
+										     #elseif($!payType==4)
+										                        支付宝V1.1<br/>
+										     #elseif($!payType==5)
+										                        微分销微信支付<br/>
+										     #elseif($!payType==6)
+										                        测试支付宝<br/>
+										     #end
+										  #end
+										 </td>
+										 <td>
+										  #foreach($!payMoney in $payMoneys.split(","))
+										     $number.format("#0.00",$!payMoney) <br/>
+										  #end
+										 </td>
+										 <td>
+										  #foreach($!refundMoney in $refundMoneys.split(","))
+										     $number.format("#0.00",$!refundMoney) <br/>
+										  #end
+										 </td>
+										 <td>
+										   #foreach($!realMoney in $realMoneys.split(","))
+										     $number.format("#0.00",$!realMoney) <br/>
+										   #end
+										 </td>
+									    </tr>
+									    
+									     #set($typeId=$!data.typeId)
+									     #set($typename=$!data.typeName)
+									     
+								         #set($payTypes=$!data.payTypeId+",")
+								         #set($payMoneys=$!data.payMoney+",")
+								         #set($refundMoneys=$!data.refundMoney+",")
+								         #set($realMoneys=$!data.RealMoney+",")
+							           #else
+							             #set($payTypes=$payTypes+$!data.payTypeId+",")
+								         #set($payMoneys=$payMoneys+$!data.payMoney+",")
+								         #set($refundMoneys=$refundMoneys+$!data.refundMoney+",")
+								         #set($realMoneys=$realMoneys+$!data.RealMoney+",")
+								       #end
+								     #end
+								    #if($!rowNum==$!datas.size())
+								         <tr>
+										  <td>$!fstatement.startPayTime -- $!fstatement.endPayTime</td>
+										  <td>$typename</td>
+										  <td>
+										  #foreach($!payType in $payTypes.split(","))
+										     #if($!payType==0)
+										                    支付宝V1.0 <br/>
+										     #elseif($!payType==1)
+										                     银联支付 <br/>
+										     #elseif($!payType==2)
+										        APP微信支付 <br/>
+										    #elseif($!payType==3)
+										                        妈豆支付<br/>
+										    #elseif($!payType==4)
+										                        支付宝V1.1<br/>
+										    #elseif($!payType==5)
+										                        微分销微信支付<br/>
+										    #elseif($!payType==6)
+										                        测试支付宝<br/>
+										    #end
+										  
+										  #end
+										 </td>
+										 <td>
+										  #foreach($!payMoney in $payMoneys.split(","))
+										     $number.format("#0.00",$!payMoney) <br/>
+										  #end
+										 </td>
+										 <td>
+										  #foreach($!refundMoney in $refundMoneys.split(","))
+										     $number.format("#0.00",$!refundMoney) <br/>
+										  #end
+										 
+										 </td>
+										 <td>
+										   #foreach($!realMoney in $realMoneys.split(","))
+										     $number.format("#0.00",$!realMoney) <br/>
+										   #end
+										 </td>
+									   </tr>
+								      #end
+								  #end
+							  </tbody>
+							</table>
+							##分页
+						    #parse("pagination.vm")
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+var typeId = '';
+var shopId='';
+$(function(){
+	var type = '$!{request.getParameter('type')}';
+    typeId = '$!{request.getParameter('typeId')}';
+	shopId = '$!{request.getParameter('shopId')}';
+	if(type==null || type =="" || type==undefined){
+		//console.log("第一次跳转");
+	}else{
+		if(type==1){
+			showType(1);
+		}else if(type==2){
+			showType(2);
+		}
+	}
+});
+
+function showType(type){
+  if(type==-1){
+		Toast.show("请选择数据！");
+  }else if(type ==1){
+		//获取分公司列表
+		 Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showCompanyList.do",
+                val: {},
+                fun: function (data) {
+					var str = '';
+					$.each(data, function(i, n) {
+						//console.log(n.divNumId);
+						if(typeId != null){
+							var t = Number(typeId);
+							if(n.divNumId==t){
+								str += "<option value='"+n.divNumId+"' selected>"+n.divName+"</option>";
+							}else{
+								str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+							}
+						}else{
+							str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+						}
+						
+            		});
+					$("#t2").html(str);
+                }
+          });
+  }else{
+		Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showStorageList.do",
+                val: {},
+                fun: function (data) {
+					var str = '<option value=\"-1\">全部</option>';
+					$.each(data, function(i, n) {
+						if(typeId != null && typeId != ""){
+							var t = Number(typeId);
+							if(n.storageNumId==t){
+								str += "<option value='"+n.storageNumId+"' selected >"+n.storageName+"</option>";
+							}else{
+								str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+							}
+						}else{
+							str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+						}
+            		});
+					$("#t2").html(str);
+                }
+          });
+  }
+}
+
+function butonCommit(type){
+   var startTime = $('#startPayTime').val();
+   var endTime = $('#endPayTime').val();
+   if(startTime == ""){
+				Toast.show("请先选择开始日期");
+				$('#startPayTime').focus();
+				return false;
+   }else if(endTime==""){
+ 		        Toast.show("请先选择结束日期");
+				$('#endPayTime').focus();
+				return false;
+   }else{
+	 if(startTime > endTime){
+					Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+					$('#startPayTime').focus();
+					return false;
+	 }
+   }
+   if(type==2){
+     $('#form').attr("action", "$!{request.getContextPath()}/fs/exportDivStorageCapital.do");
+   }else{
+   	$('#form').attr("action", "$!{request.getContextPath()}/fs/capitalQuery.do");
+   }
+   $('#form').submit();
+}
+
+</script>

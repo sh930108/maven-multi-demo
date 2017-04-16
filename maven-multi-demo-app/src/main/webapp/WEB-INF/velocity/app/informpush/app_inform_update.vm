@@ -1,0 +1,228 @@
+##编辑推送信息
+#set($layout="/admin/layout/modal.vm")
+
+<style>
+    .modal-iframe-content {padding: 10px;}
+    .view-mode .form-horizontal .control-label {padding-top: 10px;}
+</style>
+
+<div>
+    <div class="edit-mode" #if($!{opt}=="show") hidden #end>
+        <form id="msg-form" class="form-horizontal">
+            <input type="hidden" name="channel" value="$!pushJobMap.get('channel')"/>
+            <input type="hidden" name="jobId" value="$!pushJobMap.get('push_job_id')"/>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>标题：</label>
+
+                <div class="controls">
+                    <input type="text" name="title" value="$!{pushJobMap.title}" maxlength="128"/>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>内容：</label>
+
+                <div class="controls">
+                    <textarea rows="3" cols="16" name="content" maxlength="255">$!{pushJobMap.content}</textarea>
+                </div>
+            </div>
+            #if($!{pushJobMap.channel}=='push')
+            <div class="control-group">
+                <label class="control-label"><i>*</i>落地页类型：</label>
+
+                <div class="controls">
+                    <select name="pushType" class="select">
+                        #foreach($key in ${pushtypes.keySet()})
+                        <option value='$key' #if($!{pushJobMap.push_type}==${key}) selected #end>
+                            ${pushtypes.get($key)}
+                        </option>
+                        #end
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><i>*</i>落地页地址：</label>
+               <div class="controls">
+                  <input type="text" name="pageUrl" value="$!{pushJobMap.page_url}" maxlength="128">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>平台类型：</label>
+
+                <div class="controls">
+                    <select class="select" name="platformType">
+                        <option value='0' #if($!{pushJobMap.platform_type}==0) selected #end>全部</option>
+                        <option value='1' #if($!{pushJobMap.platform_type}==1) selected #end>IOS</option>
+                        <option value='2' #if($!{pushJobMap.platform_type}==2) selected #end>Android</option>
+                    </select>
+                </div>
+            </div>
+            #end
+            <div class="control-group">
+                <label class="control-label"><i>*</i>推送时间：</label>
+
+                <div class="controls">
+                    <input id="endTime" type="text" name="pushTime1"
+                           onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'%y-%M-%d'});"
+                           value="$!date.format('yyyy-MM-dd HH:mm:ss',$!{pushJobMap.push_time})"/>
+                    <span>（不填写代表立即推送）</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>推送用户：</label>
+
+                <div class="controls">
+                    <label><input type="radio" name="specMemberType" value="0" #if($!{pushJobMap.spec_member_type}==0)
+                                  checked #end/>所有用户</label>
+                    <label><input type="radio" name="specMemberType" value="2" #if($!{pushJobMap.spec_member_type}==2)
+                                  checked #end/>指定用户</label>
+                    <label>用户ID: (可输入多个ID，不同ID用，隔开)</label>
+                    <label><input type="text" name="specMemberIds" value="$!{pushJobMap.memberIds}"/></label>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    <button type="button" class="btn btn-primary" onclick="updatePushJob();">确定</button>
+                </label>
+            </div>
+        </form>
+    </div>
+
+    <div class="view-mode" #if($!{opt}!="show" ) hidden #end>
+        <form class="form-horizontal">
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>标题：</label>
+
+                <div class="controls">
+                    <span>$!{pushJobMap.title}</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>内容：</label>
+
+                <div class="controls">
+                    <span>$!{pushJobMap.content}</span>
+                </div>
+            </div>
+
+            #if($!{pushJobMap.channel}=='push')
+            <div class="control-group">
+                <label class="control-label"><i>*</i>落地页面：</label>
+
+                <div class="controls">
+                    <span>
+                #if($!{pushJobMap.push_type}==0)
+                主页
+                #elseif($!{pushJobMap.push_type}==1)
+                个人中心
+                #elseif($!{pushJobMap.push_type}==2)
+                优惠券
+                #else
+                设置-关于妈妈好
+                #end
+                    </span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>平台类型：</label>
+
+                <div class="controls">
+                    <span>
+                #if($!{pushJobMap.platform_type}==0)
+                全部
+                #elseif($!{pushJobMap.platform_type}==1)
+                IOS
+                #elseif($!{pushJobMap.platform_type}==2)
+                Android
+                #end
+                    </span>
+                </div>
+            </div>
+            #end
+
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>推送时间：</label>
+
+                <div class="controls">
+                    <span>$!date.format('yyyy-MM-dd HH:mm:ss',$!{pushJobMap.push_time})</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label"><i>*</i>推送用户：</label>
+
+                <div class="controls">
+                    <span>
+                #if($!{pushJobMap.spec_member_type}==0)
+                全部
+                #else
+                用户id为：$!{pushJobMap.memberIds}
+                #end
+                    </span>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    /*更新推送信息*/
+    function updatePushJob() {
+        /*表单验证*/
+        var _form = $("#msg-form"),
+            title = _form.find("[name='title']"),
+            content = _form.find("[name='content']"),
+            pushTime = _form.find("[name='pushTime1']"),
+            specMemberIds = _form.find("[name='specMemberIds']");
+        if (isForm.isTrim(title.val())) {
+            showEmptyTips(title);
+            return false;
+        }
+        if (isForm.isTrim(content.val())) {
+            showEmptyTips(content);
+            return false;
+        }
+        if (isForm.isTrim(pushTime.val())) {
+            showEmptyTips(pushTime);
+            return false;
+        }
+        if ($("input[name='specMemberType']:checked").val() == 2 && isForm.isTrim(specMemberIds.val())) {
+            showEmptyTips(specMemberIds);
+            return false;
+        }
+
+        /*ajax提交数据*/
+        $.ajax({
+            url: '$!{request.getContextPath()}/informPush/save.do',
+            type: 'post',
+            dataType: 'json',
+            data: $("#msg-form").serialize(),
+            success: function (data) {
+                if (data == "success") {
+                    Toast.show({
+                        template: "更新成功",
+                        second: 1000,
+                        callback: function () {
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Toast.show("[服务器异常]" + XMLHttpRequest.status);
+            }
+        });
+    }
+
+    //显示不能为空提示
+    function showEmptyTips(obj) {
+        Toast.show(obj.closest(".control-group").find(".control-label").text().replace(/[\s*:：]/g, "") + "不能为空");
+        obj.focus();
+    }
+
+</script>

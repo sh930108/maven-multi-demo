@@ -1,0 +1,74 @@
+##妈豆
+
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+  Matrix.Nav({"menu": 26, "cmenu": 27});
+</script>
+<div id="content-header">
+    <h1>用户管理 | 会员充值记录</h1>
+</div>
+
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box">
+        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+          <h5>用户信息</h5>
+        </div>
+        <div class="widget-content">
+			#parse("/user/user_public_header.vm")
+		</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box widget-tabs-box">
+          <ul class="nav nav-tabs">
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserIntegral.do?memberId=$memberId" >成长值记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserMbean.do?memberId=$memberId" >妈豆记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserVoucher.do?memberId=$memberId&type=1">优惠券记录</a>
+            </li>
+			<li class="">
+              <a href="$!{request.getContextPath()}/user/showNewUser.do?memberId=$memberId&type=1">拉新用户记录</a>
+            </li>
+            <li class="active">
+              <a href="$!{request.getContextPath()}/user/showVipRecharge.do?memberId=$memberId">会员充值记录</a>
+            </li>
+          </ul>
+          <div class="widget-content tab-content">
+            <!-- 选项卡 -->
+            <div id="tab2" class="tab-pane active">
+              <table class="table table-hover table-text-center">
+                <thead>
+                  <tr>
+                    <th width="240">时间</th>
+                    <th>充值类型</th>
+                    <th>充值金额</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  #foreach($data in $dataList)
+                	<tr>
+                    	<td>$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.createTime})</td>
+                        <td>$!{data.type}</td>
+                        <td>$!{data.desc}</td>
+                    </tr>
+                  #end
+                </tbody>
+              </table>
+              #parse("/pagination.vm")
+            </div>
+          </div>
+          <!-- 内容框 END -->
+        </div>
+    </div>
+  </div>
+</div>

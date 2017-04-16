@@ -1,0 +1,341 @@
+##微推广排名榜
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<style>
+    .pt1x{padding-top: 10px;}
+    .pb1x{padding-bottom: 10px;}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 148, "cmenu": 157});
+</script>
+<div id="content-header">
+    <h1>微推广管理 |微推广排名榜</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>微推广排名榜</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form id="searchFrm" class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/share/income/promotionRankingList4Page.do">
+						<input type="hidden" name="rankType" value="$!dto.rankType"/>
+						<div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">排名方式：</label>
+                                    <div class="controls">
+                                        <select name="rankWay">
+                                            <option value="0" #if($!dto.rankWay == 0) selected #end>拉新用户数</option>
+											<option value="1" #if($!dto.rankWay == 1) selected #end>佣金收入</option>
+											<option value="2" #if($!dto.rankWay == 2) selected #end>交易GMV</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span8">
+                                <div class="control-group">
+                                    <label class="control-label">时间：</label>
+                                    <div class="controls">
+										<input id="beginDate" class="span4" type="text" name="beginDate" value="$!date.format('yyyy-MM-dd',$!dto.beginDate)" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endDate\')}'})"/>
+										<span class="notepad-inline">至</span>
+										<input id="endDate" class="span4" type="text" name="endDate" value="$!date.format('yyyy-MM-dd',$!dto.endDate)" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'beginDate\')}'})"/>
+                                        <a class="btn btn-primary" href="javascript:showTimeAndSubmit(7);">最近7天</a>
+                                        <a class="btn btn-primary" href="javascript:showTimeAndSubmit(30);">最近30天</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">总公司：</label>
+                                    <div class="controls">
+                                        <select name="parentOrgId" id="_parentOrg"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+									#if($!dto.rankType == 2)
+										<label class="control-label">分公司/部门名称：</label>
+                                        <div class="controls">
+                                            <input type="text" name="branchOrgName" value="$!dto.branchOrgName"/>
+                                        </div>
+									#else
+                                        <label class="control-label">分公司/部门：</label>
+                                        <div class="controls">
+                                            <select name="branchOrgId" id="_branchOrg"></select>
+                                        </div>
+									#end
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="control-group">
+									#if($!dto.rankType == 0)
+                                        <label class="control-label">地推点/门店：</label>
+                                        <div class="controls">
+                                            <select name="serviceOrgId" id="_serviceOrg"></select>
+                                        </div>
+									#elseif($!dto.rankType == 1)
+										<label class="control-label">地推点/门店名称：</label>
+                                        <div class="controls">
+                                            <input type="text" name="serviceOrgName" value="$!dto.serviceOrgName"/>
+                                        </div>
+									#end
+                                </div>
+                            </div>
+                        </div>
+						#if($!dto.rankType == 0)
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label class="control-label">推广员姓名：</label>
+                                        <div class="controls">
+                                            <input type="text" name="promoterName" value="$!dto.promoterName"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="span4">
+                                    <div class="control-group">
+                                        <label class="control-label">推广员手机号：</label>
+                                        <div class="controls">
+                                            <input type="text" name="promoterMobile" value="$!dto.promoterMobile"/>
+                                        </div>
+                                    </div>
+                                </div>
+								<div class="span4">
+                                    <div class="control-group">
+                                        <label class="control-label">角色名称：</label>
+                                        <div class="controls">
+                                             <select name="roleId">
+													<option value="">全部</option>
+												#foreach($role in $!roleList)
+													<option value="$!role.roleId" #if($!dto.roleId == $!role.roleId) selected #end>$!role.roleName</option>
+												#end	
+											 </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+						#end
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit">筛选</button>
+							<button class="btn btn-warning" type="reset" id="next">重置</button>
+							<div class="btn-group tip-right" data-original-title="由于排名数据量大，导出速度比较慢，请点击“生成排名数据”，稍后再进行数据下载(导出excel表格)。">
+                              <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">导出 <span class="caret"></span></button>
+                              <ul class="dropdown-menu" id="exportOrder"></ul>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li #if($!dto.rankType == 0) class="active" #end>
+                                <a href="$!{request.getContextPath()}/share/income/promotionRankingList4Page.do?rankType=0&rankWay=$!dto.rankWay">个人排名</a>
+                            </li>
+                            <li #if($!dto.rankType == 1) class="active" #end>
+                                <a href="$!{request.getContextPath()}/share/income/promotionRankingList4Page.do?rankType=1&rankWay=$!dto.rankWay">地推点/门店排名</a>
+                            </li>
+                            <li #if($!dto.rankType == 2) class="active" #end>
+                                <a href="$!{request.getContextPath()}/share/income/promotionRankingList4Page.do?rankType=2&rankWay=$!dto.rankWay">分公司/部门排名</a>
+                            </li>
+                        </ul>
+                        <div class="widget-content tab-content">
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th>排名</th>
+                                    <th>
+										#if($!dto.rankType == 0)
+											推广员姓名
+										#elseif($!dto.rankType == 1)
+											服务点名称
+										#elseif($!dto.rankType == 2)
+											公司名称
+										#end	
+									</th>
+                                    <th>直属上级</th>
+                                    <th>拉新用户交易GMV</th>
+                                    <th>佣金收入</th>
+                                    <th>拉新用户数</th>
+									#if($!dto.rankType == 0)
+										<th>操作</th>
+									#end
+								</tr>
+								#foreach($data in ${list})
+									#set($rankIndex = ($!page.page - 1) * $!page.size + $loopCounter + 1)
+                                <tr>
+                                    <td>$rankIndex</td>
+                                    <td>
+										#if($!dto.rankType == 0)
+											$!data.name
+										#elseif($!dto.rankType == 1)
+											$!data.serviceName
+										#elseif($!dto.rankType == 2)
+											$!data.branchCompanyName
+										#end
+									</td>
+                                    <td>
+										#if($!dto.rankType == 0)
+											#if($!data.serviceName)
+    											$!data.serviceName
+    										#elseif($!data.branchCompanyName)
+    											$!data.branchCompanyName
+    										#else
+    											$!data.parentCompanyName
+    										#end	
+										#else
+											#if($!dto.rankType == 1)
+    											$!data.branchCompanyName
+    										#elseif($!dto.rankType == 2)
+    											$!data.parentCompanyName
+    										#end
+										#end	
+										
+									</td>
+                                    <td>#formatAmount($!data.gmv)</td>
+                                    <td>#formatAmount($!data.income)</td>
+                                    <td>$!data.regCount</td>
+									#if($!dto.rankType == 0)
+										<td><a href="$!{request.getContextPath()}/share/promoter/queryPromoter.do?id=$!data.promoterId" target="_blank">查看</a></td>
+									#end
+								</tr>
+								#end
+                            </table>
+
+							#parse("/pagination.vm")
+							
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+	
+<script>
+	 function showTimeAndSubmit(day) {
+        var startTime = getBeforeDate(day);
+        $('#beginDate').val(startTime);
+        var currentDate = getBeforeDate(0);
+        $('#endDate').val(currentDate);
+		$("#searchFrm").submit();
+    }
+	
+	function initOrgs(id,parentId){
+    	var url  = root + "/share/org/queryChildOrgList.do";
+    	if(parentId != null && parentId !=""){
+    		url +=("?parentId="+parentId);
+    	}
+    	$.get(url,function(data){
+    		var option = "<option value>全部</option>";
+    		$.each(data,function(idx,item){
+    			option += ("<option value='"+item.orgId +"'>"+item.shortName+"</option>");
+    		});
+    		$("#"+id).html(option);
+    	});
+    	
+    }
+
+	$(function(){
+		///// begin search ///
+    	initOrgs("_parentOrg", "");
+    	
+    	$("#_parentOrg").on('change',function(){
+    		var id = $(this).val();
+    		initOrgs("_branchOrg", id);
+			$("#_serviceOrg").html(''); //重置服务点
+    	});
+    	$("#_branchOrg").on('change',function(){
+    		var id = $(this).val();
+    		initOrgs("_serviceOrg",id);
+    	});
+    	///// end search
+		
+		//选中
+		#if($!dto.parentOrgId)
+    		orgSelected('$!dto.parentOrgId','_parentOrg', '');
+		#end
+		#if($!dto.branchOrgId)
+			orgSelected('$!dto.branchOrgId','_branchOrg', '$!dto.parentOrgId');
+		#end
+		#if($!dto.serviceOrgId)
+			orgSelected('$!dto.serviceOrgId','_serviceOrg', '$!dto.branchOrgId');
+		#end
+	});
+	
+	function orgSelected(val, id, parentId){
+		var url  = root + "/share/org/queryChildOrgList.do";
+    	if(parentId != null && parentId !=""){
+    		url +=("?parentId="+parentId);
+    	}
+    	$.get(url,function(data){
+    		var option = "<option value>全部</option>";
+    		$.each(data,function(idx,item){
+    			option += ("<option value='"+item.orgId +"'>"+item.shortName+"</option>");
+    		});
+    		$("#"+id).html(option);
+			$("#"+id).val(val);
+    	});
+	}
+	
+	//导出excel
+	function exportExcel(){
+		$("#searchFrm").attr("action",root + "/share/income/exportPromoterRank.do")
+		$("#searchFrm").submit();
+		$("#searchFrm").attr("action",root + "/share/income/promotionRankingList4Page.do")
+	}
+	
+	
+
+
+
+//获取正在导出的导出数据
+	function buildingOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/share/income/queryExportFinishingNotice.do",
+			fun: function(result){
+				var result = eval(result);
+				if(result != null){
+					//数据正在导出中
+					var html = '<li><a href="javascript:void(0)">正在生成排名数据，请稍后下载（数据更新时间：'+getLocalTime(result.createTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}else{
+					var html = '<li><a href="javascript:exportExcel();">生成排名数据（后台生成数据，稍后才能进行导出）</a></li>';
+					$("#exportOrder").append(html);		
+				}
+			}
+		});
+	}
+	buildingOrderExport();
+	
+	//获取排名下载列表
+	function buildOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/share/income/queryExportFinishNotice.do",
+			fun: function(result){
+				if(result != ""){
+					//数据已完成导出
+					var html = '<li><a href="'+root+"/"+result.message+'">排名数据下载（数据更新时间：'+getLocalTime(result.updateTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}
+			}
+		});
+	}
+	buildOrderExport();
+	
+	//日期函数
+	function getLocalTime(nS) {   
+        return new Date(parseInt(nS)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");    
+    }
+	
+</script>

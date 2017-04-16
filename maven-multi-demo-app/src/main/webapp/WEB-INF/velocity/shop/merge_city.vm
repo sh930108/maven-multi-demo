@@ -1,0 +1,208 @@
+##会员分享配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 100, "cmenu": 226});
+</script>
+<div id="content-header">
+    <h1>商户管理 | 区域合并</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>区域选择</h5>
+                </div>
+                ##$invalid
+                ##$valid
+                ##$hasNotNum
+                ##$hasNum
+                ##$citys
+                #set($type = $request.getParameter("type"))
+                <div class="widget-content nopadding">
+                    <form id="frm" class="form-horizontal" method="get" action="$!{request.getContextPath()}/mergeCity/index.do?">
+                       <input type="hidden" name="status" value="$!status"/>
+                        <div class="row-fluid">
+                            <div class="control-group">
+                                <label class="control-label">门店类型：</label>
+                                <div class="controls">
+                                    <select id="shop-type" class="" onchange="$('#frm').submit()" name="type">
+                                        <option value="1" #if($type == 1)selected="selected"#end>GB店</option>
+                                        <option value="2" #if($type == 2)selected="selected"#end>运动店(星店)</option>
+                                        <option value="3" #if($type == 3)selected="selected"#end>Mothercare</option>
+                                        <option value="4" #if($type == 4)selected="selected"#end>好孩子e家</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">没有店的地级市：</label>
+                                <div class="controls">
+                                    <strong>#if($hasNotNum > 0)$!{hasNotNum} #else 0 #end</strong>个市
+                                </div>
+                                <label class="control-label">选择市：</label>
+                                <div class="controls">
+                                    <select id="prv" class="span2 province" name="prvNumId" data-has-shop=0>
+                                        <option value="0">请选择</option>
+                                        #foreach($item in $invalid)
+                                        <option value="$item.prvNumId" >$item.prvName</option>
+                                        #end  
+                                    </select>
+                                    <select id="city" class="span2 city" name="cityNumid">
+                                        <option value="0">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">有店的地级市：</label>
+                                <div class="controls">
+                                    <strong>#if($hasNum > 0)$!{hasNum} #else 0 #end</strong>个市
+                                </div>
+                                <label class="control-label">选择市：</label>
+                                <div class="controls">
+                                    <select class="span2 province" name="" data-has-shop=1>
+                                        <option value="0">请选择</option>
+                                        #foreach($item in $valid)
+                                        <option value="$item.prvNumId" >$item.prvName</option>
+                                        #end
+                                    </select>
+                                    <select class="span2 city" name="">
+                                        <option value="0">请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a class="btn btn-success" id="submit">合并</a>
+                        </div>
+                    </form>
+                </div>
+        
+                <div class="row-fluid">
+                    <div class="widget-content">
+                        <table class="table table-text-center">
+                            <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>没有店的地级市</th>
+                                    <th>有店的地级市</th>
+                                    <th>合并结果</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                #foreach($city in $citys)
+                                <tr data-id="$!city.mergeId">
+                                    <td>$foreach.count</td>
+                                    <td>$city.unclude</td>
+                                    <td>$city.include</td>
+                                    <td>$city.unionname</td>
+                                    <td>
+                                        <a href="javascript:;" class="btn btn-danger btn-mini js-delete">删除</a>
+                                    </td>
+                                </tr>
+                                #end
+                            </tbody>
+                        </table>
+                        ##parse("/pagination.vm")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var vm = {
+        rootPath:'$!{request.getContextPath()}',
+        imgPath: '$imgpath'
+    }
+</script>
+<script type="text/javascript">
+    ;(function(){
+        var page = {
+            config:{
+                vm :vm,
+                api : {
+                    delete : '/mergeCity/split.do',
+                    combine : '/mergeCity/merge.do',
+                    getCities : '/mergeCity/getCitys.do',
+                }
+            },
+            init : function(){
+                var self = this, o = this.ele;
+                $('.js-delete').on('click',self.delete);
+                $('.province').on('change', self.showCity);
+                $('#submit').on('click',self.combine);
+            },
+            /*删除*/
+            delete:function(){
+                var _this = $(this).closest('tr'), c = page.config;
+                var params = {mergeId : _this.data('id')};
+                if(confirm('是否确认删除?')){
+                    Matrix.JSON({
+                        url: c.vm.rootPath + c.api['delete'],
+                        val: params,
+                        type: 'POST',
+                        fun: function (res) {
+                            //回调
+                            Toast.show('删除成功~');
+                            setTimeout('window.location.reload()',1000);
+                        }
+                    });
+                }
+            },
+            /*合并*/
+            combine:function(){
+                if($('.city')[0].value == 0 || $('.city')[1].value == 0) return Toast.show('请选择完整');
+                var c = page.config, list = [ {  
+                    shopType: $('#shop-type').val(),
+                    cityId:$('.city')[0].value,
+                    cityName:$($('.city')[0]).find('option:selected').text(),
+                    hasShop:0//包含不(1 包含 0不包含)
+                },
+                {  
+                    shopType: $('#shop-type').val(),
+                    cityId:$('.city')[1].value,
+                    cityName:$($('.city')[1]).find('option:selected').text(),
+                    hasShop:1//包含不(1 包含 0不包含)
+                }];
+                var params ={list:JSON.stringify(list)};
+                if(confirm('是否确认合并?')){
+                    // return console.log(params);
+                    Matrix.JSON({
+                        url: c.vm.rootPath + c.api['combine'],
+                        val: params,
+                        type: 'POST',
+                        fun: function (res) {
+                            //回调
+                            if(res.success){
+                                Toast.show('合并成功~');
+                                setTimeout('window.location.reload()',1000);
+                            }
+                        }
+                    });
+                }
+            },
+            showCity:function(){
+                var _this = $(this),c = page.config, params = {prvNumId:_this.val(),type:$('#shop-type').val(),hasOrNot:_this.data('has-shop')};
+                _this.next('.city').html('');
+                Matrix.JSON({
+                    url: c.vm.rootPath + c.api['getCities'],
+                    val: params,
+                    type: 'POST',
+                    fun: function (res) {
+                        //回调
+                        if(res.success){
+                            $.each(res.data,function(i,item){
+                                _this.next('.city').append('<option value="' + item.cityNumId + '">' + item.cityName + '</option>');
+                            });
+                        }
+                    }
+                });
+            },
+        };
+
+        page.init();
+    })();
+</script>

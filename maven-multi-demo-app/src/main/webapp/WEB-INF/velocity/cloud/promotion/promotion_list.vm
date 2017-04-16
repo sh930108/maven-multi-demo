@@ -1,0 +1,175 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 107, "cmenu": 111});
+</script>
+
+<style >
+	.photo {
+	    width: 320px;
+        height: 192px;
+        overflow: hidden;
+	}
+    .checkLabel {
+        display: inline;
+    }
+</style>
+
+<div id="content-header">
+    <h1>商品管理  | 品牌宣导</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                <h5>品牌宣导列表</h5>
+                #if($!{request.getParameter('online')} == 1)
+                <a class="btn btn-warning fr btn-small" href="$!{request.getContextPath()}/gb/goods/queryOnlineGoodsList.do?online=1&type=1#if($!{request.getParameter('page')} != '')&page=$!{request.getParameter('page')}#end">返回</a>
+                #elseif($!{request.getParameter('online')} == 0)
+                <a class="btn btn-warning fr btn-small" href="$!{request.getContextPath()}/gb/goods/queryCheckPassGoodsList.do?online=0#if($!{request.getParameter('page')} != '')&page=$!{request.getParameter('page')}#end">返回</a>
+                #else
+                <a class="btn btn-warning fr btn-small" href="$!{request.getContextPath()}/gb/goods/queryOnlineNoStockGoodsList.do?type=2#if($!{request.getParameter('page')} != '')&page=$!{request.getParameter('page')}#end">返回</a>
+                #end
+            </div>
+            #if(!$!{mapRet.styleNumId})
+            <div class="widget-content">
+                <a class="btn btn-success" href="$!{request.getContextPath()}/gb/goods/showPromotionDetail.do?styleNumId=$!{request.getParameter('styleNumId')}&styleId=$!{request.getParameter('styleId')}&online=$!{request.getParameter('online')}&type=$!{request.getParameter('type')}&page=$!{request.getParameter('page')}">添加品牌宣导</a>
+            </div>
+            #else
+            <div class="widget-content">
+                <input type="hidden" value="$!{request.getParameter('styleNumId')}" name="styleNumId">
+                <input type="hidden" value="$!{request.getParameter('styleId')}" name="styleId">
+                <table class="table table-hover with-check table-text-center">
+                    <thead>
+                        <th width="320" class="text-left">封面</th>
+                        <th>标题</th>
+                        <th width="200">操作</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="photo">
+									<img width="320" src="http://bgo.mamhao.cn/$!{mapRet.coverPic}"/>
+                                </div>
+                            </td>
+                            <td>$!{mapRet.brandPromotionTitle}</td>
+                            <td>
+                                <div style="margin:10px 0;">
+								<a class="btn btn-primary btn-mini" href="$!{request.getContextPath()}/gb/goods/getPromotionShow.do?styleNumId=$!{mapRet.styleNumId}&styleId=$!{mapRet.styleId}" target="_blank">预览</a>
+                                <a class="btn btn-warning btn-mini" href="$!{request.getContextPath()}/gb/goods/showPromotionDetail.do?styleNumId=$!{request.getParameter('styleNumId')}&styleId=$!{request.getParameter('styleId')}&online=$!{request.getParameter('online')}&type=$!{request.getParameter('type')}&page=$!{request.getParameter('page')}">修改</a>
+                                <a class="btn btn-danger  btn-mini" onclick="delConfirm($!{request.getParameter('styleNumId')});" href="javascript:void(0)">删除</a>
+                                </div>
+                                <p>
+                                <a class="btn btn-success btn-mini" data-toggle="modal" id="pActive" href="#pActivePop">未启用</a>
+                                <div class="modal hide" id="pActivePop" aria-hidden="true" style="width: 300px;margin-left: -150px;">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">×</button>
+                                        <h3>选择启用选项</h3>
+                                    </div>
+                                    <div class="modal-body padding10 text-left">
+                                        <div class="">
+                                        <input name="pActive" id="s1" value="1" #if($!{mapRet.isTerminalInShow}=='1') checked #end type="checkbox"><label class="checkLabel" for="s1">品牌宣导在终端展示</label></div>
+                                        <div class="">
+                                        <input name="pActive" id="s2" value="2" type="checkbox" #if($!{mapRet.isMicroShopShow}=='1') checked #end><label class="checkLabel" for="s2">品牌宣导在微店展示</label></div>
+                                        <div class="">
+                                        <input name="pActive" id="s3" value="3" type="checkbox" #if($!{mapRet.isAppInShow}=='1') checked #end><label class="checkLabel" for="s3">品牌宣导在妈妈好App展示</label></div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="javascript:;" onclick="pActive();" class="btn btn-primary" data-dismiss="modal">确定</a>
+                                        <a href="javascript:;" class="btn" data-dismiss="modal">关闭</a>
+                                    </div>
+                                </div>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            #end
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+$(function(){
+    var chks = $("input[name='pActive']:checked");
+    if (chks.length>0) {
+        $("#pActive").text("已启用"+chks.length+"项");
+    }
+})
+
+function delConfirm(styleNumId) {
+    if(confirm("确定删除该品牌宣导吗？")){
+        Matrix.JSON({
+            showLoad : true,
+            type : "POST",
+            val: {
+                styleNumId:$("input[name='styleNumId']").val(),
+                styleId:$("input[name='styleId']").val()
+            },
+            url : '$!{request.getContextPath()}/gb/goods/deletePromotion.do',
+            fun : function(data) {
+                console.log(data);
+                if (data.success) {
+                    Toast.show("已删除！");
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    Toast.show(data.msg);
+                }
+            }
+        });
+    }
+}
+
+function pActive () {
+    var isPromotionOpen = 0;
+    var isAppInShow = 0;
+    var isMicroShopShow = 0;
+    var isTerminalInShow = 0;
+
+    var chks = $("input[name='pActive']:checked");
+
+    if (chks.length>0) {
+
+        isPromotionOpen=1;
+
+        for (var i = 0; i < chks.length; i++) {
+            var chk = $(chks[i]);
+            if (chk.val()==1) { isTerminalInShow = 1;}
+            else if (chk.val()==2) { isMicroShopShow = 1;}
+            else { isAppInShow = 1; }
+        };
+
+        $("#pActive").text("已启用"+chks.length+"项");
+
+    } else{
+        $("#pActive").text("未启用");
+    }
+    
+    Matrix.JSON({
+        showLoad : true,
+        type : "POST",
+        val: {
+            styleNumId:$("input[name='styleNumId']").val(),
+            styleId:$("input[name='styleId']").val(),
+            isPromotionOpen:isPromotionOpen,
+            isTerminalInShow:isTerminalInShow,
+            isMicroShopShow:isMicroShopShow,
+            isAppInShow:isAppInShow},
+        url : '$!{request.getContextPath()}/gb/goods/savePromotionShowTag.do',
+        fun : function(data) {
+            if (data.success) {
+                Toast.show("修改保存成功");
+            } else {
+                Toast.show(data.msg);
+            }
+        }
+    });
+}
+
+</script>

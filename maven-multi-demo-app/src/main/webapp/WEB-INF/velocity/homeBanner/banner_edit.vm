@@ -1,0 +1,12 @@
+##广告编辑(查看)页
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 184, "cmenu": 185});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 投放系统</h1>
+</div>
+<hr>
+
+${id}

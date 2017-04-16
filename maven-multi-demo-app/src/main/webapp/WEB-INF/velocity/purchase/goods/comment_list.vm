@@ -1,0 +1,289 @@
+##普通商品评论
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 216});
+</script>
+<style>
+    ul,li{list-style:none;}
+    .block{margin:0 10px;padding: 10px;display: block;}
+    .comment{margin: 10px 15px;}
+    .comment {margin: 0;}
+    .comment li{border-bottom: 1px solid #DCDCDC;}
+    .comment .opt{display: none;}
+    .comment .article-post:hover .opt{display: inline-block;}
+    .comment .article-post{margin-left: 54px;padding: 10px 0; border-bottom: 1px dotted #AEBDC8;}
+    .comment .article-post:last-child{border-bottom: none;}
+    .comment p{margin:5px 0;}
+    .comment .user-info{font-size: 14px;font-weight: 800;margin-right: 10px;color: #006DCC;}
+    .comment .time{color: #999;}
+    .comment .user-avatar{width: 40px;height: 40px;margin-right: 10px;margin-top: 5px;padding: 2px;float: left;padding: 2px;}
+    .comment .user-avatar img{border-radius: 50%;}
+    .thumbnails img{width: 150px;}
+    .modal{width: 760px;margin-left: -380px;}
+    .specs ul{margin: 0;}
+    .specs dl{display: inline-flex; padding: 10px;border: 1px solid #ccc;}
+    .specs li:first-child dl{border-bottom: none;}
+    .specs dd,.specs dt{display: inline-block;float: left;padding: 5px 10px;border:1px dashed #ccc;min-width: 50px;}
+    .specs dd{color: #333;border-left: none !important;}
+    .specs dt{color: #006DCC}
+    .item{border: 1px solid #dcdcdc;margin-top: 10px;}
+</style>
+<div id="content-header">
+    <h1>查看评论 </h1>
+</div>
+<div class="container-fluid">
+    <div class="widget-box">
+        <div class="widget-title">
+            <span class="icon"> <i class="icon-align-justify"></i> </span>
+            <h5>商品信息</h5>
+        </div>
+        <div class="widget-content nopadding">
+            <div class="form-horizontal">
+                <div class="control-group">
+                    <label for="" class="control-label">商品名称：</label>
+                    <div class="controls">
+                        <span class="notepad-inline">$!purchaseGoods.gbStyle.styleTitle</span> 
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="" class="control-label">推荐对象：</label>
+                    <div class="controls">
+                        <span class="notepad-inline">
+                            #if($!purchaseGoods.pgIsWantPregnant)
+                                备孕
+                            #end
+                            #if($!purchaseGoods.pgPregnantEndDays > 0)
+                                ，孕妈 预产期前#covertDay2Date($!purchaseGoods.pgPregnantBeginDays)-#covertDay2Date($!purchaseGoods.pgPregnantEndDays)
+                            #end
+                            #if($!purchaseGoods.pgBabyEndDays > 0)
+                                ，宝妈
+                                    #covertDay2Date($!purchaseGoods.pgBabyBeginDays)-#covertDay2Date($!purchaseGoods.pgBabyEndDays) ，
+                                    #if($!purchaseGoods.pgBabySex == 0)
+                                        不限
+                                    #elseif($!purchaseGoods.pgBabySex == 1)
+                                        王子
+                                    #elseif($!purchaseGoods.pgBabySex == 2)
+                                        公主
+                                    #end
+                            #end
+                        </span> 
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="" class="control-label">推荐地区：</label>
+                    <div class="controls">
+                        <span class="notepad-inline"> 
+                        #if($!purchaseGoods.purchaseAreas.size == 0)
+                            全国
+                        #else
+                            #foreach($!data in $!purchaseGoods.purchaseAreas)
+                                #if($!data.cityNumId == 0)
+                                    全国
+                                #else
+                                    $!data.cityName &nbsp;
+                                #end
+                            #end
+                        #end
+                        </span> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="widget-title">
+            <span class="icon"> <i class="icon-align-justify"></i> </span>
+            <h5>评论内容</h5>
+        </div>
+        <div class="widget-content">
+            <ul class="comment"></ul>
+            <div id="pagination"></div>
+            <p><a href="javascript:history.go(-1);" class="btn btn-danger">返回</a></p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var VM = {
+        rootPath:'$!{request.getContextPath()}',
+        goodsId:'$!{purchaseGoods.pgId}'
+    };
+</script>
+<script type="text/javascript">
+    /*
+* 每月购 评论列表
+* by wml
+* 20151222
+* */
+;(function(){
+    var API = {
+        getComment: VM.rootPath + '/purchase/goods/queryCommentList.do',
+        deleteComment: VM.rootPath + '/purchase/goods/deleteComment.do'
+    };
+    /*分页工具条 Pagination.init({})*/
+    var Pagination = {
+        info: {
+            cPage: 1,
+            totalPage: 1,
+            totalCount: 1,
+            container: $("#pagination")
+        },
+        init: function(op) {
+            var self = this;
+            $.extend(self.info, op);
+            self.render();
+        },
+        render: function() {
+            var o = this.info,
+                pageArr = [];
+            pageArr.push('<div class="pagination alternate text-right"><div class="count">');
+            pageArr.push('<span>共 ' + o.totalCount + ' </span>条记录 (第 <span>' + o.cPage + '</span> 页,共<span> ' + o.totalPage + ' </span>页)');
+            pageArr.push('</div><ul>');
+            if (o.cPage == 1) {
+                pageArr.push('<li class="disabled" id="prev" data-cur-page=' + o.cPage + '><a href="javascript:;">上一页</a></li>');
+            } else {
+                pageArr.push('<li id="prev" data-cur-page=' + o.cPage + '><a href="javascript:;">上一页</a></li>');
+            }
+            for (var i = 1; i < o.totalPage + 1; i++) {
+                if (i == o.cPage) {
+                    pageArr.push('<li class="active"><a href="javascript:;">' + i + '</a></li>');
+                } else {
+                    pageArr.push('<li class="js-paged"><a href="javascript:;">' + i + '</a></li>');
+                }
+            }
+
+            if (o.cPage == o.totalPage) {
+                pageArr.push('<li class="disabled" id="next" data-cur-page=' + o.cPage + '><a href="javascript:;">下一页</a></li>');
+            } else {
+                pageArr.push('<li id="next" data-cur-page=' + o.cPage + '><a href="javascript:;">下一页</a></li>');
+            }
+
+            pageArr.push('</ul></div>');
+
+            o.container.html(pageArr.join(''));
+        }
+    };
+    var page = {
+        info:{
+            vm:VM,
+            commentDIV:$(".comment"),
+            doc:$(document.body)
+        },
+        init:function(){
+            var o = page.info;
+            o.doc.on('click', '.js-paged', function() {
+                if ($(this).is('.active')) return false;
+                var p = Number($(this).text());
+                page.getComment(p);
+            });
+            o.doc.on('click', '.js-comment-del', function(){
+                page.deleteComment($(this).closest('.article-post').data("comment-id"));
+            });
+            //加载第一页评论列表
+            page.getComment(1);
+        },
+        /*请求接口获取指定页数评论*/
+        getComment: function(p) {
+            var o = page.info,
+                params = {
+                    purchaseGoodsId: o.vm.goodsId,
+                    page: p
+                };
+            Matrix.JSON({
+                url: API.getComment,
+                val: params,
+                fun: function(res) {
+                    console.log(res);
+                    page.showComment(res);
+                }
+            });
+        },
+        deleteComment:function(commentId){
+            if(confirm("是否确认删除该评论")){
+                Matrix.JSON({
+                    url: API.deleteComment,
+                    val: {"commentId":commentId},
+                    fun: function(res) {
+                        if(res.success_code == 200){
+                            setTimeout('window.location.reload()', Toast.show('操作成功'));
+                        }else{
+                            Toast.show(res.msg);
+                        }
+                    }
+                });
+            }
+        },
+        /*显示评论列表*/
+        showComment: function(data) {
+            console.log(data);
+            var o = page.info,
+                list = data.data;
+            if (list.length == 0) {
+                o.commentDIV.html("暂无评论~");
+                return;
+            }
+            var arr = [], pagaArr = [];
+            if(o.vm.commentId && o.vm.commentId !=""){
+                $.each(list, function() {
+                    var comment = this;
+                    if(comment.commentId == o.vm.commentId){
+                        list = [comment];
+                        return false;
+                    }
+
+                    //回复评论列表
+                    if (comment.followComments) {
+                        $.each(comment.followComments, function() {
+                            if(this.commentId == o.vm.commentId){
+                                list = [comment];
+                            }
+                        });
+                    }
+                });
+            }else{
+                $('#commentCount').text("(" + data.total + ")");
+            }
+            $.each(list, function() {
+                var comment = this;
+                var memberInfo = comment.fromMember;
+                var nickName = memberInfo.nickName || "";
+                arr.push('<li data-comment-id=' + comment.commentId + '>');
+                arr.push('<div class="user-avatar"> <img alt="User" src="' + (memberInfo.headPortrait || 'http://s.mamhao.cn/common/images/avatar.png') + '"> </div>');
+                arr.push('<div class="article-post" data-comment-id=' + comment.commentId + ' data-member-id=' + memberInfo.memberId + '>');
+                arr.push('<span class="user-info">' + nickName + '</span><span class="time mr1x">' + (new Date(comment.commentDate)).format("yyyy-MM-dd hh:mm:ss") + '</span>');
+                arr.push('<span class="opt"><button class="btn btn-mini btn-danger mr1x js-comment-del">删除</button></span>')
+                arr.push('</span>');
+                arr.push('<p>' + comment.commentContent + '</p>');
+                arr.push('</div>');
+                //回复评论列表
+                if (comment.commentViewObjects) {
+                    $.each(comment.commentViewObjects, function() {
+                        var reply = this;
+                        var fromNickName = reply.fromMember.nickName;
+                        arr.push('<div class="article-post" data-comment-id=' + reply.commentId + ' data-member-id=' + reply.fromMember.memberId + '>');
+                        arr.push('<span class="user-info">' + (fromNickName || '') + '</span>');
+                        if(reply.toMember && reply.toMember.nickName != undefined){
+                            arr.push('回复 <span class="user-info">'+ reply.toMember.nickName +'</span>')
+                        }
+                        arr.push('<span class="time mr1x">' + (new Date(reply.commentDate)).format("yyyy-MM-dd hh:mm:ss") + '</span>');
+												arr.push('<span class="opt"><button class="btn btn-mini btn-danger mr1x js-comment-del">删除</button></span>')
+                        arr.push('</span>');
+                        arr.push('<p>' + reply.commentContent + '</p>');
+                        arr.push('</div>');
+                    });
+                }
+                arr.push('</li>');
+            });
+            o.commentDIV.html(arr.join(''));
+            Pagination.init({
+                cPage: data.page,
+                totalPage: data.total,
+                totalCount: data.allRecords,
+                container: $("#pagination")
+            });
+        }
+    };
+
+    page.init();
+})();
+
+</script>

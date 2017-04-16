@@ -1,0 +1,101 @@
+﻿
+
+#*************** 月份回显 ********************#
+#macro(getMonth $cur_month)
+  #set($month = ["1","2","3","4","5","6","7","8","9","10","11","12"])
+  #if ($cur_month =="0")
+    <option value="0" selected>选择月份</option>
+  #elseif ($cur_month =="")
+    <option value="0" selected>选择月份</option>
+  #else
+    <option value="0">选择月份</option>
+  #end
+  #foreach($mon in $month)
+   #if ($mon == $cur_month)
+    <option value="$cur_month" selected>$cur_month</option>
+   
+   #else
+    <option value="$mon">$mon</option>
+   #end
+  #end
+#end
+
+#*************** 根据后台传过来的pageList显示查询结果的记录数，所有模块 ********************#
+#macro(page_count $plist)
+  #if($plist)
+    #if($plist.count > 0)
+      共$plist.count条记录
+    #elseif($plist.size() > 0)
+      共$plist.size()条记录
+    #else
+    没有符合条件的记录。
+    #end
+  #else
+  没有符合条件的记录。
+  #end
+#end
+
+
+#*************** 根据后台传过来的pageList翻页导航，所有模块 ********************#
+#macro(page_navg $plist $action)
+  #if($plist)
+    #if($plist.count > 0)
+      第$plist.getPageIndex()/$plist.getPageCount()页&nbsp;&nbsp;
+      
+      #if(!$plist.isFirstPage())
+         <a href="#"onClick="${action}(1)">第一页</a>&nbsp;&nbsp;
+      #else
+      	 第一页
+      #end
+    
+      #if($plist.isPreviousPageAvailable())
+         <a href="#"onClick="${action}($plist.getPrevPageIndex())">上一页</a>&nbsp;&nbsp;
+      #else
+      	 上一页
+      #end
+    
+      #if($plist.isNextPageAvailable())
+      
+         <a href="#"onClick="${action}($plist.getNextPageIndex())">下一页</a>&nbsp;&nbsp;
+      #else
+      	 下一页
+      #end
+     
+      #if(!$plist.isLastPage()) 
+        <a href="#"onClick="${action}($plist.getPageCount())">最后一页</a>&nbsp;&nbsp;
+      #else
+      	 最后一页
+      #end 
+       
+   
+    
+ 转到第<input type="text" name="page" class="main_text_rect" size="3">页&nbsp;
+  <img src="images/go.gif" style="cursor:hand" onclick="${action}(page.value)" align="middle"/>
+  #end
+  #end
+#end
+
+
+#*************** 下拉列表通用摸板 ********************#
+#macro(list $keys $maps $selectedItem)
+  #if($selectedItem == "")
+    #foreach ($key in $keys)
+    <option value="$maps.get('$key')">$key</option>
+      #end
+  #else
+      #foreach ($key in $keys)
+        #if ("$!map.get($key)" == "$!selectedItem")
+         <option value="$maps.get($key)" selected>$key</option>
+      #else
+         <option value="$maps.get($key)">$key</option>
+        #end
+      #end
+  #end
+  
+#end
+#*************** 字符串截取 ********************#
+#***********
+#macro(substring $str $beginIndex $endIndex)
+	getResult($str $beginIndex $endIndex)
+#end
+********#

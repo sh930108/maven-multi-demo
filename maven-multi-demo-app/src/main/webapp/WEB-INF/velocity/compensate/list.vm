@@ -1,0 +1,244 @@
+﻿##APP信息推送列表
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+  Matrix.Nav({"menu": 116, "cmenu": 223});
+</script>
+<div id="content-header">
+    <h1>订单管理 | 小额赔付</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>列表</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/compensate/list.do">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">订单号：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="cOrderNo" value="$!{compensateDto.cOrderNo}" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">申请赔付时间：</label>
+                                    <div class="controls">
+                                        <input id="beginTime" class="span3" type="text" name="applyStartDate" value="$!date.format('yyyy-MM-dd',$!compensateDto.applyStartDate)" onfocus="WdatePicker({maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+                                        <span class="notepad-inline">至</span>
+                                        <input id="endTime" class="span3" type="text" name="applyEndDate" value="$!date.format('yyyy-MM-dd',$!compensateDto.applyEndDate)" onfocus="WdatePicker({minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">赔付人姓名：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="cTelName" value="$!{compensateDto.cTelName}" >
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">联系方式：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="cTelPhone" value="$!{compensateDto.cTelPhone}" >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success" type="submit" id="next">筛选</button>
+                            <button class="btn btn-success" type="reset">重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                    <ul class="nav nav-tabs">
+                        <li #if($compensateDto.cState == 1) class="active" #end ><a href="$!{request.getContextPath()}/compensate/list.do?cState=1">待审核</a></li>
+                        <li #if($compensateDto.cState == 2) class="active" #end><a href="$!{request.getContextPath()}/compensate/list.do?cState=2">已通过</a></li>
+                        <li #if($compensateDto.cState == 3) class="active" #end><a href="$!{request.getContextPath()}/compensate/list.do?cState=3">已拒绝</a></li>
+                    </ul>
+                    <table class="table table-hover with-check table-text-center">
+                        <thead>
+                        <tr>
+                            <th>申请时间</th>
+                            <th>订单号</th>
+                            <th>姓名</th>
+                            <th>手机号</th>
+                            <th>赔付金额</th>
+                            <th>赔付原因</th>
+                            <th>赔付凭证</th>
+                            <th>拒绝原因</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            #foreach($data in ${compensateList})
+                            <tr>
+                                <td>$!date.format('yyyy-MM-dd HH:mm:ss',$!data.cApplyTime)</td>
+                                <td>$!data.cOrderNo</td>
+                                <td>$!data.cTelName</td>
+                                <td>$!data.cTelPhone</td>
+                                <td>#formatAmount($!data.cPrice)</td>
+                                <td>$!data.cApplyCase</td>
+                                <td>
+                                    <ul class="thumbnails up-load-img main">
+                                        #if($!{data.cProofPics}!='')
+                                            #set($plist=$data.cProofPics.split(','))
+                                            #foreach($pic in $plist)
+                                                <li>
+                                                    <img src="$imgpath$pic">
+                                                </li>
+                                            #end
+                                        #end
+                                    </ul>
+                                </td>
+                                <td>$!data.cVerifyPassCase</td>
+                                <td>
+                                    #if($compensateDto.cState == 1)
+                                        <a class="btn btn-danger btn-mini" href="javascript:void(0);" onclick="javascript:passSubmit('$!data.cId');">通过</a>
+                                        <a class="btn btn-danger btn-mini" href="javascript:void(0);" onclick="javascript:refuseSubmitView('$!data.cId');">拒绝</a>
+                                    #else
+                                        不能操作
+                                    #end
+                                </td>
+                            </tr>
+                            #end
+                        </tbody>
+                    </table>
+                    #parse("/pagination.vm")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form id="msg-form" class="form-horizontal model">
+            <input type="hidden" id="cid"/>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>拒绝原因：</label>
+                <div class="controls">
+                    <select id="notPassCaseSelect">
+                        <option value="赔付金额不合理">赔付金额不合理</option>
+                        <option value="申请原因描述不详">申请原因描述不详</option>
+                        <option value="申请图片不清晰">申请图片不清晰</option>
+                        <option value="其他">其他</option>
+                    </select>
+                    <input id="notPassCaseInput" type="text"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="javascript:refuseSubmit();">确定</button>
+        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#notPassCaseInput").hide();
+    function passSubmit(cId){
+        //通过提交
+        if(confirm("您确定通过该用户的小额赔付要求？一旦确定，将涉及到金额交易，请谨慎处理")){
+            if(cId == ""){
+                Toast.show("参数不能为空");
+                return false;
+            }
+            $.ajax({
+                url: '$!{request.getContextPath()}/compensate/passSubmit.do',
+                data: {cId: cId},
+                type: 'post',
+                cache: false,
+                success: function (data) {
+                    if (data.success == true) {
+                        Toast.show({
+                            template: "审核通过成功",
+                            second: 1000,
+                            callback: function () {
+                                window.location.reload();
+                            }
+                        });
+                    }else{
+                        Toast.show(data.msg);
+                    }
+                },
+                error: function () {
+                    Toast.show("系统异常！");
+                }
+            });
+        }
+    }
+
+    $("#notPassCaseSelect").bind("change",function(){
+        if($("#notPassCaseSelect").val()=="其他"){
+            $("#notPassCaseInput").show();
+        }else{
+            $("#notPassCaseInput").hide();
+        }
+    });
+
+    function refuseSubmitView(cid){
+        //拒绝界面
+        $("#cid").val(cid);
+        $(".model input[name='smallPrice']").val("11");
+        var self = $(".js-tmp-modal");
+        self.find(".modal-header h3").text("确认拒绝?");
+        self.modal("show");
+    }
+
+    function refuseSubmit(){
+        //拒绝
+        var cid = $("#cid").val();
+        var refuseCase = "";
+        if($("#notPassCaseSelect").val()=="其他"){
+            refuseCase = $("#notPassCaseInput").val();
+        }else{
+            refuseCase = $("#notPassCaseSelect").val();
+        }
+        if(cid == ""){
+            Toast.show("参数不能为空");
+            return false;
+        }
+
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/compensate/refuseSubmit.do",
+            val: {"cId": cid,"cVerifyPassCase":refuseCase},
+            fun: function (data) {
+                data = eval(data);
+                if (data.success == true) {
+                    Toast.show({
+                        template: "操作成功",
+                        second: 1000,
+                        callback: function () {
+                            window.location.reload();
+                        }
+                    });
+                }else{
+                    Toast.show(data.msg);
+                }
+            }
+        });
+    }
+</script>

@@ -1,0 +1,92 @@
+﻿##超时订单退款允许处理
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>
+    后台维护 |MC下单赠券配置
+    </h1>
+</div>
+ 	<style>
+        #ulli{margin: 5px;}
+        #ullilabel{display:inline-block;min-width: 150px;text-align: right;font-weight: bold;}
+        .btn{margin: 5px;}
+        input{padding-left: 6px;margin-left: 5px;}
+       
+    </style>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>优惠券赠送活动</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <div class="span5">
+
+                        <div class="row-fluid">
+                            <div class="control-group">
+                               
+                                <ul class="container">
+							        <li id="ulli"><label id="ullilabel">status: </label><input type="text" class="status" /></li>
+							        <li id="ulli"><label id="ullilabel">startTime: </label><input type="text" class="startTime" /></li>
+							        <li id="ulli"><label id="ullilabel">endTime: </label><input type="text" class="endTime" /></li>
+							        <li id="ulli" class="multi">
+								        <label id="ullilabel">voucherTemplateId: </label><input type="text" class="voucherTemplateId" />
+								        <label id="ullilabel">termPrice: </label><input type="text" class="termPrice" />
+								        &nbsp;&nbsp;<button class="js-del">删除</button>
+							        </li>
+							    </ul>
+							    
+							    <div class="btn"><button class="js-add" type="button">增加</button></div>
+							    <div class="btn"><button class="js-save" type="button">提交</button></div>
+    
+                            </div>
+						</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ <script>
+        $(function () {
+            $('.js-add').on('click', function () {
+                var container = $('.container');
+                var tpl = '<li id="ulli" class="multi"><label id="ullilabel">voucherTemplateId: </label><input type="text" class="voucherTemplateId" /><label id="ullilabel">termPrice: </label><input type="text" class="termPrice" /><button class="js-del">删除</button></li>';
+                container.append(tpl);
+            });
+            $(document.body).on('click','.js-del', function () {
+                $(this).closest('li').remove();
+            });
+            $('.js-save').on('click', function () {
+                var ajaxData = {
+                    status: $.trim($('.status').val()),
+                    startTime: $.trim($('.startTime').val()),
+                    endTime: $.trim($('.endTime').val()),
+                    data:(function () {
+                        var arr = [];
+                        $.each($('.multi'), function () {
+                            var _this = $(this);
+                            arr.push({voucherTemplateId: $.trim($('.voucherTemplateId').val()),termPrice: $.trim($('.voucherTemplateId').val()) });
+                        });
+                        return arr;
+                    })()
+                };
+
+                $.ajax({
+                    type: 'post',
+                    url: root + "/order/cmtCouponConf.do",
+                    data: JSON.stringify({data: ajaxData}),
+                    success: function (res) {
+                       alert("处理完成"+res);
+                    },
+                    error: function (res) {
+                        alert("请求失败");
+                    }
+                });
+            });
+        });
+    </script>

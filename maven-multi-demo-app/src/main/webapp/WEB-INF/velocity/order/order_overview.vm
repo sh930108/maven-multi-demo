@@ -1,0 +1,95 @@
+##订单概况
+#set($layout="/admin/layout/matrix.vm")
+<div id="content-header">
+	<h1>订单管理 | 订单概况</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+  <div class="row-fluid">
+  	<ul class="site-stats order-form">
+      <!-- <li class="bg_lb"><strong>$!{orderBasicCount.aWeekOrderPlacedCount}</strong> <small>7天下单笔数</small></li> -->
+      <li class="bg_lb"><strong>$!{orderBasicCount.peddingRepamentsCount}</strong> <small>待付款</small></li>
+      <li class="bg_lb"><strong>$!{orderBasicCount.peddingShipmentsCount}</strong> <small>待发货</small></li>
+      <li class="bg_lb"><strong>$!{orderBasicCount.refundsCount}</strong> <small>退款退货</small></li>
+    </ul>
+  </div>
+  
+	<div class="row-fluid">
+		<div class="span12">
+    	<div class="widget-box">
+				<div class="widget-title"><span class="icon"><i class="icon-signal"></i></span><h5>7天订单趋势</h5></div>
+        <div class="widget-content">
+        	<div class="order-block clearfix">
+          	<ul class="order-left">
+            	<li><strong>$!{yesterdayOrderCount.placedCount}</strong>昨日下单笔数</li>
+            	<li><strong>$!{yesterdayOrderCount.repaymentedCount}</strong>昨日付款订单</li>
+            	<li><strong>$!{yesterdayOrderCount.shipmentedCount}</strong>昨日发货订单</li>
+            </ul>
+            <div class="order-chart">
+            	<div class="chart" id="order-chart">Loading....</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/flot/jq.flot.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/flot/jq.flot.resize.min.js"></script>
+<script type="text/javascript">
+	Matrix.Nav({"menu": 116, "cmenu": 142});
+
+	
+	//console.log(day);
+	var data = {
+		day: $!{dayLine},
+		placeTrend: $!{placeTrend},
+		repaymentsTrend: $!{repaymentsTrend},
+		shipmentsTrend: $!{shipmentsTrend},
+		label: {placeTrend: "下单笔数", repaymentsTrend: "付款订单", shipmentsTrend: "发货订单"},
+		color: {placeTrend: "#488C13", repaymentsTrend: "#4fb9f0", shipmentsTrend: "#ee7951"}
+	}, arr = [];
+	for(key in data.label){
+		var i = 0, d = data[key], l = data.day.length,
+		obj = {label: data.label[key], color: data.color[key], data: []};
+		for(; i < l; i++){
+			obj.data.push([i, data[key][i]]);
+		}
+		arr.push(obj);
+	}
+	//console.log(arr);
+	var Chart = $("#order-chart");
+	var plot = $.plot(Chart, arr,{
+		series: {
+			lines: { show: true },
+			points: { show: true }
+		},
+		grid: { hoverable: true, clickable: true },
+		xaxis: { ticks: [[0, data.day[0]], [1, data.day[1]], [2, data.day[2]], [3, data.day[3]], [4, data.day[4]], [5, data.day[5]], [6, data.day[6]]]}
+	});
+
+	var previousPoint = null;
+	Chart.on("plothover", function (event, pos, item) {
+		if(item){
+		  if(previousPoint != item.dataIndex){
+		    previousPoint = item.dataIndex;
+		    $("#tooltip").remove();
+		    var x = item.datapoint[0].toFixed(2), y = item.datapoint[1];/*.toFixed(2)*/
+		    maruti.flot_tooltip(item.pageX, item.pageY, item.series.label + "：" + y);
+		  }
+		} else {
+		  $("#tooltip").remove();
+		  previousPoint = null;
+		}
+	});
+	maruti = {
+	  flot_tooltip:function(x, y, contents) {
+	    $('<div id="tooltip">' + contents + "</div>").css({
+	      top: y + 5,
+	      left: x + 5
+	    }).appendTo("body").show();
+	  }
+	};
+	
+</script>

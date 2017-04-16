@@ -1,0 +1,192 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 124, "cmenu": 168});
+</script>
+<style>
+.selectType label{display:inline-block;margin:10px 15px;color:#bd362f;}
+.selectType label input{vertical-align:middle;}
+</style>	
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+	<h1>财务管理 | 微分销提现数据导出</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>提现导出查询列表</h5>
+				</div>
+				<div class="widget-content">
+					<div class="widget-box widget-tabs-box">
+						<ul class="nav nav-tabs">
+							<li #if ($!{request.getParameter('selectType')} == '1') class="active" #end>
+								<a href="$!{request.getContextPath()}/cloud/withdraw/list.do?status=-1&selectType=1&page=1">实体店提现</a>
+							</li>
+							<li #if ($!{request.getParameter('selectType')} == '2') class="active" #end>
+								<a href="$!{request.getContextPath()}/cloud/withdraw/list.do?status=-1&selectType=2&page=1">第三方店提现</a>
+							</li>
+							<li #if ($!{request.getParameter('selectType')} == '') class="active" #end>
+								<a href="$!{request.getContextPath()}/f/e/queryFinanceData.do?selectType=">提现导出</a>
+							</li>
+						</ul>
+
+						<div class="widget-content">
+							<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/f/e/queryFinanceData.do">
+								<div class="row-fluid">
+									<div class="span4">
+										<div class="control-group">
+											<label class="control-label">门店名称：</label>
+											<div class="controls">
+												<input id="js_shopName" name="shopName" value="$!{request.getParameter('shopName')}" type="text" maxlength="50" class="span11" />
+											</div>
+										</div>
+									</div>
+									<div class="span4">
+										<div class="control-group">
+											<label class="control-label">订单来源：</label>
+											<div class="controls">
+												<input  name="from" value="0"  type="radio" #if($!{request.getParameter('from')}==0) checked #end/>微店
+												<input  name="from" value="1"  type="radio"  #if($!{request.getParameter('from')}==1) checked #end/>APP
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row-fluid">
+									<div class="span12">
+										<div class="control-group">
+											<label class="control-label">申请时间：</label>
+											<div class="controls">
+												<input id="startTime"  name="beginDate" class="Wdate" type="text" value="$!{request.getParameter('beginDate')}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" autocomplete="off" />
+												<span>至</span>
+												<input id="endTime" name="endDate" class="Wdate" type="text" value="$!{request.getParameter('endDate')}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" autocomplete="off" />
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">商品名称：</label>
+											<div class="controls">
+												<input id="js_shopName" name="styleTitle" value="$!{request.getParameter('styleTitle')}" type="text"class="span4" />
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">订单号：</label>
+											<div class="controls">
+												<input id="js_orderNo" name="orderNo" value="$!{request.getParameter('orderNo')}" type="text"class="span4" />
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="form-actions app-ad-block" >
+									<input type="hidden" value="$!{request.getParameter('status')}" name="status"/>
+									<input type="hidden" value="$!{request.getParameter('selectType')}" name="selectType"/>
+									<button class="btn btn-success" type="submit" id="commit">筛选</button>
+									<button class="btn btn-warning" type="reset">重置</button>
+									<button type="button" name="files" id="btn-export" class="btn btn-warning" >导出</button>
+								</div>
+							</form>
+						</div>
+						<div class="widget-content ">
+							<div class="widget-box widget-tabs-box">
+								<div class="widget-content tab-content">
+									<table class="table table-text-center">
+    										<thead>
+    											<tr>
+    												<th>门店编号</th>
+    												<th>订单号</th>
+    												<th>店名</th>
+    												<th>订单状态</th>
+    												<th>商品ID</th>
+    												<th>商品名称</th>
+    												<th>订单金额</th>
+    												<th>佣金收入</th>
+    												<th>订单来源</th>
+													<th>完成时间</th>
+    											</tr>
+    										</thead>
+    										<tbody>
+    											#foreach($d in $data)
+												<tr>
+    												<td>$!{d.shopId}</td>
+    												<td>$!{d.orderNo}</td>
+    												<td>$!{d.shopName}</td>
+    												<td>$!{d.incomeState}</td>
+    												<td>$!{d.styleNumId}</td>
+    												<td>$!{d.styleTitle}</td>
+    												<td>$!{d.payPrice}</td>
+    												<td>$!{d.income}</td>
+    												<td>$!{d.from}</td>
+													<td>$!{d.finishTime}</td>
+    											</tr>
+												#end
+    										</tbody>
+										</table>
+										##分页
+										#parse("pagination.vm")
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+
+<link rel="stylesheet" type="text/css" href="$!{request.getContextPath()}/res/uploadify/uploadify.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script>
+$(function () {
+	$('#commit').click(function () {
+			$("input[type=text]").delBlank(); // 删除前后空格;
+			var startTime = $('#startTime').val();
+			var endTime = $('#endTime').val();
+			if (startTime == "") {
+				if (endTime != "") {
+					Toast.show("请先选择开始日期");
+					$('#startTime').focus();
+					return false;
+				}
+			} else {
+				if (endTime == "") {
+					Toast.show("请选择结束日期");
+					$('#endTime').focus();
+					return false;
+				} else {
+					if (startTime > endTime) {
+						Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+						$('#startTime').focus();
+						return false;
+					}
+				}
+			}
+			var linkman = $("input[name=linkman]"),
+			shopName = $("input[name=shopName]"),
+			phone = $('#js_phone');
+			if(isForm.isCheck(shopName.val())){
+				shopName.focus();
+				Toast.show("请输入正确格式的内容");
+				return false;
+			}else if(linkman.val() && !isForm.isCN(linkman.val())){
+				linkman.focus();
+				Toast.show("只允许输入中文");
+				return false;
+			}else if(phone.val() && !isForm.isPhone(phone.val())){
+				phone.focus();
+				Toast.show("联系电话只能输入数字或“-”");
+				return false;
+			}
+			$('#form').submit();
+		});
+});
+
+$("#btn-export").click(function(){
+	$('#form').attr("action","$!{request.getContextPath()}/f/e/export.do");
+	$('#form').submit();
+});
+
+
+    
+</script>

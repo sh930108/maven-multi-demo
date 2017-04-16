@@ -1,0 +1,378 @@
+#set($layout="/admin/layout/matrix.vm")
+#set($voucherType=$!{request.getParameter('type')})
+<script type="text/javascript">
+	Matrix.Nav({"menu": 161, "cmenu": 228});
+</script>
+<style type="text/css">
+    #content-header h1{float: left;}
+    #content-header .back{float: right;margin:20px 20px 0 0;}
+    .mr10{margin-right:10px}
+    .list label{margin-right:5px}
+    .form-horizontal .ticket-block{float:left;padding:5px}
+    .applyTypeContainer select,.scopeChannelOptions select{width:150px}
+    .scopeChannelOptions{margin-top:10px;padding:5px;border:1px solid #ccc;width:90%}
+    .ticket-box{border:2px solid #ffce80;position:relative;width:90%;margin:5px 0}
+    .ticket-box .control-label{width:90pt}
+    .ticket-box .controls{margin-left:130px}
+    .ticket-box .close{position:absolute;width:20px;height:20px;background:url("$!{request.getContextPath()}/res/images/close.png") no-repeat center center;overflow:hidden;text-indent:-88em;right:10px;top:10px;color:#da4f49}
+    .ticket-box input[type=text].max{max-width:140px}
+    .ticket-box input[type=text].short{width:50px}
+    .ticket-box .tip{color:#da4f49}
+    .applyTypeContainer .item{border:1px dashed #51a351;margin:5px 10px;position: relative}
+    .applyValue{border:1px solid #ccc;padding:10px;display:inline-block;max-height:200px;overflow-y:auto}
+    .ke-container{max-width:90%}
+    .styleNumIdList textarea{width:95%;height:5pc;min-height:inherit;resize:vertical}
+</style>
+
+#*0=单面额券，1=组券，3=卡券*#
+#if($!{request.getParameter('tid')})
+    #if($!{canUpdate})
+        #if($voucherType==3)#set($btnText="更新卡券")#else#set($btnText="更新优惠券")#end
+        #set($titleText="更新")
+    #else
+        #set($titleText="")
+    #end
+#else
+    #if($voucherType==3)#set($btnText="创建卡券")#else#set($btnText="创建优惠券")#end
+    #set($titleText="创建")
+#end
+
+<div id="content-header">
+	#if($voucherType==0)
+        <h1>活动管理 | 优惠券管理 | 创建统一面额优惠券</h1>
+	#elseif($voucherType==1)
+        <h1>活动管理 | 优惠券管理 | 创建礼包优惠券</h1>
+	#elseif($voucherType==3)
+        <h1>活动管理 | 优惠券管理 | 创建卡券</h1>
+	#end
+
+    <a href="$!{request.getContextPath()}/app/coupon/list.do?type=0&page=1" class="btn btn-primary back">返回优惠券管理</a>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>#if($voucherType==3)卡券#else优惠券#end</h5>
+				</div>
+				<div class="widget-content nopadding">
+
+						<div class="add-marketing-block">
+							<div class="form-horizontal form-voucher">
+
+								#*优惠券*#
+								#if($voucherType != 3)
+                                    <div class="control-group">
+                                        <label class="control-label">优惠券使用场景：</label>
+                                        <div class="controls scopeChannel">
+                                            <select name="scopeChannel">
+                                                <option value="0" selected>全部场景可用</option>
+                                                <option value="1">APP</option>
+                                                <option value="3">门店POS</option>
+                                                <option value="4">特卖会POS</option>
+                                                <option value="5">APP + 门店POS</option>
+                                                <option value="6">APP + 特卖会POS</option>
+                                                <option value="2">门店POS + 特卖会POS</option>
+                                            </select>
+                                            <div class="scopeChannelOptions" hidden>
+                                                <div>
+                                                    <div>
+                                                        <select class="unnecessary" id="prv" name="prv" onchange="showCity(this.value)">
+                                                            <option value="">请选择省份</option>
+                                                        </select>
+                                                        <select class="unnecessary" id="city" name="city" onchange="showArea(this.value)">
+                                                            <option value="">请选择市</option>
+                                                        </select>
+                                                        <select class="unnecessary" id="area" name="area" onchange="showCompanyByAreaId(this.value)">
+                                                            <option value="">请选择区</option>
+                                                        </select>
+                                                        <button class="btn btn-success js-search-shop" type="button">搜索门店</button>
+                                                    </div>
+
+                                                    <div class="shop-list">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">优惠券名称：</label>
+                                        <div class="controls"><input type="text" class="voucherName" placeholder="不超过18个字" maxlength="18" /></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">发放时间：</label>
+                                        <div class="controls grantType">
+                                            <label class="notepad-inline"><input name="grantType" type="radio" value="0" checked="checked"> 不限时发放</label>
+                                            <label class="notepad-inline"><input type="radio" name="grantType" value="1"> 限时发放</label>
+                                            <div class="grantTime" hidden><input type="text" placeholder="开始时间" id="grantBeginTime" class="grantBeginTime datepicker" name="grantBeginTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'grantEndTime\',{s:-1});}'});" /> 至 <input type="text" placeholder="结束时间" id="grantEndTime" class="grantEndTime datepicker" name="grantEndTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'grantBeginTime\',{s:1});}'});" /></div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">优惠券设置：</label>
+                                        #if($voucherType==1)
+											<div class="controls addVoucher">
+												<a class="btn btn-primary js-addTpl" href="javascript:;">增加面额</a>（若一个礼包有多张相同面额券，需要多次增加）
+											</div>
+										#end
+                                        <div class="controls clearfix voucher-list">
+                                            <div class="ticket-box">
+                                                <div class="control-group">
+                                                    <label class="control-label">单张面额：</label>
+                                                    <div class="controls">
+                                                        <input type="text" class="amount short" placeholder="面额" value="5" data-type="integer" data-tips="单张面额" maxlength="6"/> 元
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label">使用条件：</label>
+                                                    <div class="controls discountType">
+                                                        <label>
+                                                            <input type="radio" name="discountType" value="0" checked/>
+                                                            单笔订单金额满 <input type="text" data-type="integer" data-tips="订单金额" value="100" class="money short" maxlength="8" /> 元
+                                                        </label>
+                                                        <label>
+                                                            <input type="radio" name="discountType" value="1" />无金额使用条件（代金券）
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label">适用范围：</label>
+                                                    <div class="controls applyType">
+                                                        <label class="notepad-inline"><input type="radio" name="applyType" value="0" checked/>全场通用</label>
+                                                        <label class="notepad-inline"><input type="radio" name="applyType" value="4" />指定条件</label>
+                                                    </div>
+                                                    <div class="applyTypeContainer" hidden>
+                                                        <div class="item-list">
+                                                            <div class="item">
+                                                                <div class="control-group categoryCon">
+                                                                    <label class="control-label">指定类目：</label>
+                                                                    <div class="controls cate-list">
+                                                                        <select class="unnecessary"><option value="">请选择一级类目</option></select>
+                                                                        <select class="unnecessary"><option value="">请选择二级类目</option></select>
+                                                                        <select class="unnecessary"><option value="">请选择三级类目</option></select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="control-group brandCon">
+                                                                    <label class="control-label">指定品牌：</label>
+                                                                    <div class="controls brand-list"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="control-group">
+                                                            <div class="controls text-right">
+                                                                <button class="btn btn-success mr10 js-addItem">增加组合</button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="control-group styleNumIdList">
+                                                            <label class="control-label">指定商品：</label>
+                                                            <div class="controls">
+                                                                <textarea class="unnecessary" name="applyValue" placeholder="请填写商品ID,以“,”分隔"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label">适用范围文案：</label>
+                                                    <div class="controls"><input type="text" name="applyText" class="applyText" placeholder="不超过20个字" maxlength="20"/></div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label">落地类型：</label>
+                                                    <div class="controls">
+                                                        <select name="landingType">
+                                                            <option value="0">无</option>
+                                                            <option value="1">商品ID</option>
+                                                            <option value="2">类目ID</option>
+                                                            <option value="3">H5链接</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="landingContainer" hidden>
+                                                        <div class="control-group">
+                                                            <label class="control-label">落地文案：</label>
+                                                            <div class="controls">
+                                                                <input type="text" name="landingDesc" class="landingDesc" placeholder="不超过18个字" maxlength="18"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="control-group">
+                                                            <label class="control-label">落地详情：</label>
+                                                            <div class="controls"><input type="text" name="landingDetail" class="landingDetail" placeholder="请输入落地详情" /></div>
+                                                        </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <label class="control-label">优惠券有效期：</label>
+                                                    <div class="controls voucherValidType">
+                                                        <label class="notepad-inline"><input type="radio" name="voucherValidType" value="0" checked/>日期</label>
+                                                        <label class="notepad-inline"><input type="radio" name="voucherValidType" value="1"/>周期</label>
+                                                        <div class="voucherLimitDay"><input type="text" placeholder="开始时间" id="voucherBeginDay" class="voucherBeginDay max datepicker" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'voucherEndDay\',{s:-1});}'});" /> 至 <input type="text" placeholder="结束时间" id="voucherEndDay" class="voucherEndDay max datepicker" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'voucherBeginDay\',{s:1});}'});" /></div>
+                                                        <div class="voucherDelayDay" hidden>
+                                                            用户领取的 <input type="text" data-type="integer" class="short" name="voucherDelayDay" maxlength="5" id="voucherDelayDay" style="width: 50px;"/> 天内有效
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group groupVoucherCount">
+										#if($voucherType==1)
+                                            <label class="control-label">礼包金额：</label>
+                                            <div class="controls"><input type="text"  id="groupVoucherMoney" value="5" readonly name="groupVoucherMoney"/> 元</div>
+										#end
+                                        <label class="control-label">发行量：</label>
+                                        <div class="controls">
+                                            <input type="text" data-type="integer" value="100" id="groupVoucherCount" name="groupVoucherCount" maxlength="8"/> #if($voucherType==1)（上面添加的多张优惠券为一份）#else 张 #end
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">可领取用户身份：</label>
+                                        <div class="controls userType">
+                                            <label class="notepad-inline"><input type="radio" name="userType" value="0" checked> 所有用户</label>
+                                            <label class="notepad-inline"><input type="radio" name="userType" value="1"> 老用户（在妈妈好平台发生过成功的纯APP交易的用户）</label>
+                                            <label class="notepad-inline"><input type="radio" name="userType" value="2"> 新用户（在妈妈好平台未发生过成功的纯APP交易的用户）</label>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">限领设置：</label>
+                                        <div class="controls">一个用户可领取 <input type="text" data-type="integer" class="limitCount" value="1" maxlength="8" /> #if($voucherType==1)份 #else 张 #end</div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">优惠规则：</label>
+                                        <div class="controls">
+											<span class="help-inline"><label>
+												<input type="checkbox" name="useWithGroupPro" class="rule"/> 与集团促销叠加
+											</label></span>
+										</div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">优惠券成本：</label>
+                                        <div class="controls voucherCost">
+											<span class="help-inline"><label><input type="radio" name="voucherCost" value="0" checked/>集团承担</label></span>
+											<span class="help-inline"><label><input type="radio" name="voucherCost" value="1" />平台承担</label></span>
+										</div>
+                                    </div>
+								#end
+
+								#*卡券*#
+								#if($voucherType==3)
+                                    <div class="control-group">
+                                        <label class="control-label">卡券名称：</label>
+                                        <div class="controls"><input type="text" class="voucherName" placeholder="不超过18个字" maxlength="18" /></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">发放时间：</label>
+                                        <div class="controls grantType">
+                                            <label class="notepad-inline"><input name="grantType" type="radio" value="0" checked="checked"> 不限时发放</label>
+                                            <label class="notepad-inline"><input type="radio" name="grantType" value="1"> 限时发放</label>
+                                            <div class="grantTime" hidden><input type="text" placeholder="开始时间" id="grantBeginTime" class="grantBeginTime datepicker" name="grantBeginTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'grantEndTime\',{s:-1});}'});" /> 至 <input type="text" placeholder="结束时间" id="grantEndTime" class="grantEndTime datepicker" name="grantEndTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'grantBeginTime\',{s:1});}'});" /></div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">优惠券有效期：</label>
+                                        <div class="controls voucherValidType">
+                                            <label class="notepad-inline"><input type="radio" name="voucherValidType" value="0" checked/>日期</label>
+                                            <label class="notepad-inline"><input type="radio" name="voucherValidType" value="1"/>周期</label>
+                                            <div class="voucherLimitDay"><input type="text" placeholder="开始时间" id="voucherBeginDay" class="voucherBeginDay datepicker" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'voucherEndDay\',{s:-1});}'});" /> 至 <input type="text" placeholder="结束时间" id="voucherEndDay" class="voucherEndDay datepicker" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'voucherBeginDay\',{s:1});}'});" /></div>
+                                            <div class="voucherDelayDay" hidden>
+                                                用户领取的 <input type="text" name="voucherDelayDay" maxlength="5" id="voucherDelayDay" style="width: 50px;"/> 天内有效
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">主标题：</label>
+                                        <div class="controls"><input type="text" class="mainTitle" maxlength="15" placeholder="不超过15个字" /></div>
+                                        <label class="control-label">副标题：</label>
+                                        <div class="controls"><input type="text" class="subTitle" maxlength="15" placeholder="不超过15个字" /></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">发行量：</label>
+                                        <div class="controls"><input type="text" data-type="integer" value="100" id="groupVoucherCount" name="groupVoucherCount" maxlength="8"/></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">限领设置：</label>
+                                        <div class="controls">一个用户可领取 <input type="text" data-type="integer" class="limitCount" value="1"  maxlength="8"/> 张</div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">详细描述：</label>
+                                        <div class="controls"><textarea name="detailDesc" class="detailDesc" placeholder="不超过255个字" maxlength="255"></textarea></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">适用范围文案：</label>
+                                        <div class="controls"><textarea id="applyText" name="applyText" class="applyText" placeholder="不超过255个字" maxlength="255"></textarea></div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">规则编码：</label>
+                                        <div class="controls"><input type="text" class="ticketId " /></div>
+                                    </div>
+								#end
+
+								<div class="form-actions">
+									<a class="btn btn-primary btn-import-template" style="display:none;" href="javascript:;">导入数据</a>
+                                    #if($!{canUpdate} || !$!{request.getParameter('tid')})<a class="btn btn-primary js-save" href="javascript:;">$!{btnText}</a>#end
+								</div>
+
+							</div>
+						</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div aria-hidden="false" id="inline_content-import" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3 id="modal-window-title">导入卡券模板信息</h3>
+	</div>
+	<form  action="$!{request.getContextPath()}/voucher/importCardTemplate.do" name="importForm" id="importForm" method="post" enctype="multipart/form-data">
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">选择文件<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="file" name="file" id="file" accept=".xlsx"/>
+						</div>
+						 <div align="center" style="display: none;" id="import-tips"><font color="red">正在导入，请稍等...</font></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input class="btn btn-success btn-import-submit" type="button" value="确定" id="commit">
+			<a data-dismiss="modal" class="btn btn-close btn-import-close" href="javascript:;">关闭</a>
+		</div>
+	</form>
+</div>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/kindeditor.js"></script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/lang/zh_CN.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script>
+    var VM = {
+        "rootPath": "$!{request.getContextPath()}",   /*根路径*/
+		"voucherType": "$!{voucherType}",	/*优惠券类型*/
+		"tid": "$!{request.getParameter('tid')}",  //编辑状态下的模板id
+		"canUpdate": "$!{canUpdate}"  //编辑状态下的模板id
+    };
+</script>
+<script>
+    /*单独放这儿，避免加载过慢的问题*/
+    var editor;
+    KindEditor.ready(function (K) {
+        editor = K.create('textarea[name="detailDesc"]', {
+            uploadJson: VM.rootPath + '/oss/uploadFiles4Editor.do?type=0',
+            fileManagerJson: 'kindeditor/jsp/file_manager_json.jsp',
+            allowFileManager: true,
+            allowImageRemote: false,
+            readonlyMode: false, // 页面只读
+            afterBlur: function () {
+                this.sync();
+            },
+            afterCreate: function () {
+                this.sync();
+            }
+        });
+    });
+</script>
+<script src="http://s.mamhao.cn/admin/yy/js/voucher-create.2.2.js"></script>

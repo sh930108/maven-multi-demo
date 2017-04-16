@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>文件上传</title>
+</head>
+<body>
+	<form id='f' action='../oss/uploadFile.do' method="POST"
+		enctype="multipart/form-data">
+		<input type="file" name="file" id="file" /> 
+		<input type="button" id="submit" value="上传" />
+	</form>
+
+	<script type="text/javascript" src="../res/js/jQuery.js"></script>
+	<script type="text/javascript" src="../res/js/ajaxfileupload.js"></script>
+	<script type="text/javascript">
+	
+		//获取url参数
+		function getParameterByName(name) {
+			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(window.location.search);
+			if (results == null) {
+				return "";
+			} else {
+				return decodeURIComponent(results[1].replace(/\+/g, " "));
+			}
+		}
+
+		$(function() {
+			var dm_name = getParameterByName("dm_name");
+			$("#submit").click(function() {
+				//加载图标   
+				/* $("#loading").ajaxStart(function(){
+				   $(this).show();
+				}).ajaxComplete(function(){
+				   $(this).hide();
+				});*/
+				//上传文件
+				$.ajaxFileUpload({
+					url : '../oss/uploadFile.do',//处理上传文件类
+					secureuri : false,
+					fileElementId : 'file',//file控件id
+					dataType : 'json',
+					success : function(data, status) {
+						if (typeof (data.error) != 'undefined') {
+							if (data.error != '') {
+								alert(data.error);
+							}
+						} else {
+							alert(data.msg); //上传成功
+							opener.upload_call(data.fileName,dm_name);
+							window.close();
+						}
+					},
+					error : function(data, status, e) {
+						alert(e);
+					}
+				})
+				return false;
+			})
+		})
+	</script>
+
+</body>
+</html>

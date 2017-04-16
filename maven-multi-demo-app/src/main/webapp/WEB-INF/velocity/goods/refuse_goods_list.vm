@@ -1,0 +1,376 @@
+##已拒绝商品列表
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 107, "cmenu": 115});
+</script>
+<script type="text/javascript" src="http://img3.job1001.com/js/ZeroClipboard/jquery.zclip.min.js"></script>
+<style>
+	.form-horizontal-inline .control-label{width: 150px;}
+	.form-horizontal-inline .controls{margin-left: 160px;}
+</style>
+<div id="content-header">
+	<h1>商品管理 | 已拒绝商品</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>已拒绝商品列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/gb/goods/queryRefuseGoodsList.do">
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">款式编号(商品ID)：</label>
+									<div class="controls">
+										<input type="text" placeholder="" class="span12" name="styleNumId" value="$!{request.getParameter('styleNumId')}">
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">商品标题：</label>
+									<div class="controls">
+										<input type="text" placeholder="" class="span12" name="styleTitle" value="$!{request.getParameter('styleTitle')}">
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">款式编码：</label>
+                                    <div class="controls">
+                                        <input type="text" placeholder="" class="span12" name="styleId" value="$!{request.getParameter('styleId')}">
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">商品类目：</label>
+									<div class="controls">
+										<select id="t1" name="styleCatelogFirst" onchange="ch2(this.value)" onsubmit="return checkSubmit();">
+											<option value="0">请选择</option>
+											#foreach($g in $glist)
+											<option value="$g.gtId" #if($!{request.getParameter('styleCatelogFirst')}==$g.gtId) selected #end>$g.gtName</option>
+											#end  
+										</select>
+										<select id="t2" name="styleCatelogSec" onchange="ch3(this.value)">
+											<option value="0">请选择</option>
+										</select>
+										<select id="t3" name="styleCatelogThird" >
+											<option value="0">请选择</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<div class="row-fluid">
+							<div class="span8">
+								<label class="control-label">发布时间：</label>
+								<div class="controls">
+									<input id="startTime" class="Wdate" type="text" value="$!{request.getParameter('startTime')}" size="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" name="startTime"  /> 至
+									<input id="endTime" class="Wdate" type="text" value="$!{request.getParameter('endTime')}" size="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" name="endTime"  />
+								</div>
+							</div>
+							<div class="span2">
+								<div class="form-actions">
+									<button class="btn btn-success" type="submit" id="next">筛选</button>
+									<button class="btn btn-warning" type="reset">重置</button>
+								</div>
+							</div>
+						</div>
+					</form>
+					
+				</div>
+				<div class="widget-content">
+					<table class="table table-hover table-text-center">
+						<thead>
+							<tr>
+								<th style="width: 150px;">款式编号(商品ID)</th>
+								<th>款式编码</th>
+								<th>商品标题</th>
+								<th>所属一级类目</th>
+								<th>发布时间</th>
+								<th>用户名</th>
+								<th>状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${dataList})
+							#set($index = $loopCounter + 1)
+							<tr >
+								<td>$!{data.styleNumId}</td>
+								<td>$!{data.styleId}</td>
+								<td>$!{data.styleTitle}</td>
+								<td>$!{data.firstName}</td>
+								<td>
+									#if("$!{data.createTime}"=="")
+									#else
+									$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.createTime})
+									#end
+								</td>
+								<td>$!{data.userName}</td>
+								<td>
+									<span class="badge badge-important">已拒绝</span>
+									<p>
+										#if($!{data.refuseReason})
+										<a class="badge badge-important tip-top" data-original-title="$!{data.refuseReason}" href="javascript:void(0)">查看原因</a>
+										#end
+
+									##<a  class="badge badge-important" onclick="showSingleModal('showRefuseReasonModal','$!{data.styleTitle}','$!{data.refuseReason}')" href="javascript:void(0)">查看原因</a>
+									</p>
+								</td>
+								<td>
+									<a class="btn btn-warning btn-mini" href="$!{request.getContextPath()}/gb/goods/index.do?gtNo=$data.styleNumId">重新编辑</a>
+									<a class="btn btn-danger btn-mini" onclick="refreshObject('$data.styleId')" href="javascript:void(0)">刷新缓存</a>
+								</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					#parse("/pagination.vm")
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--modal container-->
+<div class="js-tmp-modal modal modal-lg hide fade">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3></h3>
+	</div>
+	<div class="modal-body nopadding">
+		<div class="model-iframe"></div>
+	</div>
+	<div class="modal-footer">
+		
+		<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+	</div>
+</div>
+<!--查看原因弹框-->
+<div aria-hidden="false" id="showRefuseReasonModal" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3></h3>
+	</div>
+	<div class="modal-body">
+		<p></p>
+	</div>
+	<div class="modal-footer">
+##		<button class="btn btn-success" type="button" onclick="copyRefuseReason()" id="copyReason">复制</button>
+		<a data-dismiss="modal" class="btn" href="javascript:;">关闭</a> 
+	</div>
+</div>
+<script>
+$('#next').click(function () {
+	var startTime = $('#startTime').val();
+	var endTime = $('#endTime').val();
+	var styleNumId = $("input[name='styleNumId']");
+	if(styleNumId.val() && !isForm.isImp(styleNumId.val())){
+		Toast.show("请输入正确的款式编号");
+		return false;
+	}else if (isForm.isTrim(startTime)) {
+		if (!isForm.isTrim(endTime)) {
+			Toast.show("请先选择开始日期");
+			$('#startTime').focus();
+			return false;
+		}
+	} else {
+		if (isForm.isTrim(endTime)) {
+			Toast.show("请选择结束日期");
+			$('#endTime').focus();
+			return false;
+		} else {
+			if (startTime > endTime) {
+				Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+				$('#startTime').focus();
+				return false;
+			}
+		}
+	}
+	$('#frm').submit();
+});
+
+var gtId1 = "$!{request.getParameter('styleCatelogFirst')}";
+var gtId2 = "$!{request.getParameter('styleCatelogSec')}";
+var gtId3 = "$!{request.getParameter('styleCatelogThird')}";
+if(gtId1 != ""){
+	ch2(gtId1);
+	if(gtId2 != ""){
+		ch3(gtId2);
+	
+	}
+}
+function ch2(id){
+		if(id==0){
+			return;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		}, function(data) {
+			var str = '<option value=\"0\">请选择</option>';
+		 	$.each(data, function(i, n) {
+				if(gtId2 != ""){
+					if(gtId2==n.gtId){
+						str += "<option value='"+n.gtId+"' selected >"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+			    
+    		});
+    		$('#t2').html(str);
+    		$('#t3').val(0);
+		});
+	}
+	function ch3(id){
+		if(id==0){
+			return;
+		}
+		$.get("$!{request.getContextPath()}/goods/queryId.do", {
+			'id' : id
+		}, function(data) {
+			var str = '<option value=\"0\">请选择</option>';
+			$.each(data, function(i, n) {
+			   if(gtId3 != ""){
+					if(gtId3==n.gtId){
+						str += "<option value='"+n.gtId+"' selected >"+n.gtName+"</option>";
+					}else{
+						str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+					}
+				}else{
+					str += "<option value='"+n.gtId+"'>"+n.gtName+"</option>";
+				}
+    		});
+			$('#t3').html(str);
+		});
+	}
+	$(function () {
+		showOrder();
+	});
+
+	/*全选*/
+	$("#checkAll").click(function () {
+		Matrix.CheckedAll($(".table-order"));
+	});
+
+	$('#putGoodsOn').click(function () {
+		var ids = "";
+		$("input[name='gtIds']:checked").each(function () {
+			ids += $(this).val() + ",";
+		})
+		if (ids != "") {
+			Matrix.JSON({
+				url: "$!{request.getContextPath()}/goods/updateGoodsOnlineStatusByIds.do",
+				val: {ids: ids, updateType: 2},
+				fun: function (data) {
+					if (data.success == 0) {
+						Toast.show(data.desc);
+					} else {
+						Toast.show({
+							template: data.desc,
+							callback: function () {
+								window.location.reload();
+							}
+						});
+					}
+				}
+			});
+		} else {
+			Toast.show("请选择您要下架的商品");
+		}
+	});
+
+	function putGoodsByIds(id) {
+		Matrix.JSON({
+			url: "$!{request.getContextPath()}/goods/updateGoodsOnlineStatusByIds.do",
+			val: {ids: id, updateType: 2},
+			fun: function (data) {
+				if (data.success == 0) {
+					Toast.show(data.desc);
+				} else {
+					Toast.show({
+						template: data.desc,
+						callback: function () {
+							window.location.reload();
+						}
+					});
+				}
+			}
+		});
+	}
+	function showOrder() {
+		var orderType = "$!request.getParameter('orderType')";
+		var orderField = "$!request.getParameter('orderField')";
+		if (orderField != "" && orderType != "") {
+			if (orderType === "0") {
+				var $obj = $(".order[orderField = " + orderField + "]");
+				$obj.children("span").text("↑");
+				$obj.attr("orderType", 1);
+			} else {
+				var $obj = $(".order[orderField = " + orderField + "]");
+				$obj.children("span").text("↓");
+				$obj.attr("orderType", 0);
+			}
+
+		}
+	}
+
+	//排序
+	function doOrder(obj, type, value) {
+		var orderType = $(obj).attr("orderType");
+		var orderField = $(obj).attr("orderField");
+		var url = "$!{request.getContextPath()}/goods/locationQueryGoodsSellOutRecordList.do?orderField=" + orderField + "&orderType=" + orderType + "";
+		location.href = url;
+	}
+
+
+	function showSendCount(obj, companyId, gtId, count) {
+		//加载iframe
+		var info = {
+			title: "",
+			url: "$!{request.getContextPath()}/goods/queryCallGoodsRecordList.do?companyId=" + companyId + "&gtId=" + gtId + "&sendCount=" + count
+		};
+		loadIframe(info);
+	}
+
+	function showSendOnHandCount(obj, shopId, gtId, count) {
+		//加载iframe
+		var info = {
+			title: "",
+			url: "$!{request.getContextPath()}/goods/queryCallOnAddGoodsRecordList.do?shopId=" + shopId + "&gtId=" + gtId + "&onHand=" + count
+		};
+		loadIframe(info);
+	}
+
+	/*加载iframe*/
+	function loadIframe(info) {
+		var self = $(".js-tmp-modal");
+		self.find(".modal-body .model-iframe").empty().append("<iframe src='" + info.url + "' />");
+		self.find(".modal-header h3").text(info.title);
+		self.modal("show");
+		return false;
+	}
+
+	//显示查看拒绝理由窗口
+    function showSingleModal(divId, title,content) {
+        var m = $("#" + divId);
+        m.find("h3").html(title);
+        m.find(".modal-body").html("<p>" + content + "</p>");
+        m.modal("show");
+    }
+	
+</script>
+#parse("/goods/refresh.vm")

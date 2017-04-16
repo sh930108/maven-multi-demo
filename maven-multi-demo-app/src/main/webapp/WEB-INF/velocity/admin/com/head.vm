@@ -1,0 +1,24 @@
+<header>
+	<div class="header-inner">
+		<logo>
+			<div class="title">
+				<div class="title_1">妈妈好</div>
+				<div class="title_2">
+						#if ($account.roleType == 'COMPANY_ADMIN' || $account.roleType == 'COMPANY_ACCOUNT' )
+						分公司管理系统
+						#elseif($account.roleType == 'PLATFORM_ADMIN' || $account.roleType == 'PLATFORM_ACCOUNT')
+						运营管理系统
+						#elseif($account.roleType == 'SHOP_ADMIN')
+						门店管理系统
+						#end
+				</div>
+			</div>
+		</logo>
+		<a href="$!{request.getContextPath()}/j_spring_security_logout">
+			<div class="loginout"></div>
+		</a>
+		<a href="">
+			<div class="message"></div>
+		</a>
+	</div>
+</header>	

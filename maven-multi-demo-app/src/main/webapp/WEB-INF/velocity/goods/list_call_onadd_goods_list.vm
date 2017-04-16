@@ -1,0 +1,35 @@
+#set ($layout ="/admin/layout/blank.vm")
+##<link href="$!{request.getContextPath()}/res/css/stylesheets.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jQuery.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/admin/rowspan.js"></script>
+<script>
+$(function(){
+	$(".table").rowspan(0);
+	$(".table").rowspan(1);
+});
+	
+</script>
+<div class="content">
+	<div class="title">
+			已上架商品详情
+	</div>
+	
+		<table border="1"  class="table">
+			<tr>
+				<td>分公司名称</td>
+				<td>调用库存</td>
+				<td>门店（仓储）名称</td>
+				<td>调用库存</td>
+            </tr>
+			#foreach($data in ${list})
+		     #set($index = $loopCounter + 1)
+    			<tr>
+    				<td>$data.companyName</td>
+    				<td>$count</td>
+    				<td>$data.houseName</td>
+    				<td>$data.hand</td>
+                </tr>
+			#end
+			
+        </table>
+</div>

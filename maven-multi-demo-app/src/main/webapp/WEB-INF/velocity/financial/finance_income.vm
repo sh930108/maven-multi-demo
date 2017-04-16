@@ -1,0 +1,144 @@
+
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 124, "cmenu": 125});
+</script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<div id="content-header">
+    <h1>财务管理 | 收入查询</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+	  	<div class="span12">
+	    	<div class="widget-box">
+	    		<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          	<h5></h5>
+		        </div>
+              	<div class="widget-content nopadding">
+              		<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/fm/queryCompanyIncomeList.do">
+						 <div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">分公司名称：</label>
+									<div class="controls">
+										<input id="companyName" value="$!{request.getParameter('companyName')}" type="text"  name="companyName" />
+									</div>
+								</div>
+							</div>
+						</div>
+              			#** <div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">所在区域：</label>
+									<div class="controls">
+										<select id="prv" class="span2" onchange="showCity(this.value)" name="shopProvince"></select>
+										<select id="city" class="span2" name="companyId"></select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">申请时间：</label>
+									<div class="controls">
+										<input id="startTime"  name="startTime" value="$!{startTime}" class="Wdate" type="text" size="20" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+										<span>至</span>
+										<input id="endTime" name="endTime" value="$!{endTime}" class="Wdate" type="text"  size="20" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+									</div>
+								</div>
+							</div>
+						</div>
+						*#
+						<div class="form-actions">
+							<button class="btn btn-success" type="submit" id="commit">筛选</button>
+							<button class="btn btn-primary" type="reset" id="clearCondition">重置</button>
+							#if($dataList.size()==0)
+							<a class="btn btn-danger" href="javascript:Toast.show('暂时没有数据可以导出')"><!-- <i class="icon-share-alt"></i> -->导出</a>
+							#else
+							<a class="btn btn-danger" href="$!{request.getContextPath()}/fm/exportCompanyIncome.do"><!-- <i class="icon-share-alt"></i> -->导出</a>
+							#end
+						</div>
+					</form>
+				</div>
+
+				<div class="widget-content">
+					<table class="table table-text-center">
+						<thead>
+							<tr >
+								<th>收入来源</th>
+								<th>联系人</th>
+								<th>联系电话</th>
+								<th>今日收入（元）</th>
+								<th>7天收入（元）</th>
+								<th>累计收入（元）</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in $dataList)
+							<tr>			
+								<td>$!data.companyName</td>
+								<td>$!data.companyContact</td>
+								<td>$!data.companyPhone</td>
+								<td>#if("$!{data.dayIncome}"=="") 0.00 #else $!{data.dayIncome} #end </td>
+								<td>#if("$!{data.svIncome}"=="") 0.00 #else $!{data.svIncome} #end</td>
+								<td>#if("$!{data.totalIncome}"=="") 0.00 #else $!{data.totalIncome} #end</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					<!-- 分页 -->
+					#parse("pagination.vm")
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+		
+<script type="text/javascript">
+$(function(){
+	getPrv();
+	var pro = '$!{shopProvince}';
+	if(pro!=""){
+		if(Number(pro) != -1){
+			showCity(pro);
+		}
+	}
+});
+$(document).ready(function () {
+	$('#commit').click(function(){
+		var startTime = $('#startTime').val();
+		var endTime = $('#endTime').val();
+		if(startTime == ""){
+			if(endTime!=""){
+				Toast.show("请先选择开始日期");
+				$('#startTime').focus();
+				return false;
+			}
+		}else{
+			if(endTime==""){
+				Toast.show("请选择结束日期");
+				$('#endTime').focus();
+				return false;
+			}else{
+				if(startTime > endTime){
+					Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+					$('#startTime').focus();
+					return false;
+				}
+			}
+		}
+		$('#form').submit();
+	});
+	$('#clearCondition').on('click',function(){
+		$('#prv').val(-1);
+		$('#city').val(0);
+		$('#startTime').val("");
+		$('#endTime').val("");
+		$('#form').submit();
+	});
+});
+</script>

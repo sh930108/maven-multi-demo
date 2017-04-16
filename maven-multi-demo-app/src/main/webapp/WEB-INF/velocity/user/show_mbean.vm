@@ -1,0 +1,224 @@
+##妈豆
+
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+  Matrix.Nav({"menu": 26, "cmenu": 27});
+</script>
+<div id="content-header">
+    <h1>用户管理 | 妈豆记录</h1>
+</div>
+
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box">
+        <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+          <h5>用户信息</h5>
+        </div>
+        <div class="widget-content">
+			#parse("/user/user_public_header.vm")
+		</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span12">
+        <div class="widget-box widget-tabs-box">
+          <ul class="nav nav-tabs">
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserIntegral.do?memberId=$memberId" >成长值记录</a>
+            </li>
+            <li class="active">
+              <a href="$!{request.getContextPath()}/user/showUserMbean.do?memberId=$memberId" >妈豆记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showUserVoucher.do?memberId=$memberId&type=1">优惠券记录</a>
+            </li>
+			 <li class="">
+              <a href="$!{request.getContextPath()}/user/showNewUser.do?memberId=$memberId&type=1">拉新用户记录</a>
+            </li>
+            <li class="">
+              <a href="$!{request.getContextPath()}/user/showVipRecharge.do?memberId=$memberId">会员充值记录</a>
+            </li>
+          </ul>
+          <div class="widget-content tab-content">
+            <!-- 选项卡 -->
+            <div id="tab2" class="tab-pane active">
+              <table class="table table-hover table-text-center">
+                <thead>
+                  <tr>
+                    <th>变化渠道</th>
+                    <th>妈豆变化值</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  #foreach($data in $dataList)
+                      <tr>
+                        <td>
+                     #** #if($!{data.beanType}==0) 商品购物
+                        #elseif($!{data.beanType}==1) 评价订单
+                        #elseif($!{data.beanType}==2) 游戏
+                        #elseif($!{data.beanType}==3) 签到
+                        #elseif($!{data.beanType}==4) 商品抵扣
+                        #elseif($!{data.beanType}==5) 退货扣除
+                        #elseif($!{data.beanType}==6) 退款返还
+                        #else 其他(包含平台操作)
+                      #end
+					*#$!{data.des}
+                      <br/>
+                      $!{data.relativeNo}
+                    </td>
+                        <td>
+                      #if($data.mathOperator==0)
+                        -$!{data.mbeanNum}
+                      #else
+                        +$!{data.mbeanNum}
+                      #end
+                    </td>
+                        <td>$!date.format('yyyy-MM-dd HH:mm:ss ',$!{data.createDate})</td>
+                        #**<td>
+                      #if($!{data.beanType}==0) 商品购物
+                        #elseif($!{data.beanType}==1) 评价订单
+                        #elseif($!{data.beanType}==2) 游戏
+                        #elseif($!{data.beanType}==3) 签到
+                        #elseif($!{data.beanType}==4) 商品抵扣
+                        #elseif($!{data.beanType}==5) 退货扣除
+                        #elseif($!{data.beanType}==6) 系统赠送
+                        #else 其他
+                      #end
+                    </td>*#
+                    </tr>
+                  #end
+                </tbody>
+              </table>
+              #parse("/pagination.vm")
+            </div>
+           #if($code !=3 )
+				<a class="btn btn-success" data-toggle="modal" href="javascript:alert('很抱歉，您无权限操作此功能');">修改妈豆数</a>
+			#else
+				<a class="btn btn-success" data-toggle="modal" href="#showReason">修改妈豆数</a>
+		   #end
+		   
+		  ## <a class="btn btn-success" data-toggle="modal" href="#queryMbean">妈豆记录查询</a>
+          </div>
+          <!-- 内容框 END -->
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal hide in" id="showReason" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>请填写您要操作的妈豆数量</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal form-horizontal-inline" method="get" action="#">
+      <div class="row-fluid">
+          <div class="span4">
+            <div class="control-group">
+              <label class="control-label">原有妈豆数量：</label>
+              <div class="controls">
+                <span class="notepad-inline">$!{mbeanCount}</span>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">操作类型：</label>
+            <div class="controls">
+              <select name="" id="operType"><option value="0">平台减少</option><option value="1">平台增加</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">修改妈豆数量：</label>
+            <div class="controls">
+              <input type="text" placeholder="" class="" id="count">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer"><a href="javascript:;" class="btn btn-primary" id="submitReason">完成</a> </div>
+</div>
+
+
+
+<div class="modal hide in" id="queryMbean" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">×</button>
+    <h3>请输入订单号</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal form-horizontal-inline" method="get" action="#">
+      <div class="row-fluid">
+        <div class="span4">
+          <div class="control-group">
+            <label class="control-label">订单号：</label>
+            <div class="controls">
+              <input type="text" placeholder="" class="" id="orderNo">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer"><a href="javascript:;" class="btn btn-primary" id="submitMbean">完成</a> </div>
+</div>
+<script type="text/javascript">
+  $('#submitReason').click(function () {
+    var currCount = $.trim($('#count').val());
+    if (isForm.isTrim(currCount) || !isForm.isImp(currCount)) {
+      Toast.show("妈豆数量不能为空且不能为负数");
+      $('#count').focus();
+      return false;
+    }
+    var type = $("#operType").val();
+    var count = Number("$!{mbeanCount}");
+    console.log(count)
+    if (type == 0 && count < currCount) {
+      //减少
+      Toast.show("您要操作的数量大于用户原有的数值，请修改");
+      return false;
+    }
+
+    /*提交数据*/
+    $.post("$!{request.getContextPath()}/user/updateMbean.do", {
+      'memberId': '$memberId',
+      'operType': type,
+      'count': currCount
+    }, function (data) {
+      Toast.show("操作成功");
+      window.location.reload();
+    });
+
+  });
+  
+  $('#submitMbean').click(function () {
+    var currCount = $.trim($('#orderNo').val());
+    if (isForm.isTrim(currCount) || !isForm.isImp(currCount)) {
+      Toast.show("订单号不能为空");
+      $('#orderNo').focus();
+      return false;
+    }
+    /*提交数据*/
+    $.get("$!{request.getContextPath()}/user/queryUserMbean.do", {
+      'orderNo': currCount
+    }, function (data) {
+     // Toast.show("操作成功");
+	  alert(data.msg);
+      //window.location.reload();
+    });
+
+  });
+</script>

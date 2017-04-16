@@ -1,0 +1,25 @@
+#set($layout="/admin/layout/matrix.vm")
+<div class="container-fluid">
+	<div class="quick-actions_homepage">
+		<ul class="quick-actions">
+			#foreach( ${menu} in ${account.menus})
+			<li class="bg_lb"> 
+				#set($target = "")
+				#set($id = "")
+				#foreach($cmenu in $menu.childMenus)
+		        	#if($foreach.count==1)
+		        	#set ($target = $request.getContextPath() + $cmenu.menuUrl)
+		        	#set ($id = $cmenu.menuId)
+		        	#break
+		        	#end
+				#end
+				<a href="${target}" #if($id == 130) target="blank" #end>  
+					<i class="icon-dashboard"></i>
+					<!-- <span class="label label-important"></span> --> 
+					$menu.menuName
+				</a> 
+			</li>
+			#end
+		</ul>
+	</div>
+</div>

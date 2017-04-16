@@ -1,0 +1,21 @@
+<script type="text/javascript">
+	var root = "$!{request.getContextPath()}";
+	// /gd-app-admin/res;
+	// http://s.mamhao.cn/admin/
+</script>
+<link type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+<link type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/matrix-style.css" rel="stylesheet" />
+<link type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/matrix-media.css" rel="stylesheet" />
+<link type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/matrix-shop.css" rel="stylesheet" />
+
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/jq.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/matrix.common.js"></script>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/tool/My97DatePicker/WdatePicker.js"></script>
+
+
+<!--common.js-->
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/common.js"></script>
+

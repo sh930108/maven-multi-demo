@@ -1,0 +1,124 @@
+##资金查询
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({
+	"menu" : 124,
+	"cmenu" : 183
+});
+</script>
+<div id="content-header">
+	<h1>财务管理 | 资金查询</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon"> <i class="icon-align-justify"></i></span>
+					<h5>资金列表</h5>
+				</div>
+				<!-- 筛选条件 -->
+				<div class="widget-content">
+				 <div class="widget-box widget-tabs-box">
+				   <ul class="nav nav-tabs">
+				     <li>
+				      <a href="$!{request.getContextPath()}/fs/capitalQuery.do?platformSource=1">分公司/总仓</a>
+				     </li>
+					 <li class="active">
+					  <a href="javascript:void();">妈妈好平台</a>
+					 </li>
+				   </ul>
+				   <div class="widget-content">
+					<form class="form-horizontal" method="get" action="$!{request.getContextPath()}/fs/mmhCapitalQuery.do" id="form">
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="control-group">
+									<label class="control-label">日期：</label>
+									<div class="controls">
+										<input type="text" maxlength="50" name="startPayTime" value="$!fstatement.startPayTime" id="startPayTime" placeholder="请输入开始时间"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+									       至<input type="text" maxlength="50" name="endPayTime" value="$!fstatement.endPayTime" id="endPayTime" placeholder="请输入结束时间"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startPayTime\')}'});">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-actions">
+							<button type="button" id="js_search" class="btn btn-success" onclick="butonCommit(1)">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							<a class="btn btn-primary" onclick="javascript:butonCommit(2)" >导出</a>
+						</div>
+					</form>
+				 </div>
+				<!--资金列表-->
+				<div class="widget-content">
+					<div class="widget-box widget-tabs-box">
+						
+					  <div class="widget-content tab-content">
+							<table class="table table-hover table-bordered table-text-center">
+								<thead>
+									<tr>
+										<th>日期</th>
+										<th>对象</th>
+										<th>收入(邮费)</th>
+										<th>支出(妈豆和优惠券)</th>
+										<th>实际收入</th>
+									</tr>
+								</thead>
+							   <tbody>
+								  #foreach($data in $!datas)
+								        <tr>
+										  <td>$!fstatement.startPayTime -- $!fstatement.endPayTime</td>
+										  <td>妈妈好平台</td>
+										  <td>
+										    $!number.format("#0.00",$!data.payFreightPrice)
+										  </td>
+										  <td>
+										   #set($outMoney=$!data.payMadouPrice + $!data.payCouponMmhPrice)
+										      $!number.format("#0.00",$!outMoney)
+										  </td>
+										 <td>
+										   #set($realMoney=$!data.payFreightPrice - $!outMoney)
+										   $!number.format("#0.00",$!realMoney)
+										 </td>
+									   </tr>
+								  #end
+							  </tbody>
+							</table>
+							##分页
+							###parse("pagination.vm")
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+ 
+ function butonCommit(type){
+   var startTime = $('#startPayTime').val();
+   var endTime = $('#endPayTime').val();
+   if(startTime == ""){
+				Toast.show("请先选择开始日期");
+				$('#startPayTime').focus();
+				return false;
+   }else if(endTime==""){
+ 		        Toast.show("请先选择结束日期");
+				$('#endPayTime').focus();
+				return false;
+   }else{
+	 if(startTime > endTime){
+					Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+					$('#startPayTime').focus();
+					return false;
+	 }
+   }
+   if(type==2){
+     $('#form').attr("action", "$!{request.getContextPath()}/fs/exportMmhCapitalQuery.do");
+   }else{
+   	$('#form').attr("action", "$!{request.getContextPath()}/fs/mmhCapitalQuery.do");
+   }
+   $('#form').submit();
+}
+ 
+</script>

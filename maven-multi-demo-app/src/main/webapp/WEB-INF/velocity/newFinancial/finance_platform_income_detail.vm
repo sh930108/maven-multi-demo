@@ -1,0 +1,303 @@
+
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 124, "cmenu": 125});
+</script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<div id="content-header">
+    <h1>财务管理 | 收支明细  <span class="btn btn-danger" onclick="javascript:history.go(-1)">返回上一步</span></h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+	  	<div class="span12">
+	    	<div class="widget-box widget-tabs-box">
+	    		<div class="widget-title"> 
+		          	 <ul class="nav nav-tabs">
+    	            <li #if($!{request.getParameter('type')}==0 || $!{request.getParameter('type')}==-1) class="active" #end><a href="$!{request.getContextPath()}/f/queryOrderDetail.do?type=-1&source=1" >分公司/总仓</a></li>
+    	            <li #if($!{request.getParameter('type')}==1) class="active" #end><a href="$!{request.getContextPath()}/f/queryPlatFormDetailStat.do?type=1" >妈妈好平台</a></li>
+    	          </ul>
+		        </div>
+				
+              	<div class="widget-content nopadding">
+              		<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/f/queryPlatFormDetailStat.do">
+						 <div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">日期：</label>
+									<div class="controls">
+										<input id="startTime"  name="start" value="$!{request.getParameter('start')}" class="Wdate" type="text" size="20" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+										<span>至</span>
+										<input id="endTime" name="end" value="$!{request.getParameter('end')}" class="Wdate" type="text"  size="20" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'yyyy-MM-dd'})" />
+									</div>
+								</div>
+								<div class="control-group">
+									<label class="control-label">关键词检索：</label>
+									<div class="controls">
+										<select id="t1" name="orderType" >
+                                                <option value="-1" #if($!{request.getParameter('orderType')}==-1)checked #end>全部</option>
+    											<option value="1" #if($!{request.getParameter('orderType')}==1)checked #end>订单号</option>
+    											<option value="2" #if($!{request.getParameter('orderType')}==2)checked #end>交易号</option>
+                                        </select>
+										<input type="text" name="orderNo" value="$!{request.getParameter('orderNo')}" placeHolder="请输入交易号或者订单号"/>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-actions">
+							<input type="hidden" name="type" value="$!{request.getParameter('type')}" />
+							<button class="btn btn-success" type="submit" id="commit">筛选</button>
+							<button class="btn btn-primary" type="reset" id="clearCondition">重置</button>
+							#if($dataList.size()==0)
+							<a class="btn btn-danger" href="javascript:Toast.show('暂时没有数据可以导出')"><!-- <i class="icon-share-alt"></i> -->导出</a>
+							#else
+							##<a class="btn btn-danger" href="$!{request.getContextPath()}/fm/exportCompanyIncome.do"><!-- <i class="icon-share-alt"></i> -->导出</a>
+                                <div class="btn-group tip-right" data-original-title="由于订单数据量大，导出速度比较慢，请点击“生成订单数据”，稍后再进行数据下载(导出excel表格)。">
+                                    <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">订单导出 <span class="caret"></span></button>
+                                    <ul class="dropdown-menu" id="exportOrder"></ul>
+                                </div>
+							#end
+						</div>
+					</form>
+				</div>
+
+				<div class="widget-content">
+					 <div class="widget-box widget-tabs-box">
+					<table class="table table-text-center">
+						<thead>
+							<tr >
+								<th>日期</th>
+								<th>收入/支出来源</th>
+								<th>订单号</th>
+								<th>交易流水号</th>
+								<th>支付方式</th>
+								<th>收入/元</th>
+								<th>支出/元</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in $list)
+							<tr>			
+								<td>$date.format('yyyy-MM-dd HH:mm:ss',$!{data.createTime})</td>
+								<td>$!data.typeName</td>
+								<td>$!data.orderNo</td>
+								<td>$!{data.serialNumber}</td>
+								<td>
+									#if($!{data.payTypeId}==0)
+										支付宝V1.0
+									#elseif($!{data.payTypeId}==1)
+										银联支付
+									#elseif($!{data.payTypeId}==2)
+										APP微信支付
+									#elseif($!{data.payTypeId}==3)
+										妈豆支付
+									#elseif($!{data.payTypeId}==4)
+										支付宝V1.1
+									#elseif($!{data.payTypeId}==5)
+										微分销微信支付
+									#else
+										测试支付宝
+									#end
+								</td>
+								<td>$!{data.payPrice}</td>
+                                <td>$!{data.refundPrice}</td>
+								<td>查看详情</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+					<!-- 分页 -->
+					#parse("pagination.vm")
+				</div>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+		
+<script type="text/javascript">
+var typeId = '';
+var shopId='';
+$(function(){
+	$("#t3").val(-1);
+	$("#t3").hide();
+	
+	var type = '$!{request.getParameter('type')}';
+    typeId = '$!{request.getParameter('typeId')}';
+	shopId = '$!{request.getParameter('shopId')}';
+	if(type==null || type =="" || type==undefined){
+		console.log("第一次跳转");
+	}else{
+		if(type==0){
+			showType(0);
+			showShopAndStorage(typeId);
+		}else if(type==2){
+			showType(2);
+			$("#t3").hide();
+		}
+	}
+});
+
+function showType(type){
+	if(type==-1){
+		Toast.show("请选择数据！");
+	}else if(type == 0){
+		//获取分公司列表
+		$("#t3").show();
+		$("#t3").val(-1);
+		 Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showCompanyList.do",
+                val: {},
+                fun: function (data) {
+					var str = '';
+					$.each(data, function(i, n) {
+						//console.log(n.divNumId);
+						if(typeId != null){
+							var t = Number(typeId);
+							if(n.divNumId==t){
+								str += "<option value='"+n.divNumId+"' selected>"+n.divName+"</option>";
+							}else{
+								str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+							}
+						}else{
+							str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+						}
+						
+            		});
+					$("#t2").html(str);
+                }
+          });
+	}else{
+		$("#t3").hide();
+		Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showStorageList.do",
+                val: {},
+                fun: function (data) {
+					var str = '<option value=\"-1\">全部</option>';
+					$.each(data, function(i, n) {
+						if(typeId != null && typeId != ""){
+							var t = Number(typeId);
+							if(n.storageNumId==t){
+								str += "<option value='"+n.storageNumId+"' selected >"+n.storageName+"</option>";
+							}else{
+								str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+							}
+						}else{
+							str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+						}
+            		});
+					$("#t2").html(str);
+                }
+          });
+	}
+}
+function showShopAndStorage(companyId){
+		var typeId = 0;
+		if(companyId != undefined){
+			typeId = companyId;
+		}else{
+			typeId = $("#t2").val();
+		}
+		Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showShopAndStorage.do",
+                val: {typeId:typeId},
+                fun: function (data) {
+					var str = "";
+					$.each(data, function(i, n) {
+						if(shopId != null && shopId !=""){
+							var t = Number(shopId);
+							if(n.subUnitNumId==t){
+								str += "<option value='"+n.subUnitNumId+"' selected >"+n.subUnitName+"</option>";
+							}else{
+								str += "<option value='"+n.subUnitNumId+"'>"+n.subUnitName+"</option>";
+							}
+						}else{
+							str += "<option value='"+n.subUnitNumId+"'>"+n.subUnitName+"</option>";
+						}
+            		});
+					$("#t3").html(str);
+                }
+          });
+	
+}
+$(document).ready(function () {
+	$('#commit').click(function(){
+		var startTime = $('#startTime').val();
+		var endTime = $('#endTime').val();
+		if(startTime == ""){
+			if(endTime!=""){
+				Toast.show("请先选择开始日期");
+				$('#startTime').focus();
+				return false;
+			}
+		}else{
+			if(endTime==""){
+				Toast.show("请选择结束日期");
+				$('#endTime').focus();
+				return false;
+			}else{
+				if(startTime > endTime){
+					Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+					$('#startTime').focus();
+					return false;
+				}
+			}
+		}
+		$('#form').submit();
+	});
+});
+
+//获取正在导出的导出数据
+function buildingOrderExport(){
+    Matrix.JSON({
+        showLoad: true,
+        type: "POST",
+        url: root + "/order/queryExportFinishingNotice.do",
+        val:{type:5},
+        fun: function(result){
+            var result = eval(result);
+            if(result != null){
+                //数据正在导出中
+                var html = '<li><a href="javascript:void(0)">正在生成订单数据，请稍后下载（数据更新时间：'+getLocalTime(result.createTime)+'）</a></li>';
+                $("#exportOrder").append(html);
+            }else{
+                var html = '<li><a href="javascript:exportOrder();">生成订单数据（后台生成数据，稍后才能进行导出）</a></li>';
+                $("#exportOrder").append(html);
+            }
+        }
+    });
+}
+buildingOrderExport();
+
+//导出按钮
+function exportOrder(){
+    $("#form").attr("action","$!{request.getContextPath()}/f/exportFinacialPlateformDetailStat.do");
+    document.getElementById("form").submit();
+};
+
+//获取订单下载列表
+function buildOrderExport(){
+    Matrix.JSON({
+        showLoad: true,
+        type: "POST",
+        val:{type:5},
+        url: root + "/f/queryExportFinishNotice.do",
+        fun: function(result){
+            if(result != ""){
+                //数据已完成导出
+                var html = '<li><a href="'+root+"/"+result.message+'">订单数据下载（数据更新时间：'+getLocalTime(result.updateTime)+'）</a></li>';
+                $("#exportOrder").append(html);
+            }
+        }
+    });
+}
+buildOrderExport();
+
+//日期函数
+function getLocalTime(nS) {
+    return new Date(parseInt(nS)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+}
+</script>

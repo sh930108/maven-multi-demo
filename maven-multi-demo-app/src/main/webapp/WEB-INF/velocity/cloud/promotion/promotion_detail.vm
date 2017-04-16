@@ -1,0 +1,382 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 107, "cmenu": 111});
+</script>
+
+<style type="text/css">
+    .form-horizontal > .control-group:first-child {
+        border-top: 0;
+    }
+
+    .btn-del-blk {
+        display: inline-block;
+        margin: 6px 0 0;
+    }
+    .op-group .controls {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    #blk-edit .control-group:hover {
+        background: #fff;
+        box-shadow: inset 0 0 1px #888;
+    }
+    #blk-edit .controls .conbox {
+        width: 350px;
+        float: left;
+        margin: 5px 0 15px;
+    }
+    .conbox input,.conbox textarea{width: 320px;}
+</style>
+
+<div id="content-header">
+    <h1>商品管理 | 编辑品牌宣导</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="widget-box">
+            <div class="widget-title"> <span class="icon"> <i class="icon-pencil"></i> </span>
+                <h5>编辑品牌宣导详情</h5>
+                <a class="btn btn-warning fr btn-small" href="$!{request.getContextPath()}/gb/goods/showPromotion.do?styleNumId=$!{request.getParameter('styleNumId')}&styleId=$!{request.getParameter('styleId')}&online=$!{request.getParameter('online')}&type=$!{request.getParameter('type')}&page=$!{request.getParameter('page')}">返回列表</a>
+            </div>
+            <div class="widget-content">
+                <form class="form-horizontal form-horizontal-inline">
+                    <input name="styleNumId" type="hidden" value="$!{request.getParameter('styleNumId')}">
+                    <input name="styleId" type="hidden" value="$!{request.getParameter('styleId')}">
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>标题：</label>
+                        <div class="controls">
+                            <input name="title" type="text" value="$!{mapRet.brand_promotion_title}" placeholder="请输入标题">
+                            <!-- <span style="color:#E86C6C"> 敏感词汇包括“ insert | update | delete | truncate | drop | select | alter | null | `~!@#$%^&*()_+<>?:"{},.\/;'[] ”</span> -->
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>封面图：</label>
+                        <div class="controls">
+                            <span class="up-photo">
+                                <input name="cover" id="pic0-hidden" type="hidden" value="$!{mapRet.cover_pic}"/>
+                                <span id="pic0-name"></span>
+
+                                <div class="up-pic" id="pic0-pic">
+
+                                #if($!{mapRet.cover_pic}) 
+                                    <img src="http://bgo.mamhao.cn/$!{mapRet.cover_pic}">
+                                #else
+                                    <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+                                #end
+
+                                </div>
+                                <div class="up-btn"><a href="javascript:;" id="pic0" class="btn">选择封面</a></div>
+                                <span style="display: inline-block;padding: 5px 0 0;color:#aaa;">请上传 1277 * 630 尺寸的图片！</span>
+                            </span>
+                        </div>
+
+                        <div class="controls">
+                            <input name="is_cpit" type="checkbox" #if($!{mapRet.is_cover_pic_in_text}=='1') checked #end value="1"><span>封面图是否出现在正文中</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i>*</i>正文编辑：</label>
+                        <div class="controls" id="blk-edit">
+
+                            <div class="op-group">
+                                <div class="controls">
+                                    <a class="btn btn-success" href="javascript:;" onclick="addText('');">添加文本</a>
+                                    <a class="btn btn-success" href="javascript:;" onclick="addPic('');">添加图片</a>
+                                    <a class="btn btn-success" href="javascript:;" onclick="addVideo('');">添加视频</a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="widget-content">
+                <a class="btn btn-primary" onclick="save();" href="javascript:;">保存</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+
+<script type="text/javascript">
+
+var picId = 0;
+
+$(function () {
+    var su = $("span.up-photo");
+    for (var i = 0; i <= su.length - 1; i++) {
+        picId=i;
+        addPicLoader();
+    };
+    picId++;
+    var sni="$!{mapRet.style_num_id}";
+    if (sni != '') {
+        var dJson = '$!{mapRet.detail}';
+
+        dJson = dJson.replace(new RegExp("\n","gm"), "\\n");
+
+        var ds = JSON.parse(dJson);
+        for(var i = 0; i < ds.length; i++){
+            if (ds[i].block.type == 1) {
+
+                addText(ds[i].block.content);
+            } else if (ds[i].block.type == 2) {
+                addPic(ds[i].block.content);
+            } else {
+                addVideo(ds[i].block.content);
+            }
+        }
+    }
+});
+
+function addPicLoader () {
+    var obj = $("#pic"+picId);
+    obj.uploadify({
+　　    uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',  
+        swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',  
+        queueID: 'null', // 上传进度列表;
+        fileTypeDesc: "jpg",
+        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+        multi: false,
+        wmode: "transparent",
+        buttonText: picId==0?'选择封面':'选择图片',
+        width: "100%",
+        height: "100%",
+        onUploadStart: function(){
+            var id = obj.attr("id");
+            $("#" + id + "-pic").html('');
+        },
+
+        onUploadSuccess: function(file,data,response) {
+            //上传完成时触发（每个文件触发一次）;
+            var data = JSON.parse(data);
+            var id = obj.attr("id");
+            if(!data.success){
+                Toast.show(data.msg);
+                $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+            }else{
+                $("#" + id + "-pic").html('<img src="$imgpath'+ data.fileName +'"/>');
+                $("#" + id + "-hidden").val(data.fileName);
+            }        
+        }
+    }); 
+}
+
+function appendPicBlk (i,content) {
+    var picBlkHtml = new Array();
+    picBlkHtml.push('<div class="control-group" type-id="2">');
+    picBlkHtml.push('<label class="control-label">添加图片</label>');
+    picBlkHtml.push('<div class="controls">');
+    picBlkHtml.push('<div class="conbox"><span class="up-photo">');
+    picBlkHtml.push('<input id="pic'+ i +'-hidden" name="pic" type="hidden" value="'+ content +'"/>');
+    picBlkHtml.push('<span id="pic'+ i +'-name"></span>');
+    picBlkHtml.push('<div class="up-pic" id="pic'+ i +'-pic">');
+
+    if (content!="") {
+        picBlkHtml.push('<img src="http://bgo.mamhao.cn/'+ content +'"></div>');
+    } else{
+        picBlkHtml.push('<img src="$!{request.getContextPath()}/res/images/photo-default.png"></div>');
+    }
+
+    picBlkHtml.push('<div class="up-btn"><a href="javascript:;" id="pic'+ i +'" class="btn">选择图片</a></div></span></div>');
+    picBlkHtml.push('<a class="btn-del-blk btn btn-danger btn-small" onclick="delBlk(this);" href="javascript:;">删除</a></div></div>');
+
+    appendBlk(picBlkHtml.join(''));
+
+    addPicLoader();
+}
+
+function appendBlk (h) {
+    var blks = $("#blk-edit").children("div.control-group");
+    if(blks.length>0){
+        blks.last().after(h);
+    }else{
+        $("#blk-edit").prepend(h);
+    }
+}
+
+function addPic (content) {
+    var pBlks = $("input[name='pic']");
+    if(pBlks.length == 10) {
+        Toast.show("只能添加10个图片编辑模块");
+        return false;
+    }
+    appendPicBlk(picId,content);
+    picId++;
+}
+
+function addText (content) {
+    var tBlks = $("textarea[name='text']");
+    if(tBlks.length == 10) {
+        Toast.show("只能添加10个文本编辑模块");
+        return false;
+    }
+    var textBlkHtml = [];
+    textBlkHtml.push('<div class="control-group" type-id="1"><label class="control-label">添加文本</label><div class="controls"><div class="conbox"><textarea name="text">')
+    textBlkHtml.push(content);
+    textBlkHtml.push('</textarea></div><a class="btn-del-blk btn btn-danger btn-small" onclick="delBlk(this);" href="javascript:;">删除</a></div></div>');
+
+    appendBlk(textBlkHtml.join(''));
+}
+
+function addVideo (content) {
+    var vBlks = $("input[name='video']");
+    if(vBlks.length == 1) {
+        Toast.show("只能添加1个视频编辑模块");
+        return false;
+    }
+    var videoBlkHtml = [];
+    videoBlkHtml.push('<div class="control-group" type-id="3"><label class="control-label">添加视频</label><div class="controls"><div class="conbox"><input name="video" type="text" value="')
+    videoBlkHtml.push(content);
+    videoBlkHtml.push('"></div><a class="btn-del-blk btn btn-danger btn-small" onclick="delBlk(this);" href="javascript:;">删除</a></div></div>');
+
+    appendBlk(videoBlkHtml.join(''));
+}
+
+function delBlk (o) {
+    if (!confirm("确定删除该编辑模块吗？")) {
+        return;
+    }
+    var obj = $(o).parent(".controls").parent(".control-group");
+    if (obj.attr("type-id") == "2") {picId--};
+    obj.remove();
+}
+
+function save () {
+    if(validateForm()) {
+
+        var arguments = new Object();
+
+        arguments.style_num_id = parseInt($("input[name='styleNumId']").val());
+        arguments.style_id = $("input[name='styleId']").val();
+        arguments.brand_promotion_title = $("input[name='title']").val();
+        arguments.cover_pic = $("input[name='cover']").val();
+        arguments.is_cover_pic_in_text = $("input[name='is_cpit']").attr("checked")?1:0;
+
+        var args = new Array();
+
+        var blks = $("#blk-edit").children("div.control-group");
+
+        if(blks.length>0){
+
+            for (var i = 0; i < blks.length; i++) {
+
+                var blk = $(blks[i]);
+                var type = blk.attr("type-id");
+                var content = '';
+
+                if (type==1) {
+                    content = blk.find("textarea[name='text']").val();
+                    
+                    content = content.replace(new RegExp("\n","gm"), "\\n"); 
+                    // content = content.replace("\r", "\\r");
+                } else if (type==2) {
+                    content = blk.find("input[name='pic']").val();
+                } else{
+                    content = blk.find("input[name='video']").val();
+                }
+
+                var json = new Object();
+                json.order=i+1;
+                json.block=JSON.parse('{"type":'+ type +',"content":"'+content+'"}');
+                args.push(json);
+            }
+        }
+
+        arguments.detail = args;
+        var jsonArgs = JSON.stringify(arguments);
+
+        Matrix.JSON({
+            showLoad : true,
+            type : "POST",
+            val: {data:jsonArgs,styleNumId:$("input[name='styleNumId']").val(),styleId:$("input[name='styleId']").val()},
+            url : '$!{request.getContextPath()}/gb/goods/savePromotionDetail.do',
+            fun : function(data) {
+                if (data.success) {
+                    Toast.show("操作成功");
+
+                    setTimeout(function () {
+                        window.location.href="$!{request.getContextPath()}/gb/goods/showPromotion.do?styleNumId=$!{request.getParameter('styleNumId')}&styleId=$!{request.getParameter('styleId')}&online=$!{request.getParameter('online')}&type=$!{request.getParameter('type')}&page=$!{request.getParameter('page')}";
+                    },1000);
+                } else {
+                    Toast.show(data.msg);
+                }
+            }
+        });
+    }
+}
+
+function validateForm(){
+    var flag = true;
+    // alert();
+    if($("input[name='title']").val()==""){
+        $("input[name='title']").focus();
+        Toast.show("请填写标题");
+        return false;
+    }else if (isForm.isCheck($("input[name='title']").val())) {
+        $("input[name='title']").focus();
+        Toast.show("标题含有敏感词汇，请重新输入");
+        return false;
+    }else if($("input[name='title']").val().length > 30) {
+        $("input[name='title']").focus();
+        Toast.show("请控制标题在30字内");
+        return false;
+    }else if($("input[name='cover']").val()==""){
+        Toast.show("请选择封面");
+        return false;
+    }
+
+    var blks = $("#blk-edit").children("div.control-group");
+    if(blks.length ==0){
+        Toast.show("必须添加编辑模块");
+        return false;
+    }
+
+    $("textarea[name='text']").each(function(index, el) {
+        $this = $(el);
+        if ($this.val()=="") {
+            Toast.show("请填写文本");
+            $this.focus();
+            flag = false;
+            return false;
+        } else if(isForm.isCheck($this.val())){
+            Toast.show("请不要包含敏感词汇");
+            $this.focus();
+            flag = false;
+            return false;
+        }
+    });
+
+    if (!flag) { return flag; }
+
+    $("input[name='pic']").each(function(index, el) {
+        $this = $(el);
+        if ($this.val()=="") {
+            Toast.show("请选择图片");
+            flag = false;
+            return false;
+        }
+    });
+
+    if ( !flag ) { return flag; }
+
+    $("input[name='video']").each(function(index, el) {
+        $this = $(el);
+        if ($this.val()=="") {
+            Toast.show("请填写视频链接");
+            $this.focus();
+            flag = false;
+            return false;
+        }
+    });
+
+    return flag;
+}
+
+</script>

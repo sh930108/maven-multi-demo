@@ -1,0 +1,207 @@
+##优惠券模版表单
+
+<div class="content">
+	<div class="title">
+		<title_1>活动管理</title_1>
+		<title_2>优惠券管理</title_2>
+	</div>
+	<div class="article_label">
+		<div class="article_header_title">
+			妈妈好平台优惠券
+		</div>
+	</div>
+	<article class="article_press">
+		<div class="marketing">
+		<form action="$!{request.getContextPath()}/voucherTemplate/save.do" method="post">
+    		 <div class="form0">
+ #*    			
+ 				<div class="form_group">
+    				<div class="form_group_left">
+						优惠券类型
+					</div>
+    				<div class="form_group_right">
+    				    <select id="voucher_template_type" name="voucherTemplateType" class="select_big"></select> 
+    				</div>
+    			</div>
+*#				
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					优惠券名称
+    				</div>
+    				<div class="form_group_right">
+    				    <input id="" class="input" type="text"  name="voucherTemplateName" value=""/>
+    				</div>
+    			</div>
+    			<div class="form_group">
+    				<div class="form_group_left">
+						有效时间
+					</div>
+    				<div class="form_group_right">
+    				    <input id="effectiveBeginTime" class="input_short" type="text"  name="effectiveBeginTime" value="" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', maxDate:'#F{$dp.$D(\'effectiveBeginTime\')}'});" style="width:170px;"/>
+						<span style="margin:0 7px;">至</span>
+    					<input id="effectiveEndTime" class="input_short" type="text"  name="effectiveEndTime" value="" onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'#F{$dp.$D(\'effectiveEndTime\')}'});" style="width:170px;"/>
+    				</div>
+    			</div>
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					单张面值
+    				</div>
+    				<div class="form_group_right">
+    				    <input id="" class="input" type="text"  name="money" value=""/>&nbsp;元
+    				</div>
+    			</div>
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					总发型量
+    				</div>
+    				<div class="form_group_right">
+    				    <input id="" class="input" type="text"  name="qty" value=""/>&nbsp;张
+    				</div>
+    			</div>
+				<div class="form_group">
+    				<div class="form_group_left">
+    					每人限领
+    				</div>
+    				<div class="form_group_right">
+    				    <input id="" class="input" type="text"  name="limitQty" value=""/>&nbsp;张
+    				</div>
+    			</div>
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					使用条件
+    				</div>
+    				<div class="form_group_right">
+    					单笔订单中此优惠券指定商品金额满
+    				    <input id="" class="input_short" type="text"  name="conditionMoney" value="" style="width:170px;"/>
+						<p_footer>元可以使用</p_footer>
+    				</div>
+    			</div>
+				#*
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					适用对象
+    				</div>
+    				<div class="form_group_right">
+						<div class="form_group_rightbox">
+    						<div class="form_group_right">
+    							<input id="shiwu" type="radio" name="applyShop" />
+    							<label for="shiwu" class="label">整个平台</label>
+    							<input id="shiwu" type="radio" name="applyShop" />
+    							<label for="shiwu" class="label">自营</label>
+    							<input id="shiwu" type="radio" name="applyShop" />
+    							<label for="shiwu" class="label">非自营</label>
+    							<input id="shiwu" type="radio" name="applyShop" />
+    							<label for="shiwu" class="label">除以下店铺外</label>
+    						</div>
+    						<div class="form_group_right">
+    							<select name="" class="select" style="width:137px;">
+    								<option>妈咪宝贝</option>
+    							</select>
+    							<select name="" class="select" style="width:137px;">
+    								<option>妈咪宝贝</option>
+    							</select>
+    							<select name="" class="select" style="width:137px;">
+    								<option>妈咪宝贝</option>
+    							</select>
+    						</div>
+						</div>
+					</div>
+    			</div>
+    			<div class="form_group">
+    				<div class="form_group_left">
+    					优惠商品
+    				</div>
+    				<div class="form_group_right">
+						<div class="form_group_rightbox">
+    						<div class="form_group_right">
+    							<input id="shiwu" type="radio" name="voucherGoods" />
+    							<label for="shiwu" class="label">全部商品</label>
+    							<input id="shiwu" type="radio" name="voucherGoods" />
+    							<label for="shiwu" class="label">指定商品</label>
+    							<input id="shiwu" type="radio" name="voucherGoods" />
+    							<label for="shiwu" class="label">除以下商品外</label>
+    							
+    						</div>
+    						<div class="form_group_right">
+    							<input id="shiwu" type="checkbox" name="type" />
+    							<label for="shiwu" class="label">已有活动商品</label>
+    							<input id="shiwu" type="checkbox" name="type" />
+    							<label for="shiwu" class="label">特价上品 </label>
+    						</div>
+    						<div class="form_group_right">
+    							<input id="shiwu" type="checkbox" name="type" />
+    							<label for="shiwu" class="label">具体某一个商品</label>
+    							<p_footer><p_green>已选择一个商品</p_green></p_footer>
+    							
+    						</div>
+						</div>
+					</div>
+    			</div>
+				*#
+				<div class="marketing_footer">
+					<div class="p_right">
+						<button id="createLink" type="button" class="btn_next">生成优惠券链接</button>
+						<button type="submit" class="btn_next_dele">创建优惠券</button>
+					</div>
+					<div class="couponlink">
+						<input id="voucherTemplateUrl" type="text" name="voucherTemplateUrl" value="" class="input_couponlink" />
+						<img  id="copyLink" src="$!{request.getContextPath()}/res/images/couponlink.png" width="" height="" alt="复制" />
+					</div>
+				</div>
+		</form>
+		</div>
+    </article>
+<div>
+	
+<script>
+	$(function(){
+		
+		//生成链接
+		$("#createLink").on("click",function(){
+			$.getJSON( root + "/voucherTemplate/createVtLink.do?jsoncallback=?",
+				function(ret){
+					if(ret.success){
+						$("#voucherTemplateUrl").val(ret.data);
+					}
+				});
+		});
+		
+		//复制链接
+		$("#copyLink").on("click",function(){
+			var linkTxt = $("#voucherTemplateUrl").val();
+			var clip = new ZeroClipboard.Client();  
+            clip.setHandCursor(true);  
+           // clip.glue('copyLink');  
+            clip.addEventListener('mouseDown', function() {  
+                clip.setText(linkTxt);  
+            });  
+            clip.addEventListener("complete", function() {  
+                Toast.show("复制成功");
+            });  
+            $(window).resize(function() {  
+                clip.reposition();   
+            });  
+		});
+		
+		//查询类别
+		$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",
+         {
+            'fdName':'voucher_template_type',
+            'tbName':'t_voucher_template'
+         },function(ret){
+            if(ret.success){
+               var opt = "";
+               var data = ret.data;
+               $.each(data,function(i,o){
+                  opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+               });
+               $("#voucher_template_type").append(opt);
+            }else{
+               
+            }
+         });
+	
+	});
+
+</script>
+	

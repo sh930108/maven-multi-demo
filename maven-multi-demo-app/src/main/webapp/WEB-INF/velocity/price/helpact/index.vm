@@ -1,0 +1,130 @@
+﻿##代拍活动配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>
+        商品管理 | 代拍配置
+    </h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+             <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>添加代拍商品</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <form  id="frm" method="post" action="$!{request.getContextPath()}/help/act/insert.do" class="form-horizontal form-horizontal-inline row-fluid">
+                        <div class="row-fluid">
+                            <div class="span5">
+                                <div class="control-group">
+                                    <label class="control-label">STYLE_NUM_ID：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5" name="styleNumId" value="" maxlength="10"><font color="red">$!{msgStyle}</font>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">价格(元)：</label>
+                                    <div class="controls">
+                                        <input type="text" class="span5"  name="price" value="" maxlength="10"><font color="red">$!{msgPrice}</font>
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label">时间：</label>
+                                    <input id="startTime" class="span4" type="text" name="startTime" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+                                    <span class="notepad-inline">至</span>
+                                    <input id="endTime" class="span4" type="text" name="endTime" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'startTime\')}'})"/> <font color="red">$!{msgTime}</font>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" id="submit-btn" class="btn btn-success">添加</button>
+                            <button type="reset" class="btn btn-warning">重置</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>代拍商品列表</h5>
+                </div>
+                             <hr/>
+	        					  <a href="$!{zxingimgpath}">【点我下载二维码】</a>
+                           <hr/>
+	        					  <img src="$!{zxingimgpath}"/> 
+                            <hr/>
+                                <a href="$!{request.getContextPath()}/help/act/list.do"> 【刷新列表】</a>
+                                <hr/>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <div class="widget-content">
+                            <table class="table table-text-center table-order">
+                                <thead>
+                                <tr>
+                                    <th>款式ID(STYLE_NUM_ID)</th>
+                                    <th>样式ID(STYLE_ID)</th>
+                                    <th>标题</th>
+                                    <th>价格(元)</th>
+                                    <th>生效时间</th>
+                                    <th>过期时间</th>
+                                    <th>添加时间</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+								#foreach($info in $list)
+                                    <tbody>
+                                    <tr class="order-bd">
+                                   <td class="text-left baobei">
+                                        <p>$!{info.templateId}</p>
+                                   </td>
+                                        <td class="source">
+                                            <p>$!{info.styleId}</p>
+                                        </td>
+ 											<td class="source">
+                                            <p>$!{info.title}</p>
+                                        </td>
+
+                                        <td class="amount">
+                                            <p class="special-num"><strong>$!{info.priceByYuan}</strong>元</p>
+                                        </td>
+
+                                        <td class="source">
+                                            <p>$!{info.startTime}</p>
+                                        </td>
+                                        <td class="source">
+                                            <p>$!{info.endTime}</p>
+                                        </td>
+<td class="source">
+                                            <p>$!{info.time}</p>
+                                        </td>
+                                        <td class="operate">
+											 <p>
+											 <a href="$!{request.getContextPath()}/help/act/del.do?templateId=$!{info.templateId}" onclick="return confirm('是否确定删除？');">删除</a>
+											 </p> 
+											  <p>
+											 <a href="$!{request.getContextPath()}/help/act/addzxing.do?templateId=$!{info.templateId}">生成二维码</a>
+											 </p> 
+                                        </td>
+                                    </tr>
+                                    </tbody>
+								#end
+                            </table>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    Matrix.Nav({"menu": 107, "cmenu": 227});
+    $("#submit-btn").on("click", function(){
+        if(confirm("确定添加该商品代拍配置？")){
+            $("#frm").submit();
+        }
+
+    });
+</script>

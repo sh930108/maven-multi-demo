@@ -1,0 +1,258 @@
+﻿##系统推送配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 219});
+</script>
+<style>
+    textarea{resize:none;}
+    .control-label{width: 100px !important;}
+    .controls{margin-left: 120px !important;}
+</style>
+<div id="content-header">
+    <h1>会员购 | 推送文案配置</h1>
+</div>
+<div class="container-fluid">
+    <div class="widget-box widget-tabs-box">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab1" data-toggle="tab">每月购</a></li>
+        </ul>
+        <div class="widget-content tab-content ">
+            <!-- <div class="container-fluid"> -->
+            <form action="$!{request.getContextPath()}/purchase/baseConf/savePushConf.do" class="form-horizontal" type="post" id="frm">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>每月购清单上线：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            清单上线当天<select name="finalListTime" id="" class="span2 js-time" data-v=$!{data.finalListTime} ></select>点
+                                            <!-- <span class="help-inline">这里给行间的提示信息</span> -->
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.finalListDefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="finalListDesc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.finalListDesc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>宝宝出生祝福送礼：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天 <select name="birthDayTime" id="" class="span2 js-time" data-v=$!{data.birthDayTime} ></select>点
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.birthDayDefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="birthDayDesc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.birthDayDesc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>宝宝满月祝福送礼：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天<select name="oneMonthTime" id="" class="span2 js-time" data-v=$!{data.oneMonthTime}></select>点
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.oneMonthDefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="oneMonthDesc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.oneMonthDesc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>宝宝百天祝福送礼：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天<select name="dayFor100Time" id="" class="span2 js-time" data-v=$!{data.dayFor100Time}></select>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.dayFor100DefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="dayFor100Desc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.dayFor100Desc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>宝宝一周岁祝福送礼：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天
+                                            <select name="oneAgeTime" id="" class="span2 js-time" data-v=$!{data.oneAgeTime}></select>点
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.oneAgeDefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="oneAgeDesc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.oneAgeDesc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>宝宝2岁-14岁祝福送礼：
+                                </h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天 <select name="ageFor2To14Time" id="" class="span2 js-time" data-v=$!{data.ageFor2To14Time}></select>点
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.ageFor2To14DefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="ageFor2To14Desc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.ageFor2To14Desc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="widget-box">
+                            <div class="widget-content">
+                                <h5>特惠日快到期提示：</h5>
+                                <div class="form-horizontal">
+                                    <div class="control-group">
+                                        <label class="control-label">推送时间：</label>
+                                        <div class="controls">
+                                            节日当天<select name="finalPmtTime" id="" class="span2 js-time" data-v=$!{data.finalPmtTime}></select>点
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">默认推送：</label>
+                                        <div class="controls"><p class="notepad-inline">$!{data.finalPmtDefaultDesc}</p></div>
+                                     </div>
+                                    <div class="control-group">
+                                        <label class="control-label">推送内容：</label>
+                                        <div class="controls">
+                                            <textarea name="finalPmtDesc" id="" cols="30" rows="3" maxlength="40" placeholder="建议不超过40个字">$!{data.finalPmtDesc}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <a class="btn btn-success" id="submit">保存</a>
+                </div>
+            </form>
+            <!-- </div> -->
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var VM = {
+        rootpath : '$!{request.getContextPath()}'
+    };
+
+    (function(){
+        var page = {
+            api:{
+                save:VM.rootpath + '/purchase/baseConf/savePushConf.do'
+            },
+            init:function(){
+                $('.js-time').each(function(){
+                    var _this = $(this), i = 0;
+                    while(i<24){
+                        if(i == _this.data("v")){
+                            $(this).append('<option value=' + i +' selected>' + (i++) + '</option>')
+                        }else{
+                            $(this).append('<option value=' + i +' >' + (i++) + '</option>')
+                        }
+                    }
+                });
+                $('#submit').on('click',page.submit);
+            },
+            /**/
+            submit:function(){
+                console.log($("#frm").serialize());
+                Matrix.JSON({
+                    val: $("#frm").serialize(),
+                    url: page.api.save,
+                    fun: function (res) {
+                        if (res.success) {
+                            setTimeout('window.location.reload()', Toast.show('操作成功'));
+                        } else {
+                            Toast.show(res.msg);
+                        }
+                    }
+                });
+            }
+        }
+        page.init();
+    })();
+</script>

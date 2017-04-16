@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>妈妈好运营后台</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+#parse("/admin/layout/bootstrap.vm")
+</head>
+
+<body>
+	<!-- 顶部信息 -->
+	#parse("admin/com/header.vm")
+  <!-- 左侧导航 -->
+  #parse("admin/com/sidebar.vm")
+  <!-- 主体内容 -->
+  <div id="content">
+  	$screen_content
+  </div>
+</body>
+</html>

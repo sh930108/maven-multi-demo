@@ -1,0 +1,326 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 124, "cmenu": 127});
+</script>
+<div id="content-header">
+    <h1>财务管理 | 退款查询</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>退款查询列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form class="form-horizontal form-horizontal-inline" method="get" id="form" action="$!{request.getContextPath()}/fm/queryRefundOrderList.do">
+						<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">申请时间：</label>
+									<div class="controls">
+										<input id="startTime"  name="startTime" class="Wdate" type="text" value="$!{request.getParameter('startTime')}" size="15" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+										<span>至</span>
+										<input id="endTime" name="endTime" class="Wdate" type="text" value="$!{request.getParameter('endTime')}" size="15" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" /> 
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">退款订单号：</label>
+									<div class="controls">
+										<input type="text" class="span12" name="refundNo" value="$!{request.getParameter('refundNo')}" />
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">退款人姓名：</label>
+									<div class="controls">
+										<input type="text" class="span12" name="name" value="$!{request.getParameter('name')}" />
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">联系方式：</label>
+									<div class="controls">
+										<input type="text" class="span12" name="phone" value="$!{request.getParameter('phone')}" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-actions">
+							<button class="btn btn-success" type="submit" id="commit">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							
+                            <a href="$!{request.getContextPath()}/fm/exportRefundRecordList.do" class="btn btn-warning">导出退款记录</a>
+						</div>
+					</form>
+					
+				</div>
+				<div class="widget-content">
+					<table class="table table-text-center">
+						<thead>
+							<tr >
+								##<th>
+									##<label><input type="checkbox" value="" name="sample-checkbox-01" id="checkAll"></label>
+								##</th>
+								<th>退款单号</th>
+								<th>支付宝退款流水号</th>
+								<th>退款人姓名</th>
+								<th>退款人联系方式</th>
+								<th>退款金额(元)</th>
+								<th>支付方式</th>
+								<th>申请日期</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in $dataList)
+							<tr >			
+								##<td>
+								##	<label><input type="checkbox" value="$data.alipayNo^$data.refundMoney^$data.refundReason" name="refundLineNos"></label>
+									<!-- <label for="checkbox-01" class="label_check">
+										<input type="checkbox" value="$data.alipayNo^$data.refundMoney^$data.refundReason" name="refundLineNos" />
+									</label> -->
+								##</td>
+								<td>$data.refundLineNo</td>
+								<td>$!data.alipayNo   </td>
+								<td>$!data.consigneeName</td>
+								<td>$!data.consigneePhone</td>
+								<td>#formatAmount($data.refundMoney)</td>
+								<td>
+									#if($data.payType==0)
+                                        <font color="green">支付宝（来啊商贸帐号）</font>
+									#elseif($data.payType==1)
+                                        <font color="black">银联支付</font>
+									#elseif($data.payType==2)
+                                        <font color="black">微信支付</font>
+									#elseif($data.payType==3)
+                                        <font color="black">妈豆支付</font>
+									#elseif($data.payType==4)
+                                        <font color="red">支付宝（妈妈好账号）</font>
+									#elseif($data.payType==5)
+										 <font color="purple">公众号支付</font>
+									#else
+										 <font color="purple">测试版支付宝</font>
+									#end
+								</td>
+								<td>$date.format('yyyy-MM-dd HH:mm:ss',$data.applyTime)</td>
+								<td>
+									#if($data.payType==0)
+										#if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+										#else
+											#if($!{data.isCanClickRefundButton})
+											<a class="btn btn-primary btn-mini js-refund" target="_bank"
+											   href="$!{request.getContextPath()}/alipay/alipaySubmit.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$data.orderLineId&batchNum=1&detail_data=$data.alipayNo^#formatAmount($data.refundMoney)^$!{data.refundReason}">
+
+												退款
+                                            </a>
+											#else
+												<a class="btn btn-primary btn-mini js-refund" onclick="alert('该退款单已被锁定!');">退款</a>
+											#end
+
+										#end
+									#elseif($data.payType==1)
+                                       ## <font color="black">银联支付</font>
+									   #if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+    								   #else
+										   #if($!{data.isCanClickRefundButton})
+                                               <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/union/submit.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$!{data.orderLineId}-$data.batchNo&totalFee=$data.totalMoney&batchNum=1&detail_data=$data.alipayNo^$data.refundMoney^$!{data.refundReason}">退款</a>
+										   #else
+                                               <a class="btn btn-primary btn-mini js-refund" onclick="alert('该退款单已被锁定!');">退款</a>
+										   #end
+
+    								   #end
+									#elseif($data.payType==2)
+                                        ##<font color="black">微信支付</font>
+										#if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+										#else
+											#if($!{data.isCanClickRefundButton})
+                                                <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/tenpay/doRefund.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$!{data.orderLineId}-$data.batchNo&totalFee=$data.totalMoney&batchNum=1&detail_data=$data.alipayNo^$data.refundMoney^$!{data.refundReason}">退款</a>
+											#else
+                                                <a class="btn btn-primary btn-mini" onclick="alert('该退款单已被锁定!');">退款</a>
+											#end
+
+										#end
+									#elseif($data.payType==3)
+                                        <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+									#elseif($data.payType==4)
+                                        ##<font color="red">支付宝（妈妈好账号）</font>
+										#if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+										#else
+											#if($!{data.orderSource}==1)
+
+												#if($!{data.isCanClickRefundButton})
+                                                    <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/alipaySubmit2.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$data.orderLineId&batchNum=1&detail_data=$data.alipayNo^#formatAmount($data.refundMoney)^$!{data.refundReason}">退款</a>
+												#else
+                                                    <a class="btn btn-primary btn-mini" onclick="alert('该退款单已被锁定!');">退款</a>
+												#end
+											#else
+												#if($!{data.isCanClickRefundButton})
+                                                    <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/wapAlipaySubmit.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$data.orderLineId&batchNum=1&detail_data=$data.alipayNo^#formatAmount($data.refundMoney)^$!{data.refundReason}">退款</a>
+												#else
+                                                    <a class="btn btn-primary btn-mini" onclick="alert('该退款单已被锁定!');">退款</a>
+												#end
+											#end
+										#end
+									#elseif($data.payType==5)
+										
+										#if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+										#else
+											#if($!{data.isCanClickRefundButton})
+                                                <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/tenpay/jsapiRefund.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$!{data.orderLineId}-$data.batchNo&totalFee=$data.totalMoney&batchNum=1&detail_data=$data.alipayNo^$data.refundMoney^$!{data.refundReason}">退款</a>
+											#else
+                                                <a class="btn btn-primary btn-mini" onclick="alert('该退款单已被锁定!');">退款</a>
+											#end
+										#end
+									#elseif($data.payType==6)
+										
+										#if($data.refundMoney==0)
+											 <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">退款</a>
+										#else
+
+											#if($!{data.isCanClickRefundButton})
+                                                <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/testAlipaySubmit.do?refundNo=$!{data.refundLineNo}&orderNo=$!{data.orderNo}-$data.orderLineId&batchNum=1&detail_data=$data.alipayNo^#formatAmount($data.refundMoney)^$!{data.refundReason}">退款</a>
+											#else
+                                                <a class="btn btn-primary btn-mini" onclick="alert('该退款单已被锁定!');">退款</a>
+											#end
+										#end
+									#elseif($data.payType==7)
+                                        <a class="btn btn-primary btn-mini js-refund" target="_bank" href="$!{request.getContextPath()}/alipay/refundMbean.do?orderNo=$!{data.orderNo}&orderLineId=$data.orderLineId&orderLineNo=$!{data.refundLineNo}">代拍退款</a>
+									#end
+									
+									
+								</td>
+							</tr>
+							#end
+						</tbody>
+					</table>	
+					#parse("/pagination.vm")
+					##<button type="button" class="btn btn-primary" id="putGoodsOn" />批量退款</button>
+					<form id="dataForm" action="$!{request.getContextPath()}/alipay/alipaySubmit.do">
+						<input type="hidden" name="batchNum"  id="batchNum"/>
+						<input type="hidden"  name="detail_data" id="detailData"/>
+	                </form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div style="display:none">
+    <div id="showReason">
+    		<p>请填写拒绝理由</p>
+    		<input type="text" id="reason"/>
+			<input type="hidden" id="reasonStatus" />
+			<input type="hidden" id="reasonNo" />
+			<input type="button" value="提交" id="submitReason"/>
+    </div>
+</div>
+
+<!--modal container-->
+<div class="js-refund-modal modal fade hide modal-sm">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3>退款提示</h3>
+	</div>
+	<div class="modal-body" style="padding: 40px 15px;">
+		<div class="js-refund-confirm text-center">
+			<button class="btn btn-success" data-dismiss="modal" aria-hidden="true">已完成退款</button>
+			<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">未完成退款</button>
+		</div>
+	</div>
+</div>
+
+
+<script>
+
+	/*退款操作*/
+	$(".js-refund").on("click", function () {
+		 $(".js-refund-modal").modal("show");
+	});
+
+	$(".js-refund-confirm").on("click",".btn", function () {
+		$(".js-refund-modal").modal("hide");
+	});
+
+	$(".js-refund-modal").on("hidden", function () {
+		window.location.reload();
+	});
+
+	$('#commit').click(function () {
+		var startTime = $('#startTime').val();
+		var endTime = $('#endTime').val();
+		if (startTime == "") {
+			if (endTime != "") {
+				Toast.show("请先选择开始日期");
+				$('#startTime').focus();
+				return false;
+			}
+		} else {
+			if (endTime == "") {
+				Toast.show("请选择结束日期");
+				$('#endTime').focus();
+				return false;
+			} else {
+				if (startTime > endTime) {
+					Toast.show("您选择的日期不对，开始日期不能大于结束日期");
+					$('#startTime').focus();
+					return false;
+				}
+			}
+		}
+		$('#form').submit();
+	});
+
+
+	$("#checkAll").click(function () {
+		if (this.checked) {
+			$("input[name='refundLineNos']:checkbox").each(function () {
+				$(this).attr("checked", true);
+			})
+		} else {
+			$("input[name='refundLineNos']:checkbox").each(function () {
+				$(this).attr("checked", false);
+			})
+		}
+	});
+
+	$('#putGoodsOn').click(function () {
+		var ids = "";
+		var batchNum = 0;
+		$("input[name='refundLineNos']:checked").each(function () {
+			ids += $(this).val() + "=";
+			batchNum++;
+		})
+		if (ids != "") {
+			easyDialog.open({
+				container: {
+					header: '批量退款弹出',
+					content: '<font color="red">您确认刷新本页面么，点击确定刷新？</font> )',
+					yesFn: function () {
+						window.location.reload();
+					},
+					noFn: true
+				}
+			});
+			//$('#dataForm').submit();
+			window.open("$!{request.getContextPath()}/alipay/alipaySubmit.do?batchNum=" + batchNum + "&detail_data=" + ids + "");
+		} else {
+			Toast.show("请选择您要退款的交易记录");
+		}
+	});
+
+</script>

@@ -1,0 +1,44 @@
+#set($layout="/admin/layout/modal.vm")
+<style>
+    .modal-iframe-content {
+        padding: 10px;
+    }
+</style>
+<div>
+    <form id="reply-form">
+        <input type="hidden" name="commentId" value="$!orderLineComment.get('comment_id')"/><br/>
+
+        <p>买家评论：</p>
+
+        <p>&nbsp;&nbsp;$!orderLineComment.get('content')</p><br/>
+
+        <p>追评：</p>
+
+        <p>&nbsp;&nbsp;$!orderLineComment.get('buffer_content')</p><br/>
+
+        <p>回复内容：</p>
+        <textarea name="shopReplyContent" maxlength="255">$!orderLineComment.get('shop_reply_content')</textarea><br/>
+        <button type="button" class="btn btn-primary" onclick="javascript:confirmReply();">回复</button>
+    </form>
+</div>
+<script type="text/javascript">
+    function confirmReply() {
+        $.ajax({
+            url: '$!{request.getContextPath()}/orderLineComment/replyOrderLineCommet.do',
+            type: 'post',
+            data: $("#reply-form").serialize(),
+            success: function (data) {
+                Toast.show({
+                    template: "回复成功",
+                    second: 1000,
+                    callback: function () {
+                        window.parent.location.reload();
+                    }
+                })
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Toast.show("[服务器异常]" + XMLHttpRequest.status);
+            }
+        });
+    }
+</script>

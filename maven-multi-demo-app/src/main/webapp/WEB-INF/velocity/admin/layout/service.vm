@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>妈妈好客服工作台</title>
+<link rel="stylesheet" type="text/css" href="http://s.mamhao.cn/admin/bootstrap/css/bootstrap.css" />
+<!-- <link rel="stylesheet" type="text/css" href="http://s.mamhao.cn/admin/webim/style/webim.css" /> -->
+<link rel="stylesheet" type="text/css" href="http://s.mamhao.cn/admin/webim/style/main.css" />
+
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/jq.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/webim/js/strophe-custom.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/webim/js/json2.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/webim/js/easemob.im.js"></script>
+<!-- <script type="text/javascript" src="http://s.mamhao.cn/admin/webim/js/mamhao-customer-service.js"></script> -->
+<script type="text/javascript" src="http://s.mamhao.cn/admin/webim/js/mamahao-im.js"></script>
+</head>
+<body>
+	$screen_content
+</body>
+</html>

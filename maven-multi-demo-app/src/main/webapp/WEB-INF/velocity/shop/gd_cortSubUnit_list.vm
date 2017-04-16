@@ -1,0 +1,694 @@
+﻿##门店管理列表
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 100, "cmenu": 103});
+</script>
+<div id="content-header">
+    <h1>商户管理 | 门店审核</h1>
+</div>
+<input type="hidden" name="status" value="$!status" id="shopStatus"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+	  	<div class="span12">
+	    	<div class="widget-box">
+	    		<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          	<h5>门店列表</h5>
+		        </div>
+              	<div class="widget-content nopadding">
+              		<form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/gbCortSubUnit/list.do" id="frm">
+              			<input type="hidden" name="status" value="$!status"/>
+              			<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">所在区域：</label>
+									<div class="controls">
+										<select id="prv" class="span2" onchange="showCity(this.value)" name="gbPrv.prvNumId" ><option value="">全部</option></select>
+										<select id="city" class="span2" onchange="showArea(this.value)" name="gbCity.cityNumId" ><option value="">全部</option></select>
+										<select id="area" class="span2" onchange="showCompanyByAreaId(this.value)" name="gbCityArea.cityAreaNumId"><option value="">全部</option></select>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">联系电话：</label>
+									<div class="controls">
+										<input id="" class="span11" type="text" name="telephone" value="$!gbCortSubUnit.telephone" placeholder="例:0571-85250100" maxlength="13"/>
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">门店类型：</label>
+									<div class="controls">
+									    <select id="shop_type" class="span11" name="ornNumId"></select>
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">线上店铺名：</label>
+									<div class="controls">
+										<input id="" type="text" class="span11" name="onlineSubUnitName" value="$!gbCortSubUnit.onlineSubUnitName" maxlength="50" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">门店名称：</label>
+									<div class="controls">
+										<input id="" type="text" class="span11" name="subUnitName" value="$!gbCortSubUnit.subUnitName" maxlength="50" />
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+                            <div class="control-group">
+                                <label class="control-label">所属分公司：</label>
+                                <div class="controls">
+                                    <input id="gbDivdivName" type="text" class="span11" name="gbDiv.divName" value="$!gbCortSubUnit.gbDiv.divName" maxlength="50" />
+                                </div>
+                            </div>
+
+                        	</div>
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">门店编号：</label>
+                                    <div class="controls">
+                                        <input id="gbDivdivName" type="text" class="span11" name="subUnitNumId" value="$!gbCortSubUnit.subUnitNumId" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <div class="control-group">
+                                    <label class="control-label">销售/展示店：</label>
+                                    <div class="controls">
+                                        <select class="span11" name="saleStatus">
+                                            <option value="">全部</option>
+											<option value="0" #if($!gbCortSubUnit.saleStatus == 0) selected #end>展示店</option>
+                                            <option value="1" #if($!gbCortSubUnit.saleStatus == 1) selected #end>销售店</option>
+										</select>
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+						<div class="form-actions">
+				            <button class="btn btn-success" type="button" id="next" onclick="javascript:exportSubUnit('chaxun')">筛选</button>
+							<button class="btn btn-warning" type="reset">重置</button>
+							<button class="btn btn-success" type="button" onclick="javascript:exportSubUnit('expert')">导出</button>
+			            </div>
+              		</form>
+              	</div>
+
+              	<div class="widget-content">
+	            	<div class="widget-box widget-tabs-box">
+			          	<ul class="nav nav-tabs">
+				            <li class="#if(!$!status) active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do" >全部</a></li>
+				            <li class="#if($!status=='TO_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=TO_AUDIT" >待编辑</a></li>
+				            <li class="#if($!status=='NO_CHECK_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=NO_CHECK_AUDIT" >待审核</a></li>
+				            <li class="#if($!status=='PASS_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=PASS_AUDIT" >已通过</a></li>
+				            <li class="#if($!status=='NO_PASS_AUDIT') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=NO_PASS_AUDIT" >已拒绝</a></li>
+                            <li class="#if($!status=='ONLINE') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=ONLINE" >已上线</a></li>
+                            <li class="#if($!status=='WAITE_ONLINE') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=WAITE_ONLINE" >待审核上线</a></li>
+                            <li class="#if($!status=='DeleteEd') active #end"><a href="$!{request.getContextPath()}/gbCortSubUnit/list.do?status=DeleteEd" >已删除</a></li>
+				        </ul>
+
+				        <div class="widget-content tab-content">
+			            	<!-- 选项卡 -->
+			            	<div id="tab1" class="tab-pane active">
+			              	<table class="table table-hover table-text-center">
+			              		<thead>
+	    							<tr>
+	    							    <th class="text-left">门店编号</th>
+	    							    <th>门店名称</th>
+	    								<th>线上店铺名</th>
+	                        			<th>区域</th>
+	                        			<th>店长姓名</th>
+	                        			<th>联系电话</th>
+	                        			<th>门店类型</th>
+	                        			<th>门店分类</th>
+	                        			<th>所属分公司</th>
+	                        			<th>状态</th>
+	                        			<th>操作</th>
+	    							</tr>
+								</thead>
+								<tbody>
+									#foreach($!data in ${listData})
+									#set($index = $loopCounter + 1)
+									<tr>
+									    <td class="text-left">$!data.get('SUB_UNIT_NUM_ID')</td>
+										<td class="text-left"><a class="btn_p" href="$!{request.getContextPath()}/gbCortSubUnit/view.do?subUnitNumId=$!data.get('SUB_UNIT_NUM_ID')&page=$page.page">$!data.get('SUB_UNIT_NAME')</a></td>
+										<td class="text-left">$!data.get('ONLINE_SUB_UNIT_NAME')</td>
+										<td>$!data.get('PRV_NAME')/$!data.get('CITY_NAME')/$!data.get('CITY_AREA_NAME')</td>
+										<td>$!data.get('CONT_EMPE1')</td>
+										<td>$!data.get('TELEPHONE')</td>
+										<td>
+											#if($!data.get('ORN_NUM_ID') == 1)
+											GB
+											#elseif($!data.get('ORN_NUM_ID')== 11)
+											MC
+											#elseif($!data.get('ORN_NUM_ID')==10)
+											星站
+											#elseif($!data.get('ORN_NUM_ID')==13)
+											运动店
+											#elseif($!data.get('ORN_NUM_ID')==50)
+												E家
+											#else
+											其他
+											#end
+										</td>
+										<td>
+											#if($!data.get('ornSubNumId') ==79)
+											           直营e家
+											#elseif($!data.get('ornSubNumId')==80)
+											          加盟e家
+											#else
+											       好孩子直营店
+											#end
+										</td>
+										<td>$!data.get('DIV_NAME')</td>
+										<td>
+											#if("$!data.get('STATUS')"==""||$!data.get('STATUS')== 0)
+												<span class="badge badge-info">待编辑</span>
+											#elseif($!data.get('STATUS')== 1)
+												#if($!data.get('ONLINE'))
+                                                    <span class="badge badge-success">已上线</span>
+                                                    <span class="tip-top" data-original-title="指定销售店">
+														<input type="checkbox"  class="saleStatus" #if($!data.get('SALE_STATUS')) checked #end shopId="$!data.get('SUB_UNIT_NUM_ID')" online="$!data.get('ONLINE')"/>
+													</span>
+												#else
+													<span class="badge badge-info">待审核</span>
+												#end
+											#elseif($!data.get('STATUS')== 2)
+												<span class="badge badge-important">已拒绝</span>
+												<span class="label label-info tip-top" data-original-title="$!data.get('REFUSE_REASON')">查看原因</span>
+											#elseif($!data.get('STATUS')== 3)
+												#if($!data.get('ONLINE'))
+                                                    <span class="badge badge-success">已上线</span>
+                                                    <span class="tip-top" data-original-title="指定销售店">
+														<input type="checkbox" class="saleStatus" #if($!data.get('SALE_STATUS')) checked #end shopId="$!data.get('SUB_UNIT_NUM_ID')" online="$!data.get('ONLINE')"/>
+													</span>
+												#else
+                                                    <span class="badge badge-success">已通过</span>
+												#end
+
+											#elseif($!data.get('STATUS')== 5)
+                                                <span class="badge badge-important">已删除</span>
+											#end
+										</td>
+									</td>
+									<td>
+										<div class="commodity_operat">	
+											<a class="btn btn-primary btn-mini" href="$!{request.getContextPath()}/gbCortSubUnit/view.do?subUnitNumId=$!data.get('SUB_UNIT_NUM_ID')&page=$page.page">查看信息</a>
+										 #if($!data.get('ONLINE'))
+											 <a class="btn btn-primary btn-mini" href="$!{request.getContextPath()}/transformationSetting/view.do?subUnitNumId=$!data.get('SUB_UNIT_NUM_ID')">转单配置</a>
+										   #if($!data.get('ornSubNumId') ==79||$!data.get('ornSubNumId') ==80)
+											  #if($!data.get('AccountId'))
+											   <a class="btn btn-success btn-mini js_modify_online_shop" href="javascript:;" shopId="$!data.get('SUB_UNIT_NUM_ID')" shopName="$!data.get('SUB_UNIT_NAME')"
+												onlineShopName="$!data.get('ONLINE_SUB_UNIT_NAME')" AccountId="$!data.get('AccountId')" AccountName="$!data.get('AccountName')"
+												AccountAvailable="$!data.get('AccountAvailable')" EmployeeId="$!data.get('EmployeeId')" EmployeeMobile="$!data.get('EmployeeMobile')"
+												AlipayAccount="$!data.get('AlipayAccount')" AlipayRealName="$!data.get('AlipayRealName')" ornSubNumId="$!data.get('ornSubNumId')">账号管理</a>
+											  #else
+											  	<a class="btn btn-primary btn-mini js_create_online_shop" href="javascript:;" accountId="$!data.get('AccountId')" shopId="$!data.get('SUB_UNIT_NUM_ID')" 
+											  	shopName="$!data.get('SUB_UNIT_NAME')" onlineShopName="$!data.get('ONLINE_SUB_UNIT_NAME')" ornSubNumId="$!data.get('ornSubNumId')">创建账号</a>
+											  #end
+										   #end
+										 #end
+										</div>
+									</td>
+								</tr>  
+								#end
+								</tbody>
+
+							</table>
+							#parse("/pagination.vm")
+							</div>
+						</div>
+						
+						<!-- 店铺账号管理弹窗 -->
+						<div aria-hidden="false" id="shop_modal" class="modal hide in">
+							<div class="modal-header">
+								<button data-dismiss="modal" class="close" type="button">×</button>
+								<h3>店铺账号管理</h3>
+							</div>
+							<div class="modal-body">
+								<div class="form-horizontal">
+									<div class="row-fluid">
+										<div class="control-group">
+										    <input type="hidden" name="accountId" id="_AccountId"/>
+										    <input type="hidden" name="shopId" id="_ShopId"/>
+										    <input type="hidden" name="employeeId" id="_EmployeeId"/>
+											<div id="js_shop_status">
+												<label class="control-label">店铺账号状态：</label>
+												<div class="controls">
+													<span class="notepad-inline" id="_shopStatus"><span class=" badge badge-success">正常</span></span>
+													&nbsp;&nbsp;<a class="btn btn-danger btn-mini" id="btn_freeze" href="javascript:;">冻结账号</a>
+												</div>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">门店名称：</label>
+											<div class="controls">
+												<span class="notepad-inline" name="" id="_shopName"></span>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">线上店铺名：</label>
+											<div class="controls">
+												<span class="notepad-inline" name="" id="_onlineShopName"></span>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label"><font color="red">*</font>店铺系统登录账号：</label>
+											<div class="controls">
+												<input type="text" name="_shopAccount" id="_shopAccount" maxlength="20">
+											</div>
+										</div>
+										<div class="control-group" id="alipayAccount">
+												<label class="control-label"><font color="red">*</font>提现收款支付宝账号：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入提现收款支付宝账号" name="alipayAccount" id="_alipayAccount" maxlength="64">
+												    <br/><span id="_alipayAccountSpan" class="label label-important"></span>
+												</div>
+										</div>
+										<div class="control-group" id="alipayRealname">
+												<label class="control-label"><font color="red">*</font>提现收款支付宝实名：</label>
+												<div class="controls">
+													<input type="text" placeholder="请输入提现收款支付宝实名" name="alipayRealname" id="_alipayRealname" maxlength="20">
+												    <br/><span id="_alipayRealnameSpan" class="label label-important"></span>
+												</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label"><font color="red">*</font>店铺系统登录密码：</label>
+											<div class="controls" >
+												<input type="text" placeholder="" name="" id="_shopAccountPwd" value="初始密码“m123456”" readonly="readonly">
+												&nbsp;&nbsp;<a class="btn btn-primary btn-mini" href="javascript:;" id="btn_pwd_reset">重置密码</a>
+											</div>
+										</div>
+										<div class="control-group">                                           
+                                            <label class="control-label"><font color="red">*</font>绑定妈妈好账号：</label>
+											<div class="controls">
+												<input type="text" name="_shopAppAccount" id="_shopAppAccount" maxlength="11">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button class="btn btn-success" type="button" id="commit">确定</button>
+								<a data-dismiss="modal" class="btn" href="javascript:;">取消</a>
+							</div>
+						</div>
+						<!-- /创建店铺账号弹窗 -->
+
+
+				    </div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script type="text/javascript">
+
+$("#next").on("click", function(){
+	var telephone = $("input[name=telephone]"),
+	onlineSubUnitName = $("input[name=onlineSubUnitName]"),
+	subUnitName = $("input[name=subUnitName]"),
+	divName = $("#gbDivdivName");
+	//console.log();
+	if(telephone.val() && !isForm.isPhone(telephone.val())){
+		telephone.focus();
+		Toast.show("联系电话只能输入数字或“-”");
+		return false;
+	}else if(isForm.isCheck(onlineSubUnitName.val())){
+		onlineSubUnitName.focus();
+		Toast.show("请输入正确格式的内容");
+		return false;
+	}else if(isForm.isCheck(subUnitName.val())){
+		subUnitName.focus();
+		Toast.show("请输入正确格式的内容");
+		return false;
+	}else if(isForm.isCheck(divName.val())){
+		divName.focus();
+		Toast.show("请输入正确格式的内容");
+		return false;
+	}
+	$('#frm').submit();
+});
+
+
+
+$(function(){
+   	getPrv('$!gbCortSubUnit.gbPrv.prvNumId'); //省
+	showCity('$!gbCortSubUnit.gbPrv.prvNumId', '$!gbCortSubUnit.gbCity.cityNumId');  //市
+	showArea('$!gbCortSubUnit.gbCity.cityNumId','$!gbCortSubUnit.gbCityArea.cityAreaNumId');	//区
+		 
+ 	//获取门店类型 
+	$.getJSON(root + "/commonAttribute/getData4Select.do?jsoncallback=?",{'fdName':'shop_type','tbName':'t_shop'},function(ret){
+		if(ret.success){
+			var opt = "<option value>全部</option>";
+			var data = ret.data;
+			$.each(data,function(i,o){
+				opt += "<option value="+o.a_value+">"+o.a_key+"</option>";
+			});
+			$("#shop_type").append(opt);
+		}else{
+			$("#shop_type").append("<option>全部</option>");
+		}
+		$("#shop_type").val("$!gbCortSubUnit.ornNumId");
+	});	
+
+	// $("input[name='gbPrv.prvNumId']").val(getQueryString('gbPrv.prvNumId'))
+	// $("input[name='gbCity.cityNumId']").val(getQueryString('gbCity.cityNumId'))
+	// $("input[name='gbCityArea.cityAreaNumId']").val(getQueryString('gbCityArea.cityAreaNumId'))
+	// $("input[name='telephone']").val(getQueryString('telephone'))
+	// $("input[name='ornNumId']").val(getQueryString('ornNumId'))
+	// $("input[name='subUnitName']").val(getQueryString('subUnitName'))
+	// $("input[name='gbDiv.divName']").val(getQueryString('gbDiv.divName'))
+	
+	
+	var isAjax = false;
+	//创建店铺账号点击弹窗
+	$(".js_create_online_shop").bind("click",function(){
+		$("#_alipayAccount").removeAttr("readonly");
+		$("#_alipayRealname").removeAttr("readonly");
+		$("#_alipayAccountSpan").text("");
+		$("#_alipayRealnameSpan").text("");
+							
+		$("#shop_modal .modal-header h3").text("创建店铺账号");
+		$("#_shopName").text($(this).attr("shopName"));
+		$("#_onlineShopName").text($(this).attr("onlineShopName"));
+		$("#_shopAccount").replaceWith('<input type="text" name="_shopAccount" id="_shopAccount" maxlength="20">');
+		$("#_shopAccountPwd").replaceWith('<input type="text" id="_shopAccountPwd" placeholder="初始密码“m123456”" readonly="readonly">');
+		$("#_shopAppAccount").val("");
+		
+		$("#btn_pwd_reset").hide();
+		$("#js_shop_status").hide();
+		
+        var ornSubNumId=$(this).attr("ornSubNumId");
+        if(ornSubNumId==79){//直营e家
+           $("#alipayAccount").hide();
+           $("#alipayRealname").hide();
+        }else{
+            $("#alipayAccount").show();
+            $("#alipayRealname").show();
+        }
+        
+        
+		var shopId = $(this).attr("shopid");
+		var ornSubNumId = $(this).attr("ornSubNumId");
+		$("#commit").unbind("click");
+		$("#commit").bind("click",function(){
+			if(isAjax) return;
+			$("input[type=text]").delBlank(); // 删除前后空格;
+			var accoutName=$("#_shopAccount").val();
+			var employeeMobile=$("#_shopAppAccount").val();
+			var alipayAccount=$('#_alipayAccount').val();
+			var realName=$('#_alipayRealname').val();
+			
+			if(!isForm.isAccount(accoutName) || accoutName.length<6 || accoutName.length>20){
+				Toast.show("店铺系统登录账号只能为字母、数字或下划线，6-20位");
+				 $("#_shopAccount").focus();
+				return ;
+			}
+          if(ornSubNumId==80){//加盟e家
+			if( !(isForm.isMobile(alipayAccount) || isForm.isMail(alipayAccount))){
+				Toast.show("请输入邮箱或者手机号");
+				$("#_alipayAccount").focus();
+				return ;
+			}
+
+			if( !isForm.isCN(realName) ){
+				Toast.show("请输入真实姓名");
+				$("#_alipayRealname").focus();
+				return ;
+			}
+           }
+			if(!isForm.isMobile(employeeMobile)){
+				Toast.show("请输入正确的手机号");
+				 $("#_shopAppAccount").focus();
+				return ;
+			}
+
+			if(!isForm.isMobile(employeeMobile)){
+				Toast.show("请输入正确的妈妈好账号");
+				 $("#_shopAppAccount").focus();
+				return ;
+			}
+
+			isAjax = true;
+			var p ={
+				shopId:shopId,
+				employeeMobile:employeeMobile,
+				accountName:accoutName,
+				ornSubNumId:ornSubNumId,
+				alipayAccount:alipayAccount,
+				alipayRealname:realName
+			};
+			console.log(p);
+			$.ajax({
+				url: root + '/cloud/third/cloudGBShop/addGBShopAccount.do',
+				data:p,
+				dataType:'json',
+				success:function(data){
+					if(data){
+						Toast.show(data.msg);
+						if(data.result==1){
+							document.location.reload();
+						}else{
+							isAjax = false;
+						}
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					Toast.show("[服务器异常]" + XMLHttpRequest.status);
+				}
+			});
+		});
+		$("#shop_modal").modal("show");
+	});
+
+	//管理店铺账号点击弹窗
+	$(".js_modify_online_shop").bind("click",function(){
+		$("#shop_modal .modal-header h3").text("管理店铺账号");
+		var onlineShopName=$(this).attr("onlineShopName");
+		var shopName = $(this).attr("shopName");
+		var shopId = $(this).attr("shopid");
+		var accountId = $(this).attr("AccountId");
+		var accountName = $(this).attr("AccountName");
+		var employeeMobile = $(this).attr("EmployeeMobile");
+		var employeeId = $(this).attr("EmployeeId");
+		var alipayAccount= $(this).attr("AlipayAccount");
+		var alipayRealName= $(this).attr("AlipayRealName");
+		var ornSubNumId=$(this).attr("ornSubNumId");
+		
+		var ifEdit=true;
+        if(ornSubNumId==79){//直营e家
+           $("#alipayAccount").hide();
+           $("#alipayRealname").hide();
+        }else{
+            $("#alipayAccount").show();
+            $("#alipayRealname").show();
+            $.ajax({
+					type:"POST",
+					data:{shopId:shopId,shopResource:1},
+					url : '$!{request.getContextPath()}/cloud/third/getAlipayInfoCount.do',//修改店铺action
+					success : function(data){
+						//data:{result:状态值,msg:状态说明}
+						if (data && data.result >=1) {//有记录，不可以修改
+							$("#_alipayAccount").attr("readonly","readonly");
+							$("#_alipayRealname").attr("readonly","readonly");
+							$("#_alipayAccountSpan").text("提现中，不可修改");
+							$("#_alipayRealnameSpan").text("提现中，不可修改");
+							ifEdit=false;
+						} else {
+						    $("#_alipayAccount").removeAttr("readonly");
+							$("#_alipayRealname").removeAttr("readonly");
+							$("#_alipayAccountSpan").text("");
+							$("#_alipayRealnameSpan").text("");
+						}
+					}
+			})
+        }
+		
+		$("#_shopStatus").attr("status",$(this).attr("accountavailable"));
+		var status = $("#_shopStatus").attr("status");
+		if(1 == status){
+			$("#_shopStatus").html("<span class='badge badge-success'>正常</span>");
+			$("#btn_freeze").text("冻结账号");
+			$("#btn_freeze").removeClass("btn-success");
+			$("#btn_freeze").addClass("btn-danger");
+			$("#_shopStatus").attr("status","1");
+		}else{
+			$("#_shopStatus").html("<span class='badge badge-important'>冻结</span>");
+			$("#btn_freeze").text("解冻账号");
+			$("#btn_freeze").removeClass("btn-danger");
+			$("#btn_freeze").addClass("btn-success");
+			$("#_shopStatus").attr("status","0");
+		}
+
+		$("#_shopName").text(shopName);
+		$("#_onlineShopName").text(onlineShopName);
+		$("#_shopAccount").replaceWith("<span class=\"notepad-inline\" name=\"\" id=\"_shopAccount\">" + accountName + "</span>")
+		$("#_shopAccountPwd").replaceWith("<span class=\"notepad-inline\" name=\"\" id=\"_shopAccountPwd\">******</span>");	
+		$("#_shopAppAccount").val(employeeMobile);
+		$("#_AccountId").val(accountId);
+		$("#_ShopId").val(shopId);
+		$("#_EmployeeId").val(employeeId);
+		$("#_alipayAccount").val(alipayAccount);
+		$("#_alipayRealname").val(alipayRealName);
+		
+		$("#btn_pwd_reset").show();
+		$("#js_shop_status").show();
+		
+        
+		$("#commit").unbind("click");
+		$("#commit").bind("click",function(){
+			if(isAjax) return;
+			$("input[type=text]").delBlank(); // 删除前后空格;
+			var accoutName=$("#_shopAccount").text();
+			var employeeMobile=$("#_shopAppAccount").val();
+			var alipayAccount=$("#_alipayAccount").val();
+			var alipayRealName=$("#_alipayRealname").val();
+           if(ornSubNumId==80&&ifEdit==true){//加盟e家
+			if( !(isForm.isMobile(alipayAccount) || isForm.isMail(alipayAccount))){
+				Toast.show("请输入邮箱或者手机号");
+				$("#_alipayAccount").focus();
+				return ;
+			}
+
+			if( !isForm.isCN(alipayRealName) ){
+				Toast.show("请输入真实姓名");
+				$("#_alipayRealname").focus();
+				return ;
+			}
+           }
+			if(!isForm.isMobile(employeeMobile)){
+				Toast.show("请输入正确的手机号");
+				 $("#_shopAppAccount").focus();
+				return ;
+			}
+			isAjax = true;
+			$.ajax({
+				url: root + '/cloud/third/cloudGBShop/updateGBShopAccount.do',
+				data:{employeeMobile:employeeMobile,accountName:accoutName,alipayAccount:alipayAccount,alipayRealName:alipayRealName,shopId:shopId,ornSubNumId:ornSubNumId},
+				type:'post',
+				dataType:'json',
+				success:function(data){
+					if(data){
+						Toast.show(data.msg);
+						if(data.result==1){
+							document.location.reload();
+						}else{
+							isAjax = false;
+						}
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					Toast.show("[服务器异常]" + XMLHttpRequest.status);
+				}
+			});
+		});
+
+		//冻结/解冻账号
+		$("#btn_freeze").bind("click",function(){
+			var accoutName=$("#_shopAccount").text();
+			if(1==$("#_shopStatus").attr("status")){
+				Freeze(accoutName,0);
+			}else{
+				Freeze(accoutName,1);
+			}
+		})
+		//重置密码
+		$("#btn_pwd_reset").bind("click",function(){
+			var accoutName=$("#_shopAccount").text();
+			$.ajax({
+				type:"POST",
+				data:{accountName:accountName},
+				url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/resetPwd.do',//账号重置action
+				success : function(data){
+					//data:{result:状态值,msg:状态说明}
+					if (data && data.result == 0) {
+						Toast.show(data.msg);
+					} else {
+						Toast.show("重置密码成功");
+						// document.location.reload();
+					}
+				}
+			})
+		})
+		
+		//$("#shop_modal #commit").hide();
+		$("#shop_modal").modal("show");
+	});
+		
+});
+
+//冻结/解冻账号  available：1冻结操作   0 解冻操作
+function Freeze(accountName,available){
+	$.ajax({
+		type:"POST",
+		data:{accountName:accountName,available:available},
+		url : '$!{request.getContextPath()}/cloud/third/cloudThirdShop/modifyFreezeStatus.do',
+		success : function(data){
+			//data:{result:状态值,msg:状态说明}
+			if (data && data.result == 0) {
+				Toast.show(data.msg);
+			} else {
+				Toast.show("操作成功");
+				if(available == 0){
+					$("#_shopStatus").html("<span class='badge badge-important'>冻结</span>");
+					$("#btn_freeze").text("解冻账号");
+					$("#btn_freeze").removeClass("btn-danger");
+					$("#btn_freeze").addClass("btn-success");
+					$("#_shopStatus").attr("status","0");
+				}else{
+					$("#_shopStatus").html("<span class='badge badge-success'>正常</span>");
+					$("#btn_freeze").text("冻结账号");
+					$("#btn_freeze").removeClass("btn-success");
+					$("#btn_freeze").addClass("btn-danger");
+					$("#_shopStatus").attr("status","1");
+				}
+			}
+		}
+	})
+}
+
+function showCortSubUnit(companyId){
+  var sstatus=$('#shopStatus').val();
+  showShopByCompanyId(companyId,sstatus);
+}
+function exportSubUnit(opt){
+   if(opt=='expert'){
+      frm.action="$!{request.getContextPath()}/gbCortSubUnit/exportCortSubUnit.do";
+   }else{
+      frm.action="$!{request.getContextPath()}/gbCortSubUnit/list.do";
+   }
+   frm.submit();
+}
+
+
+$('.saleStatus').on("click", function () {
+    var saleStatus = $(this).attr("checked") ? 1 : 0;
+	var shopId = $(this).attr('shopId');
+	var online = $(this).attr('online');
+	Matrix.JSON({
+		url: "$!{request.getContextPath()}/gbCortSubUnit/saleShop.do",
+		val: {subUnitNumId : shopId , saleStatus : saleStatus, online : online},
+		fun: function (data) {
+			window.location.reload();
+		}
+	});
+
+});
+</script>
+

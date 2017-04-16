@@ -1,0 +1,259 @@
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 252, "cmenu": 253});
+</script>
+<style>
+    .form-horizontal-inline .row-fluid{padding:0 20px;-webkit-box-sizing: border-box;box-sizing: border-box;}
+    .form-horizontal-inline .control-label{width: 100px;}
+    .form-horizontal-inline .controls{margin-left: 110px;}
+
+    .goods-info{display: -webkit-box;display: -webkit-flex;display: flex;-webkit-box-align: center;-webkit-align-items: center;align-items: center;}
+    .goods-info-pic{width:60px;-webkit-flex-shrink: 0;flex-shrink: 0;}
+    .goods-info-detail{-webkit-box-flex:1;-webkit-flex:1;flex:1;}
+    .goods-info-detail ul{list-style: none;}
+    .order-item-ext{margin-top:10px;}
+    .service-process{overflow: hidden}
+    .service-process ul{list-style-type: circle;}
+    .service-process ul li{margin-bottom:10px;}
+    .service-process ul li p{margin-bottom:0;}
+    .opt-time, .sub-tips{color: #999;}
+    .opt-time{padding-left:20px;}
+</style>
+<div id="content-header">
+    <h1>报修 | 报修单管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-content nopadding">
+                    <form class="form-horizontal form-horizontal-inline">
+                        <div class="row-fluid">
+                            <div class="control-group span4">
+                                <div class="control-label">报修单号：</div>
+                                <div class="controls"><input class="span12" type="text"></div>
+                            </div>
+                            <div class="control-group span4">
+                                <div class="control-label">联系人手机：</div>
+                                <div class="controls"><input class="span12" type="text"></div>
+                            </div>
+                            <div class="control-group span4">
+                                <div class="control-label">用户ID：</div>
+                                <div class="controls"><input class="span12" type="text"></div>
+                            </div>
+                        </div>
+                        <div class="row-fluid">
+                            <div class="control-group span6">
+                                <div class="control-label">申请时间：</div>
+                                <div class="controls">
+                                    <input id="startTime" class="span5" type="text" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',maxDate:'#F{$dp.$D(\'endTime\')}'})"> 至
+                                    <input id="endTime" class="span5" type="text" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',minDate:'#F{$dp.$D(\'startTime\')}'})"></div>
+                            </div>
+                            <div class="control-group span3">
+                                <div class="control-label">商品来源：</div>
+                                <div class="controls">
+                                    <select class="span12" >
+                                        <option value="">全部</option>
+                                        <option value="">妈妈好平台</option>
+                                        <option value="">其他平台</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="control-group span3">
+                                <div class="control-label">分配给：</div>
+                                <div class="controls">
+                                    <select class="span12" >
+                                        <option value="">全部</option>
+                                        <option value="">妈妈好平台</option>
+                                        <option value="">其他平台</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-success">筛选</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="javascript:;">全部</a></li>
+                            <li><a href="javascript:;">待分配</a></li>
+                            <li><a href="javascript:;">待受理</a></li>
+                            <li><a href="javascript:;">受理中</a></li>
+                            <li><a href="javascript:;">维修完成</a></li>
+                            <li><a href="javascript:;">已评价</a></li>
+                            <li><a href="javascript:;">已取消</a></li>
+                        </ul>
+                        #*每一条服务订单 className: order-item*#
+                        <div class="widget-content order-item">
+                            <div class="clearfix">
+                                <span class="span3"><b>报修单号：</b><label class="label label-reverse">2012541556452</label></span>
+                                <span class="span3"><b>用户昵称：</b>寒冰射手</span>
+                                <span class="span3"><b>用户ID：</b> 78910</span>
+                                <span class="span3"><b>申请时间：</b> 2016-05-31 15:45:12</span>
+                            </div>
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th width="10%">商品来源</th>
+                                    <th width="30%">商品信息</th>
+                                    <th width="20%">问题描述</th>
+                                    <th width="20%">维修联系信息</th>
+                                    <th width="10%">状态</th>
+                                    <th width="10%">操作</th>
+                                </tr>
+                                <tr>
+                                    <td>妈妈好平台</td>
+                                    <td class="text-left">
+                                        <div class="clearfix goods-info">
+                                            <div class="goods-info-pic">
+                                                <img src="http://image.mamhao.cn//D888-A/main_D888-A_01.jpg" alt="">
+                                            </div>
+                                            <div class="goods-info-detail">
+                                                <ul>
+                                                    <li>商品名称：好孩子植物精华婴儿玉米爽</li>
+                                                    <li>款式编码：D800</li>
+                                                    <li>商品属性：红色，750ml</li>
+                                                    <li>报修数量：X1</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-left">
+                                        <div>买回家1天前轮就掉了，现在装不上去，完全不能用了。轮子好像不是新的，希望能换个新的，不想在弄坏...</div>
+                                        <div><a href="javascript:;">查看全部(包含5张图片信息)</a></div>
+                                    </td>
+                                    <td class="text-left">
+                                        地址：浙江省 杭州市 上城区 中豪望江国际 1幢9F <br>
+                                        联系人：赵琳琳 <br>
+                                        联系人手机：15968170752
+                                    </td>
+                                    <td>
+                                        <label class="label label-info">完成维修</label>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-mini btn-primary">受理</button>
+                                        <button class="btn btn-mini btn-success">维修设置</button>
+                                        <button class="btn btn-mini btn-warning">跟踪留言</button>
+                                        <button class="btn btn-mini btn-danger">维修完成</button>
+                                        <button class="btn btn-mini btn-info">平台备注</button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="order-item-ext">
+                                <p>
+                                    <b>平台备注：</b><span>已电话联系杭州分公司，等待回复</span>
+                                    <button class="pull-right btn btn-mini btn-warning js-show-process">查看服务进程</button>
+                                </p>
+                                <div class="service-process" hidden>
+                                    <h5>服务进程：</h5>
+                                    <ul>
+                                        <li><p>您的服务单已经提交，1小时内将联系您确认哟！<span class="opt-time">5月15日 16：20</span></p> </li>
+                                        <li>
+                                            <p>您的服务单已经被妈妈好平台受理，响应时间34分18秒<span class="opt-time">5月15日 16：20</span></p>
+                                            <p class="sub-tips">服务已经开始咯，希望您能满意哟</p>
+                                        </li>
+                                        <li>
+                                            <p>根据您的申请，我们将上门维修！维修员 <a href="javascript:;">苏苏</a>  为您服务！联系方式:<a href="javascript:;">18701825829</a><span class="opt-time">5月15日 16：20</span></p>
+                                            <p class="sub-tips">苏苏 将会电话联系您！方便服务！请您保持手机畅通</p>
+                                        </li>
+                                        <li><p>维修已经完成啦！快来给我们的服务评价吧！</p></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget-content order-item">
+                            <div class="clearfix">
+                                <span class="span3"><b>报修单号：</b><label class="label label-reverse">2012541556452</label></span>
+                                <span class="span3"><b>用户昵称：</b>德玛西亚</span>
+                                <span class="span3"><b>用户ID：</b> 78910</span>
+                                <span class="span3"><b>申请时间：</b> 2016-05-31 15:45:12</span>
+                            </div>
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th width="10%">商品来源</th>
+                                    <th width="30%">商品信息</th>
+                                    <th width="20%">问题描述</th>
+                                    <th width="20%">维修联系信息</th>
+                                    <th width="10%">状态</th>
+                                    <th width="10%">操作</th>
+                                </tr>
+                                <tr>
+                                    <td>妈妈好平台</td>
+                                    <td class="text-left">
+                                        <div class="clearfix goods-info">
+                                            <div class="goods-info-pic">
+                                                <img src="http://image.mamhao.cn//D888-A/main_D888-A_01.jpg" alt="">
+                                            </div>
+                                            <div class="goods-info-detail">
+                                                <ul>
+                                                    <li>商品名称：好孩子植物精华婴儿玉米爽</li>
+                                                    <li>款式编码：D800</li>
+                                                    <li>商品属性：红色，750ml</li>
+                                                    <li>报修数量：X1</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-left">
+                                        <div>买回家1天前轮就掉了，现在装不上去，完全不能用了。轮子好像不是新的，希望能换个新的，不想在弄坏...</div>
+                                        <div><a href="javascript:;">查看全部(包含5张图片信息)</a></div>
+                                    </td>
+                                    <td class="text-left">
+                                        地址：浙江省 杭州市 上城区 中豪望江国际 1幢9F <br>
+                                        联系人：赵琳琳 <br>
+                                        联系人手机：15968170752
+                                    </td>
+                                    <td>
+                                        <label class="label label-info">完成维修</label>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-mini btn-primary">受理</button>
+                                        <button class="btn btn-mini btn-success">维修设置</button>
+                                        <button class="btn btn-mini btn-warning">跟踪留言</button>
+                                        <button class="btn btn-mini btn-danger">维修完成</button>
+                                        <button class="btn btn-mini btn-info">平台备注</button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="order-item-ext">
+                                <p>
+                                    <b>平台备注：</b><span>已电话联系杭州分公司，等待回复</span>
+                                    <button class="pull-right btn btn-mini btn-warning js-show-process">查看服务进程</button>
+                                </p>
+                                <div class="service-process" hidden>
+                                    <h5>服务进程：</h5>
+                                    <ul>
+                                        <li><p>您的服务单已经提交，1小时内将联系您确认哟！<span class="opt-time">5月15日 16：20</span></p> </li>
+                                        <li>
+                                            <p>您的服务单已经被妈妈好平台受理，响应时间34分18秒<span class="opt-time">5月15日 16：20</span></p>
+                                            <p class="sub-tips">服务已经开始咯，希望您能满意哟</p>
+                                        </li>
+                                        <li>
+                                            <p>根据您的申请，我们将上门维修！维修员 <a href="javascript:;">苏苏</a>  为您服务！联系方式:<a href="javascript:;">18701825829</a><span class="opt-time">5月15日 16：20</span></p>
+                                            <p class="sub-tips">苏苏 将会电话联系您！方便服务！请您保持手机畅通</p>
+                                        </li>
+                                        <li><p>维修已经完成啦！快来给我们的服务评价吧！</p></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(document).on('click','.js-show-process',function(){
+            var _this = $(this), _target = _this.closest('.order-item-ext').find('.service-process');
+            _target.stop().slideToggle();
+        })
+    })
+</script>

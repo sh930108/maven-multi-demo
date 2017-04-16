@@ -1,0 +1,54 @@
+##首页广告资源位
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 117, "cmenu": 230});
+</script>
+<div id="content-header">
+	<h1>首页资源管理 </h1>
+</div>
+<hr>
+<div class="MA-have-all">
+	<a href="$!{request.getContextPath()}/homeAdConf/index.do" class="btn btn-success">点这儿返回首页投放</a>
+</div>
+<div class="container-fluid MA-have-admin-all">
+	<div class="row-fluid">
+		<div class="widget-box nomargin js-src-container">
+		</div>
+	</div>
+</div>
+<!-- 首页一级导航上传图片弹窗 -->
+<div class="modal modal-lg hide" id="modal-pic">
+	<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>上传导航图片</h3></div>
+	<div class="modal-body">
+		<div class="form-horizontal">
+			<div class="form-arr-item">
+				<div class="control-group">
+					<label class="control-label">导航图：<p class="js-pic-size" data-size="x80">(高80px)</p></label>
+					<div class="controls">
+						<span class="up-photo">
+							<input type="hidden" id="home-hidden" name="pic" value="" data-toast="广告图"/>
+							<div class="up-pic" id="home-pic">
+								<img src="$!{request.getContextPath()}/res/images/photo-default.png">	
+							</div>
+							<div class="up-btn" data-id="home"><a href="javascript:;" id="home" class="btn">选择图片</a></div>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer"> <button class="btn btn-success js-save-pic" onclick="">完成</button> <a class="btn" href="javascript:;" data-dismiss="modal">取消</a> </div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/admin/yy/js/home-config.js"></script>
+<script type="text/javascript">
+	var VM = {
+		imgurl: "$imgpath",
+		moduleType : 0,
+		srcData:'$!{data}',	// 资源位配置数据
+		//srcTypes: [{"bannerType":3,"limit":20,"name":"一级导航"},{"bannerType":14,"limit":10,"name":"顶部Banner"},{"bannerType":5,"limit":10,"name":"图标ICON"},{"bannerType":6,"limit":20,"name":"黄金坑位(组合三宫格)"},{"bannerType":7,"limit":20,"name":"黄金坑位(组合五宫格)"},{"bannerType":9,"limit":50,"name":"黄金坑位(并列两宫格)"},{"bannerType":10,"limit":20,"name":"黄金坑位(并列三宫格)"},{"bannerType":18,"limit":50,"name":"文字导航(活动横幅Banner)"},{"bannerType":11,"limit":50,"name":"黄金坑位(并列四宫格)"},{"bannerType":16,"limit":20,"name":"钻展(活动大型Banner)"},{"bannerType":19,"limit":20,"name":"吊顶栏"},{"bannerType":20,"limit":20,"name":"横排广告展示(图片)"},{"bannerType":24,"limit":20,"name":"横排广告展示(商品)"},{"bannerType":15,"limit":50,"name":"钻展(活动Banner)"},{"bannerType":17,"limit":50,"name":"小蛮腰"},{"bannerType":12,"limit":20,"name":"黄金坑位(并列六宫格)"},{"bannerType":8,"limit":20,"name":"黄金坑位(组合七宫格)"},{"bannerType":13,"limit":50,"name":"黄金坑位(并列九宫格)"},{"bannerType":0,"limit":1,"name":"附近门店"},{"bannerType":1,"limit":1,"name":"为您优选"}]	// 可配置资源位类型列表
+	};
+	VM.srcData ? VM.srcData = JSON.parse(VM.srcData) : VM.srcData = null;
+	HOME_CONFIG.init(VM);
+</script>

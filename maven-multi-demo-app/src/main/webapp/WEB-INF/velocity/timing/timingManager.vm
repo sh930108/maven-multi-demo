@@ -1,0 +1,215 @@
+##任务设置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">Matrix.Nav({"menu": 161, "cmenu": 162});</script>
+<style>
+	input[type=text].error{ color:#b94a48; border-color:#b94a48;}
+</style>
+<div id="content-header">
+
+    <h1>定时任务管理 |任务设置</h1>
+</div>
+<div class="container-fluid">
+	<hr>
+  <div class="row-fluid">
+		<div class="span12">
+    	<div class="form-horizontal">
+           <div class="accordion-group widget-box">
+	          <div class="accordion-heading">
+	            <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+	              <h5>任务设置</h5>
+	            </div>
+	          </div>
+	          <div class="accordion-body collapse in" id="collapseGTwo">
+            	<div class="control-group">
+	              <div class="controls">
+                	 
+                	  <input type="button" class="btn btn-success btn-add" id="next"value="新增任务">
+	              </div>
+	              <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th>任务ID</th>
+                                    <th>任务名称</th>
+                                    <th>任务别名</th>
+                                    <th>任务分组</th>
+									<th>任务状态</th>
+									<th>时间表达式</th>
+									<th>任务描述</th>
+									<th>操作</th>
+                                </tr>
+                                #foreach($data in ${list})
+                                <tr>
+                                  <th>$!data.id</th>
+                                  <th>$!data.taskName</th>
+                                  <th>$!data.aliasName</th>
+                                  <th>
+                                  #if($!data.taskGroup==1)
+                                                                                                             技术组
+                                  #end 
+                                  #if($!data.taskGroup==2)
+                                  	测试组
+                                  #end
+                                  </th>
+                                  <th>$!data.state</th>
+                                  <th>$!data.timeExpression</th>
+                                  <th>$!data.taskDescription</th>
+                                  <th>
+                                  	<a class="btn btn-primary btn-mini"  mid="#inline_content" href="$!{request.getContextPath()}/timingTask/stopTimingRask.do?id=$!{data.id}&taskName=$!{data.taskName}&taskGroup=$!{data.taskGroup}&timeExpression=$!{data.timeExpression}">暂停任务</a>
+                                  	<a class="btn btn-warning btn-mini modify"  href="$!{request.getContextPath()}/timingTask/recoveryTimingRask.do?id=$!{data.id}&taskName=$!{data.taskName}&taskGroup=$!{data.taskGroup}&timeExpression=$!{data.timeExpression}" >恢复任务</a>
+                                  <!--	<a class="btn btn-primary btn-mini"  mid="#inline_content" href="$!{request.getContextPath()}/timingTask/updateTimingRask.do?taskName=$!{data.taskName}&taskGroup=$!{data.taskGroup}&timeExpression=$!{data.timeExpression}">更新任务时间</a>-->
+                                  	<a class="btn btn-success btn-mini btn-delete" pid="$!{data.promoterId}" href="$!{request.getContextPath()}/timingTask/deleteTimingRask.do?id=$!{data.id}&taskName=$!{data.taskName}&taskGroup=$!{data.taskGroup}&timeExpression=$!{data.timeExpression}">删除任务</a>
+                                  	<a class="btn btn-success btn-mini btn-delete" pid="$!{data.promoterId}" href="$!{request.getContextPath()}/timingTask/onceRunTask.do?id=$!{data.id}&taskName=$!{data.taskName}&aliasName=$!{data.aliasName}&taskGroup=$!{data.taskGroup}&timeExpression=$!{data.timeExpression}">重新生成</a></td>
+                                  	</td> 
+                                  </th>
+                                </tr>
+                              #end
+                        </table>
+                        #parse("/pagination.vm")
+	            </div>
+	         </div>
+	      </div>
+	     </div>
+	   </div>
+	 </div>
+ </div>
+ <div aria-hidden="false" id="inline_content-add" class="modal hide in">
+	<div class="modal-header">
+		<button data-dismiss="modal" class="close" type="button">×</button>
+		<h3 id="modal-window-title">新增推广员</h3>
+	</div>
+	<form method="post" action="" id="frm-promoter-info">
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<div class="row-fluid">
+					<div class="control-group">
+						<label class="control-label">任务名称<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="text" name="_task_name" id="_task_name" maxlength="20"/>
+						</div>
+						<label class="control-label">任务别名<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="text" name="_alias_name"  maxlength="20" id="_alias_name"/>
+						</div>
+						<label class="control-label parent">任务分组<font color="red">*</font>：</label>
+						<div class="controls parent">
+							<select name="_task_group" id="_task_group">
+							 <option value="1">技术组</option>
+							 <option value="2">测试组</option>
+							</select>
+						</div>
+						<label class="control-label">时间表达式<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="text" name="_time_expression"  maxlength="20" id="_time_expression"/>
+						</div>
+						<label class="control-label">作业类名<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="text" name="_job_class_name"  maxlength="20" id="_job_class_name"/>
+						</div>
+						<label class="control-label">任务描述<font color="red">*</font>：</label>
+						<div class="controls">
+							<input type="tel" name="_task_description" maxlength="11" id="_task_description"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<input class="btn btn-success btn-add-submit" type="button" value="确定" id="commit">
+			<a data-dismiss="modal" class="btn btn-close" href="javascript:;">关闭</a> 
+		</div>
+		</form>
+	<!--modal container-->
+	<div class="js-tmp-modal modal modal-lg hide fade">
+	    <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h3></h3>
+	    </div>
+	    <div class="modal-body nopadding">
+	        <div class="model-iframe"></div>
+	    </div>
+	    <div class="modal-footer">
+	        <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+	    </div>
+	</div>
+	<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+	<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/JSON.js"></script>
+	<script type="text/javascript">
+	$(".btn-add").click(function(){
+			//initRoles("_roleName");	
+			//initOrgs("_parentOrg", "");
+			//setOrgDisplay(3);
+			$("#inline_content-add").modal("show");
+		});
+		
+		$(".btn-add-submit").click(function(){
+			addTask();
+		});
+	
+	
+	function addTask(){
+	var url = "$!{request.getContextPath()}/timingTask/addTimingRask.do";
+	var task_name = $("#_task_name").val();
+	var alias_name = $("#_alias_name").val();
+	var task_group = $("#_task_group").val();
+	var time_expression=$("#_time_expression").val();
+	var task_description = $("#_task_description").val();
+	var job_class_name = $("#_job_class_name").val();
+	if(task_name == ''){
+		Toast.show('请输入任务名称');
+		$("#_task_name").focus();
+		return;
+	}
+    if(alias_name == ''){
+		Toast.show('请输入任务别名');
+		$("#_alias_name").focus();
+		return;
+	}
+	if(task_group == ''){
+		Toast.show('请选择任务组');
+		$("#_task_group").focus();
+		return;
+	}
+	if(time_expression == ''){
+		Toast.show('请输入任务时间表达式');
+		$("#_time_expression").focus();
+		return;
+	}
+	if(task_description == ''){
+		Toast.show('请输入任务描述');
+		$("#_task_description").focus();
+		return;
+	}
+	
+	
+	$.post(url,
+	 {
+		'taskName':task_name, 
+		'aliasName':alias_name,
+		'taskGroup':task_group,
+		'timeExpression':time_expression,
+		'taskDescription' :task_description,
+		'jobClassName':job_class_name
+	 },
+	 function(data){
+	 	Toast.show(data.msg);
+	 	if(data.result == 1){
+	 		$(".btn-close").click();
+	 		window.location.reload();
+	 	}
+	 }
+	);
+	}
+	function addTimingRask(){
+			Matrix.JSON({
+				url: root + "/timingTask/addTimingRask.do",
+				fun: function(msg){
+					if(!msg.success){
+						$(obj).addClass("error");
+						Toast.show(msg.msg);	
+					}else{
+						$(obj).removeClass("error");
+					}
+				}
+			});
+	}
+</script>

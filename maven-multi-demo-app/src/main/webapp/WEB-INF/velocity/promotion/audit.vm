@@ -1,0 +1,2 @@
+#set($layout="/admin/layout/matrix.vm")
+用于新增修改促销(促销类型promotionType;	//促销类型1满减2满赠3组合促销4赠品促销)

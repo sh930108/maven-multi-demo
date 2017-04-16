@@ -1,0 +1,524 @@
+<form id="orderForm" name="orderForm" method="get" class="form-horizontal form-horizontal-inline row-fluid">
+	<div class="row-fluid">
+  	<div class="span5">
+      <div class="control-group">
+        <label class="control-label">订单号：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="orderNo" value="$!{order.orderNo}">
+        </div>
+      </div>
+    </div>
+    <div class="span6">
+      <div class="control-group">
+        <label class="control-label">下单时间：</label>
+        <div class="controls">
+          <input id="beginTime" class="span3" type="text" name="beginTimeStr" value="$!date.format('yyyy-MM-dd HH:mm',$!order.beginTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+          <span class="notepad-inline">至</span>
+          <input id="endTime" class="span3" type="text" name="endTimeStr" value="$!date.format('yyyy-MM-dd HH:mm',$!order.endTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',minDate:'#F{$dp.$D(\'beginTime\')}'})"/>
+          <a class="btn btn-primary" id="lately07" href="javascript:void(0);">最近7天</a>
+          <a class="btn btn-primary" id="lately30" href="javascript:void(0);">最近30天</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row-fluid">
+    <div class="span5">
+      <div class="control-group">
+        <label class="control-label">收货人：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="consigneeName" value="$!{order.consigneeName}">
+        </div>
+      </div>
+    </div>
+    <div class="span5">
+      <div class="control-group">
+        <label class="control-label">收货人手机：</label>
+        <div class="controls">
+          <input type="text" class="span12" name="consigneePhone" value="$!{order.consigneePhone}">
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row-fluid">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label">仓储名称：</label>
+                <div class="controls">
+                    <input type="text" class="span12" name="warehouseName" value="$!{order.warehouseName}">
+                </div>
+            </div>
+        </div>
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label">门店名称：</label>
+                <div class="controls">
+                    <input type="text" class="span12" name="shopName" value="$!{order.shopName}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<div class="row-fluid">
+  	<div class="span3">
+      <div class="control-group">
+        <label class="control-label">订单状态：</label>
+        <div class="controls">
+          <select name="orderState" class="span12">
+            <option value=""  #if ($order.orderState == "") selected #end>全部</option>
+            <option value="3" #if ($order.orderState == 3) selected #end>待付款</option>
+            <option value="4" #if ($order.orderState == 4) selected #end>待发货</option>
+            <option value="5" #if ($order.orderState == 5) selected #end>已发货</option>
+			<option value="6" #if ($order.orderState == 6) selected #end>待评价</option>
+            <option value="0" #if ($order.orderState == 0) selected #end>已完成</option>
+            <option value="2" #if ($order.orderState == 2) selected #end>已取消</option>
+            <option value="1" #if ($order.orderState == 1) selected #end>已失效</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="span3">
+      <div class="control-group">
+        <label class="control-label">物流方式：</label>
+        <div class="controls">
+          <select name="deliveryWay" class="span12">
+            <option value="" #if ($order.deliveryWay == "") selected #end>全部</option>
+            <option value="1" #if ($order.deliveryWay == 1) selected #end>门店配送</option>
+            <option value="2" #if ($order.deliveryWay == 2) selected #end>上门自提</option>
+            <option value="3" #if ($order.deliveryWay == 3) selected #end>快递配送</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="span3">
+      <div class="control-group">
+        <label class="control-label">付款方式：</label>
+        <div class="controls">
+          <select name="dealingType" class="span12">
+            <option value="" #if ($order.dealingType == "") selected #end>全部</option>
+            <option value="1" #if ($order.dealingType == 1) selected #end>线上支付</option>
+            <!--<option value="2" #if ($order.dealingType == 2) selected #end>验货支付</option>-->
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="row-fluid">
+        <div class="span5">
+            <div class="control-group">
+                <label class="control-label">对象：</label>
+                <div class="controls">
+                    <select id="t1" name="type" onchange="showType(this.value)">
+                        <option value="-1">全部</option>
+                        <option #if($!{request.getParameter('type')}==0) selected #end value="0">分公司</option>
+                        <option #if($!{request.getParameter('type')}==1) selected #end value="1">总仓</option>
+                    </select>
+                    <select id="t2" name="typeId" onchange="showShopAndStorage()">
+                        <option value="-1">全部</option>
+                    </select>
+                    <select id="t3" name="shopOrWarehouseId" >
+                        <option value="-1">全部</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label">下单用户id：</label>
+                <div class="controls">
+                    <input type="text" class="span4" name="memberId" value="$!{order.memberId}">
+                </div>
+            </div>
+        </div>
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label">CRM编号：</label>
+                <div class="controls">
+                    <input type="text" class="span4" name="gbCrmNo" value="$!{order.gbCrmNo}">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span9">
+            <div class="control-group">
+                <label class="control-label">收货地址：</label>
+                <div class="controls">
+                    <select id="prv" class="span2" onchange="showCity(this.value)" name="deliveryProvince">
+                    </select>
+                    <select id="city" class="span2" onchange="showArea(this.value)" name="deliveryCity">
+                    </select>
+                    <select id="area" class="span2" onchange="showCompanyByAreaId(this.value)" name="deliveryDistrict">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="control-group">
+                <label class="control-label">订单来源：</label>
+
+                <div class="controls">
+                    <label class="notepad-inline"><input name="platformSource" type="checkbox" value="1"/> APP订单</label>
+                    <label class="notepad-inline"><input name="platformSource" type="checkbox" value="2"/> 云订单</label>
+                </div>
+            </div>
+        </div>
+    <span class="span5">
+        <div class="control-group">
+            <label class="control-label">订单类型：</label>
+
+            <div class="controls">
+                <label class="notepad-inline"><input name="orderType" type="checkbox" value="1"/> 普通订单</label>
+                <label class="notepad-inline"><input name="orderType" type="checkbox" value="2"/> 妈豆订单</label>
+                <label class="notepad-inline"><input name="orderType" type="checkbox" value="3"/> pos订单</label>
+                <label class="notepad-inline"><input name="orderType" type="checkbox" value="4"/> 一元购</label>
+            </div>
+        </div>
+    </span>
+    </div>
+    <div class="row-fluid">
+        <span class="span3">
+            <div class="control-group">
+                <label class="control-label">订单转单：</label>
+                <div class="controls">
+                    <label class="notepad-inline"><input name="shiftStatus" type="checkbox" value="0"/> 非转单</label>
+                    <label class="notepad-inline"><input name="shiftStatus" type="checkbox" value="1"/> 转单</label>
+                </div>
+            </div>
+        </span>
+    </div>
+    <div class="row-fluid">
+        <span class="span3">
+            <div class="control-group">
+                <label class="control-label">是否代拍：</label>
+                <div class="controls">
+                    <label class="notepad-inline"><input name="ebay" type="checkbox" value="true"/>代拍</label>
+                </div>
+            </div>
+        </span>
+    </div>
+
+  <!--Tab标签-->
+    <input name="tabId" type="hidden" value="${tabId}"/>
+
+  <!--最近几天-->
+    <input type="hidden" id="latelyDay" name="latelyDay">
+
+
+  <div class="form-actions">
+  	<button id="Choice" class="btn btn-success">筛选</button>
+    <button type="reset" class="btn btn-warning">重置</button>
+	<!-- <button id="export" type="button" class="btn btn-danger">订单导出</button> -->
+	<div class="btn-group tip-right" data-original-title="由于订单数据量大，导出速度比较慢，请点击“生成订单数据”，稍后再进行数据下载(导出excel表格)。">
+      <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">订单导出 <span class="caret"></span></button>
+      <ul class="dropdown-menu" id="exportOrder"></ul>
+    </div>
+  </div>
+</form>
+<!--保存省、市、区、门店信息-->
+<input type="hidden" id="deliveryProvince" value="$!{order.deliveryProvince}"/>
+<input type="hidden" id="deliveryCity" value="$!{order.deliveryCity}"/>
+<input type="hidden" id="deliveryDistrict" value="$!{order.deliveryDistrict}"/>
+
+<!-- 备注 -->
+<div class="modal hide" id="remark-info" aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>备注信息</h3></div>
+  <div class="modal-body nopadding">
+   	<div class="form-horizontal">
+    	<div class="control-group"><label class="control-label">备注信息：</label>
+        <div class="controls">
+        	<input type="hidden" id="order-no" />
+          <textarea id="order-remark" name=""></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+	<a class="btn btn-success js-save" href="javascript:setRemark();">保存</a>
+	<a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+  </div>
+</div>
+
+<input type="hidden" id="types" value="$!{order.orderType}"/>
+<input type="hidden" id="shiftStatus" value="$!{order.shiftStatus}"/>
+<input type="hidden" id="platformSources" value="$!{order.platformSource}"/>
+<input type="hidden" id="ebay" value="$!{order.ebay}"/>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script type="text/javascript">
+	//省市区初始化方法
+    var deliveryProvince = $("#deliveryProvince").val();
+    if(deliveryProvince != ''){
+        getPrv(deliveryProvince);
+    }else{
+        getPrv();
+    }
+    var deliveryCity = $("#deliveryCity").val();
+    if(deliveryCity != ''){
+        showCity(deliveryProvince, deliveryCity);
+    }
+    var deliveryDistrict = $("#deliveryDistrict").val();
+    if(deliveryDistrict != ''){
+        showArea(deliveryCity, deliveryDistrict);
+    }
+
+	//最近7天绑定单击事件
+	$("#lately07").bind("click",function(){
+		$("#latelyDay").val("7");
+		$("#Choice").click();
+	});
+	
+	//最近30天绑定单击事件
+	$("#lately30").bind("click",function(){
+		$("#latelyDay").val("30");
+		$("#Choice").click();
+	});
+
+    //点击tab标签页
+    function clickTab(orderState){
+        if(orderState != -1){
+            $("select[name='orderState']").val(orderState);
+        }else{
+            $("select[name='orderState']").val("");
+        }
+        $("#Choice").click();
+    }
+
+	//获取正在导出的导出数据
+	function buildingOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/order/queryExportFinishingNotice.do",
+			fun: function(result){
+				var result = eval(result);
+				if(result != null){
+					//数据正在导出中
+					var html = '<li><a href="javascript:void(0)">正在生成订单数据，请稍后下载（数据更新时间：'+getLocalTime(result.createTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}else{
+					var html = '<li><a href="javascript:exportOrder();">生成订单数据（后台生成数据，稍后才能进行导出）</a></li>';
+					$("#exportOrder").append(html);		
+				}
+			}
+		});
+	}
+	buildingOrderExport();
+	
+	//导出按钮
+	function exportOrder(){
+        var beginTimeStr = $("input[name='beginTimeStr']").val();
+        var endTimeStr = $("input[name='endTimeStr']").val();
+        if(beginTimeStr != "" && endTimeStr!=""){
+            $("#orderForm").attr("action","$!{request.getContextPath()}/order/exportOrder.do");
+            document.getElementById("orderForm").submit();
+        }else{
+            Toast.show('请选择下单时间范围');
+        }
+	};
+	
+	//获取订单下载列表
+	function buildOrderExport(){
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			url: root + "/order/queryExportFinishNotice.do",
+			fun: function(result){
+				if(result != ""){
+					//数据已完成导出
+					var html = '<li><a href="'+root+"/"+result.message+'">订单数据下载（数据更新时间：'+getLocalTime(result.updateTime)+'）</a></li>';
+					$("#exportOrder").append(html);
+				}
+			}
+		});
+	}
+	buildOrderExport();
+	
+	//日期函数
+	function getLocalTime(nS) {   
+        return new Date(parseInt(nS)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");    
+    }
+	
+	var remarkPOP = $("#remark-info");
+	function showRemark(id){
+	
+		$("#order-no").val(id);
+		remarkPOP.modal("show");
+		
+		/* 订单行已经返回了备注，为什么还要调用接口查询
+			Matrix.JSON({
+				showLoad: true,
+				type: "POST",
+				val: {orderNo: id},
+				url: root + "/order/getOrderRemark.do",
+				fun: function(msg){
+					$("#order-remark").val(msg);
+					$("#order-no").val(id);
+					remarkPOP.modal("show");
+				}
+			});
+		*/
+	};
+	function showRemark(id,msg){
+	    $("#order-remark").val(msg);
+		$("#order-no").val(id);
+		remarkPOP.modal("show");
+	};
+	function setRemark(){
+		var name = $("#order-remark"), id = $("#order-no").val();
+		Matrix.JSON({
+			showLoad: true,
+			type: "POST",
+			val: {orderNo: id, remark: name.val()},
+			url: root + "/order/updateOrderRemark.do",
+			fun: function(msg){
+				remarkPOP.modal("hide");
+				Toast.show('操作成功!');
+				window.location.reload();
+			}
+		});
+	};
+
+    //多选复选框
+    var orderTypes = $("#types").val();
+    if (orderTypes != "") {
+        orderTypes = JSON.parse(orderTypes);
+        for (var i = 0; i < orderTypes.length; i++) {
+            var orderType = orderTypes[i];
+            $("input[name=orderType][value=" + orderType + "]").attr("checked", 'checked');//选择复选框
+        }
+    }
+
+    var shiftStatus = $("#shiftStatus").val();
+    if (shiftStatus != "") {
+        shiftStatus = JSON.parse(shiftStatus);
+        for (var i = 0; i < shiftStatus.length; i++) {
+            var shift = shiftStatus[i];
+            $("input[name=shiftStatus][value=" + shift + "]").attr("checked", 'checked');//选择复选框
+        }
+    }
+
+    var platformSources = $("#platformSources").val();
+    if (platformSources != "") {
+        platformSources = JSON.parse(platformSources);
+        for (var i = 0; i < platformSources.length; i++) {
+            var platformSource = platformSources[i];
+            $("input[name=platformSource][value=" + platformSource + "]").attr("checked", 'checked');//选择复选框
+        }
+    }
+
+    var ebay = $("#ebay").val();//代拍
+    if (ebay != "") {
+        $("input[name=ebay]").attr("checked", 'checked');//选择复选框
+    }
+</script>
+
+<script>
+    var typeId = '';
+    var shopId='';
+    $(function(){
+        $("#t3").val(-1);
+        $("#t3").hide();
+
+        var type = '$!{request.getParameter('type')}';
+        typeId = '$!{request.getParameter('typeId')}';
+        shopId = '$!{request.getParameter('shopOrWarehouseId')}';
+        if(type==null || type =="" || type==undefined){
+            console.log("第一次跳转");
+        }else{
+            if(type==0){
+                showType(0);
+                showShopAndStorage(typeId);
+            }else if(type==1){
+                showType(1);
+                $("#t3").hide();
+            }
+        }
+    });
+
+    function showType(type){
+        if(type==-1){
+            Toast.show("请选择数据！");
+        }else if(type == 0){
+            //获取分公司列表
+            $("#t3").show();
+            $("#t3").val(-1);
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showCompanyList.do",
+                val: {},
+                fun: function (data) {
+                    var str = '';
+                    $.each(data, function(i, n) {
+                        //console.log(n.divNumId);
+                        if(typeId != null){
+                            var t = Number(typeId);
+                            if(n.divNumId==t){
+                                str += "<option value='"+n.divNumId+"' selected>"+n.divName+"</option>";
+                            }else{
+                                str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+                            }
+                        }else{
+                            str += "<option value='"+n.divNumId+"'>"+n.divName+"</option>";
+                        }
+
+                    });
+                    $("#t2").html(str);
+                }
+            });
+        }else{
+            $("#t3").hide();
+            Matrix.JSON({
+                url: "$!{request.getContextPath()}/activity/showStorageList.do",
+                val: {},
+                fun: function (data) {
+                    var str = '<option value=\"-1\">全部</option>';
+                    $.each(data, function(i, n) {
+                        if(typeId != null && typeId != ""){
+                            var t = Number(typeId);
+                            if(n.storageNumId==t){
+                                str += "<option value='"+n.storageNumId+"' selected >"+n.storageName+"</option>";
+                            }else{
+                                str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+                            }
+                        }else{
+                            str += "<option value='"+n.storageNumId+"'>"+n.storageName+"</option>";
+                        }
+                    });
+                    $("#t2").html(str);
+                }
+            });
+        }
+    }
+    function showShopAndStorage(companyId){
+        var typeId = 0;
+        if(companyId != undefined){
+            typeId = companyId;
+        }else{
+            typeId = $("#t2").val();
+        }
+        Matrix.JSON({
+            url: "$!{request.getContextPath()}/activity/showShopAndStorage.do",
+            val: {typeId:typeId},
+            fun: function (data) {
+                var str = '<option value=\"-1\">全部</option>';
+                $.each(data, function(i, n) {
+                    if(shopId != null && shopId !=""){
+                        var t = Number(shopId);
+                        if(n.subUnitNumId==t){
+                            str += "<option value='"+n.subUnitNumId+"' selected >"+n.subUnitName+"</option>";
+                        }else{
+                            str += "<option value='"+n.subUnitNumId+"'>"+n.subUnitName+"</option>";
+                        }
+                    }else{
+                        str += "<option value='"+n.subUnitNumId+"'>"+n.subUnitName+"</option>";
+                    }
+                });
+                $("#t3").html(str);
+            }
+        });
+
+    }
+</script>

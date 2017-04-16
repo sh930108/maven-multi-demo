@@ -1,0 +1,134 @@
+##添加推送信息
+#set($layout="/admin/layout/modal.vm")
+<style>
+    .modal-iframe-content {
+        padding: 10px;
+    }
+</style>
+<div>
+    <form id="msg-form" class="form-horizontal">
+        <input type="hidden" name="channel" value="$!channel"/>
+
+        <div class="control-group">
+            <label class="control-label"><i>*</i>标题：</label>
+
+            <div class="controls">
+                <input type="text" name="title" value="" maxlength="128">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><i>*</i>内容：</label>
+
+            <div class="controls">
+                <textarea rows="3" cols="16" name="content" maxlength="255"></textarea>
+            </div>
+        </div>
+
+        #if($!channel=='push')
+        <div class="control-group">
+            <label class="control-label"><i>*</i>落地页类型：</label>
+
+            <div class="controls">
+                <select name="pushType" class="select">
+                    #foreach($key in ${pushtypes.keySet()})
+                    <option value='$key'>${pushtypes.get($key)}</option>
+                    #end
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><i>*</i>落地页地址：</label>
+            <div class="controls">
+                <input type="text" name="pageUrl" value="" maxlength="128">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><i>*</i>平台类型：</label>
+
+            <div class="controls">
+                <select class="select" name="platformType">
+                    <option value='0'>全部</option>
+                    <option value='1'>IOS</option>
+                    <option value='2'>Android</option>
+                </select>
+            </div>
+        </div>
+        #end
+
+
+        <div class="control-group">
+            <label class="control-label"><i>*</i>推送时间：</label>
+            <div class="controls">
+                <input id="endTime" type="text" name="pushTime1"
+                       onFocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', minDate:'%y-%M-%d'});"/>
+                <span>（不填写代表立即推送）</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label"><i>*</i>推送用户：</label>
+
+            <div class="controls">
+                <label><input type="radio" name="specMemberType" value="0" checked/>所有用户</label>
+                <label><input type="radio" name="specMemberType" value="2"/>指定用户</label>
+                <label>用户ID: (可输入多个ID，不同ID用，隔开)</label>
+                <label><input type="text" name="specMemberIds"/></label>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label"><button type="button" class="btn btn-primary" onclick="javascript:addPushJob();">确定</button></label>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    /*新增推送消息*/
+    function addPushJob() {
+        /*表单验证*/
+        var _form = $("#msg-form"),
+            title = _form.find("[name='title']"),
+            content = _form.find("[name='content']"),
+            specMemberIds = _form.find("[name='specMemberIds']");
+        if(isForm.isTrim(title.val())){
+            showEmptyTips(title);
+            return false;
+        }
+        if(isForm.isTrim(content.val())){
+            showEmptyTips(content);
+            return false;
+        }
+        if($("input[name='specMemberType']:checked").val() == 2 && isForm.isTrim(specMemberIds.val())){
+            showEmptyTips(specMemberIds);
+            return false;
+        }
+
+        /*ajax提交数据*/
+        $.ajax({
+            url: '$!{request.getContextPath()}/informPush/save.do',
+            type: 'post',
+            dataType: 'json',
+            data: $("#msg-form").serialize(),
+            success: function (data) {
+                if (data == "success") {
+                    Toast.show({
+                        template: "添加成功",
+                        second: 1000,
+                        callback: function () {
+                            window.parent.location.reload();
+                        }
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Toast.show("[服务器异常]" + XMLHttpRequest.status);
+            }
+        });
+    }
+
+    //显示不能为空提示
+    function showEmptyTips(obj){
+        Toast.show(obj.closest(".control-group").find(".control-label").text().replace(/[\s*:：]/g,"")+"不能为空");
+        obj.focus();
+    }
+
+
+</script>

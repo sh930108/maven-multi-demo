@@ -1,0 +1,254 @@
+##排名榜配置
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<style>
+    .pt1x{padding-top: 10px;}
+    .pb1x{padding-bottom: 10px;}
+    .control-label i{color: #f00;}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 148, "cmenu": 158});
+</script>
+<div id="content-header">
+    <h1>微推广管理 |排名榜配置</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>排名榜配置</h5>
+                </div>
+                <div class="widget-content">
+                    <div class="pt1x pb1x"><button class="btn btn-success js-add">添加</button></div>
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li #if($!request.getParameter('confType')==5)  class="active" data-id="5" #end>
+                                <a href="$!{request.getContextPath()}/appconf/queryShareRankings.do?confType=5">GB-员工</a>
+                            </li>
+                            <li #if($!request.getParameter('confType')==7)  class="active" data-id="7" #end>
+                                <a href="$!{request.getContextPath()}/appconf/queryShareRankings.do?confType=7">MMH-员工</a>
+                            </li>
+                            <li #if($!request.getParameter('confType')==6)  class="active" data-id="6" #end>
+                                <a href="$!{request.getContextPath()}/appconf/queryShareRankings.do?confType=6">MMH-地推人员</a>
+                            </li>
+                        </ul>
+                        <div class="widget-content tab-content">
+                           <div class="app-home-ad">
+                            <table class="table table-hover table-text-center">
+                                <tr>
+                                    <th class="table_normal_line1">图片</th>
+                                    <th>落地页</th>
+                                    <th>排序</th>
+                                    <th>操作</th>
+                                </tr>
+                                #foreach($!data int $!datas)
+                                 <tr>
+                                   <td>
+                                       <div class="photo">
+                                            #if($!data.get('pic')!= "")
+                                               <img src="$imgpath$!data.get('pic')"/>
+                                            #end
+                                      </div>
+                                   </td>
+                                   <td>$!data.get('link')</td>
+                                   <td>$!data.get('orderBy')</td>
+                                   <td><a href="#addModal" class="btn btn-primary btn-mini" onclick="openModal(this,$!data.get('id'))">修改</a>
+                                        <a href="javascript:deleteById($!data.get('id'));" class="btn btn-danger btn-mini" onclick="return checkDel('是否删除？');">删除</a>
+                                   </td>
+                                   </tr>
+                                #end
+                            </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal container-->
+<div class="js-tmp-modal modal hide fade" id="modelId">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3></h3>
+    </div>
+    <div class="modal-body nopadding">
+        <form class="form-horizontal form-horizontal-inline" action="" id="frm">
+            <input type="hidden" name="confType" value="$!request.getParameter('confType')"/>
+            <input id="gfId" type="hidden" name="id">
+            <div class="control-group">
+                <label class="control-label"><i>*</i>上传图片：<br>（750*280px）</label>
+                <div class="controls">
+                    <span class="up-photo">
+                        <input name="pic" id="pic-hidden" type="hidden" value=""/>
+                        <span id="picName"></span>
+                        <div class="up-pic" id="pic-pic">
+                            <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+                        </div>
+                        <div class="up-btn" data-id="pic"><a href="javascript:;" id="pic" class="btn">选择图片</a></div>
+                    </span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">落地页：</label>
+                <div class="controls">
+                    <input type="text" name="link" value="" placeholder="不填写落地链接，点击图片不会跳转"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"><i>*</i>排序：</label>
+                <div class="controls">
+                    <input type="text" name="orderBy" value="" placeholder="数字越大，排序越靠前"/>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        ##<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <a class="btn btn_info btn_submit" href="javascript:;">完成</a>
+        <a class="btn btn_info" href="javascript:;" id="cancel">取消</a> 
+    </div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/JSON.js"></script>
+<script type="text/javascript">
+  //文件上传
+    $(".up-btn").each(function () {
+        var thas = $(this);
+        thas.children().uploadify({
+            uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',
+            swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+            queueID: 'null', // 上传进度列表;
+            fileTypeDesc: "jpg",
+            fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+            multi: false,
+            wmode: "transparent",
+            buttonText: '选择图片',
+            width: "100%",
+            height: "100%",
+            onUploadStart: function () {
+                var id = this.button.parents(".up-btn").data("id");
+                $("#" + id + "-pic").html('');
+            },
+            onUploadSuccess: function (file, data, response) {
+                //上传完成时触发（每个文件触发一次）;
+                var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                if (!data.success) {
+                    Toast.show(data.msg);
+                    $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+                } else {
+					deleteFileByName($("#" + id + "-hidden").val());
+                    $("#" + id + "-pic").html('<img src="$imgpath' + data.fileName + '"/>');
+                    $("#" + id + "-hidden").val(data.fileName);
+                }
+            }
+        });
+    });
+    
+    
+    $(function () {
+        //添加
+        $(".btn_submit").on("click", function () {
+            var _link = $("input[name='link']"),
+                    orderBy = $("input[name='orderBy']");
+            if (isForm.isTrim($("#pic-hidden").val())) {
+                Toast.show("请上传图片");
+                return false;
+            }
+            
+            if (isForm.isTrim(orderBy.val) || !isForm.isImp($.trim(orderBy.val()))) {
+                Toast.show("排序必须为正整数且不能为空");
+                return false;
+            }
+
+            $.ajax({
+                url: root + '/appconf/saveGoodsConf.do',
+                type: 'post',
+                dataType: 'json',
+                data: $("#frm").serialize(),
+                success: function (ret) {
+                    if (ret.success) {
+                        window.location.reload();
+                    } else {
+                        Toast.show(ret.msg);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    Toast.show("[服务器异常]" + XMLHttpRequest.status);
+                }
+            });
+
+        });
+
+        //取消
+        $("#cancel,.close").on("click", function () {
+            $("#gfId").val("");
+            $('.up-pic img').attr("src", "$!{request.getContextPath()}/res/images/photo-default.png");
+            $('#pic').val("");
+            $("input[name=pic]").val("");
+            $("input[name='link']").val("");
+            $("input[name='orderBy']").val("");
+            $('#modelId').modal('hide');
+        });
+    });
+
+    //显示窗口
+    function openModal(obj, id) {
+        if (id) {
+            $.getJSON(root + "/appconf/getGoodsConfById.do?jsoncallback=?",
+                    {
+                        id: id
+                    }, function (ret) {
+                        if (ret.success) {
+                            $("#gfId").val(ret.data.id);
+                            $('.up-pic img').attr("src", "$imgpath" + ret.data.pic);
+                            $('#pic').val(ret.data.pic);
+                            $("input[name=pic]").val(ret.data.pic);
+                            $("input[name='link']").val(ret.data.link);
+                            $("input[name='orderBy']").val(ret.data.orderBy);
+                        } else {
+                            Toast.show(ret.msg);
+                        }
+                    });
+        }
+       // $('#modelId').modal('show');
+        
+        var info ={
+            title:"修改"
+        };
+        showModal(info);
+    }
+    //删除
+    function deleteById(id) {
+       if(confirm("是否删除?")){
+        $.getJSON(root + "/appconf/delGoodsConfById.do?jsoncallback=?",
+                {
+                    id: id
+                }, function (ret) {
+                    Toast.show(ret.msg);
+                    if (ret.success) {
+                        window.location.reload();
+                    }
+                });
+        }
+    }
+</script>
+<script>
+    
+    $(".js-add").on("click", function () {
+        var info ={
+            title:"添加"
+        };
+        showModal(info);
+    });
+    /*显示模态框*/
+    function showModal(info){
+        var self = $(".js-tmp-modal");
+        self.find(".modal-header h3").text(info.title);
+        self.modal("show");
+    }
+</script>

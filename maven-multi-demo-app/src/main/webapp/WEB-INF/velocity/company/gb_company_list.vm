@@ -1,0 +1,168 @@
+##运营分公司管理
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 100, "cmenu": 101});
+</script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<div id="content-header">
+    <h1>商户管理 | 分公司审核</h1>
+</div>
+<input type="hidden" name="status" value="$!status"/>
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+	  	<div class="span12">
+	    	<div class="widget-box">
+	    		<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+		          	<h5>分公司列表</h5>
+		        </div>
+              	<div class="widget-content nopadding">
+              		<form class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/gb/company/list.do">
+              		   <input type="hidden" name="status" value="$!status"/>
+              			<div class="row-fluid">
+							<div class="span12">
+								<div class="control-group">
+									<label class="control-label">所在区域：</label>
+									<div class="controls">
+										<select id="prv" class="span2" onchange="showCity(this.value)" name="gbPrv.prvNumId">
+										</select>
+										<select id="city" class="span2" onchange="showArea(this.value)" name="gbCity.cityNumId">
+										</select>
+										<select id="area" class="span2" onchange="showCompanyByAreaId(this.value)" name="gbCityArea.cityAreaNumId">
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row-fluid">
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">总经理手机号：</label>
+									<div class="controls">
+										<input id="" type="text" name="contEmpeTelePhone" value="$!gbDiv.contEmpeTelePhone" />
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">总经理姓名：</label>
+									<div class="controls">
+										<input id="" type="text" name="contEmpe" value="$!gbDiv.contEmpe" />
+									</div>
+								</div>
+							</div>
+							<div class="span4">
+								<div class="control-group">
+									<label class="control-label">分公司名称：</label>
+									<div class="controls">
+										<input id="" type="text" name="divName" value="$!gbDiv.divName" />
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-actions">
+				            <button class="btn btn-success" type="submit" id="next">筛选</button>
+							<button class="btn btn-success" type="reset" id="next">重置</button>
+			            </div>
+              		</form>
+              	</div>
+
+              	<div class="widget-content">
+	            	<div class="widget-box widget-tabs-box">
+			          	<ul class="nav nav-tabs">
+				            <li class="#if(!$!status) active #end"><a href="$!{request.getContextPath()}/gb/company/list.do" >全部</a></li>
+				            <li class="#if($!status=='0') active #end"><a href="$!{request.getContextPath()}/gb/company/list.do?status=0" >待编辑</a></li>
+				            <li class="#if($!status=='1') active #end"><a href="$!{request.getContextPath()}/gb/company/list.do?status=1" >待审核</a></li>
+				            <li class="#if($!status=='3') active #end"><a href="$!{request.getContextPath()}/gb/company/list.do?status=3" >已通过</a></li>
+				            <li class="#if($!status=='2') active #end"><a href="$!{request.getContextPath()}/gb/company/list.do?status=2" >已拒绝</a></li>
+				            <li class="#if($!status=='6') active #end"><a href="$!{request.getContextPath()}/gb/company/list.do?status=6" >已冻结</a></li>
+				        </ul>
+
+				        <div class="widget-content tab-content">
+			            	<!-- 选项卡 -->
+			            	<div id="tab1" class="tab-pane active">
+			              	<table class="table table-hover table-text-center">
+			              		<thead>
+	    							<tr>
+	    								<th>分公司名称</th>
+	                        			<th>区域</th>
+	                        			<th>最后登录时间</th>
+	                        			<th>门店数量/仓储数量</th>
+	                        			<th>状态</th>
+	                        			<th>操作</th>
+	    							</tr>
+								</thead>
+								<tbody>
+								 #foreach($!data in $!list)
+	                        		<tr>
+	                        			<td>$!data.divName</td>
+	                        			<td>$!data.gbPrv.prvName/$!data.gbCity.cityName/$!data.gbCityArea.cityAreaName</td>
+										<td>$!date.format('yyyy-MM-dd HH:mm:ss ',$!data.lastLoginTime)</td>
+	                        			<td>$!data.shopsNum/$!data.storagesNum</td>
+	                        			<td>
+											#if($!data.status == 0||"$!data.status"==""||$!data.status == 4) <span class="badge badge-info">待编辑</span>
+											#elseif($!data.status == 1)	<span class="badge badge-info">待审核</span>
+											#elseif($!data.status == 2) <span class="badge badge-danger">已拒绝</span>
+											#elseif($!data.status == 3)	<span class="badge badge-success">已通过</span>
+											#elseif($!data.status == 5)	<span class="badge">已删除</span>
+											#elseif($!data.status == 6)	<span class="badge">已冻结</span>
+											#end
+										</td>
+	                        			<td>
+	                        			  	<div class="commodity_operat">
+	                        			  		<a class="btn btn-primary btn-mini" href="$!{request.getContextPath()}/gb/company/view.do?divNumId=$!data.divNumId">查看信息</a>
+	                        			  		#if($!data.status==6)
+	                        			  		   <a class="btn btn-danger btn-mini" href="javascript:frozenOrthawCompany($!data.divNumId,1);">解冻</a>
+	                        			  		#elseif($!data.status==3)
+	                        			  		   <a class="btn btn-danger btn-mini" href="javascript:frozenOrthawCompany($!data.divNumId,0);">冻结</a>
+	                        			  		#end
+	                        		          	
+	                        			  	</div>
+	                        			</td>
+	                        		 </tr>
+	                    		  #end
+								</tbody>
+
+							</table>
+							#parse("/pagination.vm")
+							</div>
+						</div>
+				    </div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		 getPrv('$!gbDiv.gbPrv.prvNumId'); //省
+		 showCity('$!gbDiv.gbPrv.prvNumId', '$!gbDiv.gbCity.cityNumId');  //市
+		 showArea('$!gbDiv.gbCity.cityNumId','$!gbDiv.gbCityArea.cityAreaNumId');	//区
+	});
+	
+	function frozenOrthawCompany(companyId,available){
+       $.ajax( {    
+              url:root + '/gb/company/frozenOrthawCompany.do',// 跳转到 action    
+              data:{divNumId:companyId,available:available},    
+              type:'post',    
+             cache:false,    
+           success:function(data) { 
+              if(data=="sucess" ){ 
+                 if(available==0){
+                    Toast.show("冻结成功！！！");
+                 }else{
+                    Toast.show("解冻成功！！！");
+                 }   
+                 window.location.reload();    
+              }else{    
+              }    
+            },    
+           error : function() {    
+              Toast.show("系统异常！");
+            }    
+	  });
+   }
+</script>
+

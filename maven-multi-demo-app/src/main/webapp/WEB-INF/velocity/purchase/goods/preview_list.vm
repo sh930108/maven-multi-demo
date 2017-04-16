@@ -1,0 +1,234 @@
+﻿##采购预览清单
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 218});
+</script>
+<div id="content-header">
+  <h1>会员购 | 预览采购清单</h1>
+</div>
+<div class="container-fluid">
+<hr>
+<div class="row-fluid">
+  <div class="span12">
+    <div class="widget-box">
+      <div class="widget-title"> <span class="icon"> <i class="icon-book"></i> </span>
+        <h5>条件</h5>
+      </div>
+      <div class="widget-content nopadding">
+        <div class="form-horizontal form-horizontal-inline row-fluid">
+          <div class="row-fluid">
+            <div class="span3">
+              <div class="control-group">
+                <label class="control-label">用户ID：</label>
+                <div class="controls">
+                  <input type="text" name="memberId" />
+                </div>
+              </div>
+            </div>
+            <div class="span3">
+              <div class="control-group">
+                <label class="control-label">清单时间：</label>
+                <div class="controls">
+                  <select name="month">
+                    <option value="1">本月</option>
+                    <option value="0">上个月</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span12">
+              <div class="control-group">
+                <label class="control-label">地区：</label>
+                <div class="controls">
+                  <select id="prv" class="span2" onchange="showCity(this.value)"></select>
+                  <select id="city" class="span2" onchange="showArea(this.value)"></select>
+                  <select id="area" class="span2"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3">
+              <div class="control-group">
+                <label class="control-label">推荐对象：</label>
+                <div class="controls">
+                  <select name="rcmdObjType" class="span12 js-beau">
+                  	<option value="1">孕妈</option>
+                  	<option value="2">宝妈</option>
+                    <!-- <option value="3">备孕</option> -->
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="span8">
+              <div class="control-group js-age-condition">
+                <label class="control-label">搜索条件：</label>
+                <div class="controls">
+                  <p class="none">预产期：<input type="text" name="pregnentDays" style="width:200px;" onfocus="WdatePicker({dateFmt:'yyyy/MM/dd'})" maxlength="25" /> </p>
+                  <p>年龄：<span><input type="text" data-name="BeginYs" maxlength="2" />岁<input type="text" data-name="BeginMs" maxlength="2" />个月</span> | 宝宝性别：
+                    <select name="babySex">
+                      <option value="0">不限</option>
+                      <option value="1">王子</option>
+                      <option value="2">公主</option>
+                    </select>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-success js-save">生成每月购清单</button>
+          </div>
+        </div>
+        <div class="widget-content">
+        	<div class="row-fluid nomargin">
+          	<div class="span6">
+            	<div class="widget-title"> <span class="icon"> <i class="icon-book"></i> </span><h5>查询条件</h5></div>
+              <div class="widget-content">
+              	<style type="text/css">.shopping li{ padding:5px;}</style>
+              	<ul class="shopping js-search-term"><li>请填写查询条件</li></ul>
+              </div>
+            </div>
+            <div class="span6">
+            	<div class="widget-title"> <span class="icon"> <i class="icon-book"></i> </span><h5>预览</h5></div>
+              <div class="widget-content">
+              	<iframe id="iframe" style="border:0; padding:0; margin:0; min-width:400px; height:500px; border:1px solid #DCDCDC; display:none;" src="about:blank"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+<script type="text/javascript">
+	getPrv(); //省
+	// 选择推荐对象;
+	beau = $(".js-beau"),
+	condition = $(".js-age-condition");
+	beau.on("change", function(){
+		setBeau($(this).val());
+	}).val(2);
+	function setBeau(val){
+		var ages = condition, ps = ages.find("p");
+		ps.hide();
+		if(val == 1){
+			// 孕妈;
+			var p = ps.eq(0);
+			ages.show();
+			p.show();
+		}else if(val == 2){
+			// 宝妈;
+			var p = ps.eq(1);
+			ages.show();
+			p.show();
+		}else{
+			ages.hide();
+		}
+	};
+	
+	var preview = {
+		config: {
+			date: '$!{listDate}',
+			url: 'http://h5.mamhao.cn/app/shopping/'
+		},
+		info: {},
+		init: function(){
+			var self = this, o = self.info;
+			o.save = $(".js-save");
+			o.iframe = $("#iframe");
+			o.memberId = $("input[name=memberId]");
+			o.month = $("select[name=month]");
+			o.babySex = $("select[name=babySex]");
+			o.beau = $(".js-beau");
+			o.prv = $("#prv");
+			o.city = $("#city");
+			o.area = $("#area");
+			o.searchTerm = $(".js-search-term");
+			
+			
+			o.save.on("click", function(){
+				self.form();
+			});
+		},
+		form: function(){
+			var self = this, o = self.info, c = self.config;
+			var val = {
+				page: 1,
+				count: 20,
+				jsonTerm: {
+					isWantPregnent: false
+				}
+			};
+			// 用户id;
+			if(o.memberId.val()){
+				val.memberId = o.memberId.val();
+			}
+			// 地区;
+			if(o.prv.val() != ""){
+				if(o.city.val() == "" || o.area.val() == ""){
+					return Toast.show('请用城市与地区');
+				}else{
+					val.areaId = o.area.val();
+				}
+			}
+			// 本月，上个月;
+			if(o.month.val() == 1){
+				val.year = new Date(c.date).format("yyyy");
+				val.month = new Date(c.date).format("MM");
+			}else{
+				var d = new Date(c.date);
+				var n = new Date( d.setMonth( d.getMonth() - 1 ) );
+				val.year = n.format("yyyy");
+				val.month = n.format("MM");
+			}
+			var p = condition.find("p:visible"), Day;
+			if(beau.val() == 1){
+				// 孕妈;
+				var inpu = p.find("input[name=pregnentDays]");
+				if(!inpu.val()) return Toast.show('请填写正确的预产期');
+				Day = Matrix.diff("D", new Date(c.date), inpu.val());
+				if(Day < 0) return Toast.show('请填写正确的预产期');
+				val.jsonTerm.status = 1;
+				val.jsonTerm.pregnentDays = Day;
+			}else if(beau.val() == 2){
+				// 宝妈;
+				Day = Matrix.AgeToDay({
+					yy: p.find("input[data-name=BeginYs]"),
+					mm: p.find("input[data-name=BeginMs]")
+				});
+				if(Day == 0) return Toast.show('请填写正确的年龄');
+				val.jsonTerm.status = 2;
+				val.jsonTerm.babys = [{
+					babyDays: Day,
+					babySex: o.babySex.val()
+				}];
+			}else if(beau.val() == 3){
+				// 备孕;
+				val.jsonTerm.status = 3;
+				val.jsonTerm.isWantPregnent = true;
+			}
+			// 生成数据;
+			var arr = [];
+			val.memberId && arr.push('<li>用户ID：'+ val.memberId +'</li>');
+			arr.push('<li>清单时间：'+ $("select[name=month] :selected").text() +'</li>');
+			val.areaId && arr.push('<li>地区：'+ $("#area :selected").text() +'</li>');
+			arr.push('<li>推荐对象：'+ $(".js-beau :selected").text() +'</li>');
+			if(beau.val() == 1){
+				arr.push('<li>预产期：'+ inpu.val() +'</li>');
+			}else if(beau.val() == 2){
+				arr.push('<li>年龄：'+ p.find("input[data-name=BeginYs]").val() + '岁 ' + p.find("input[data-name=BeginMs]").val() +'月</li>');
+				arr.push('<li>宝宝性别：'+ $("select[name=babySex] :selected").text() +'</li>');
+			}
+			arr.push('<li>请求地址：' + c.url + '?json=' + JSON.stringify(val) + '&http=172.28.1.107:8080/gd-app-api</li>');
+			o.searchTerm.html(arr.join(''));
+			o.iframe.show().attr('src', c.url + "?json=" + JSON.stringify(val) + "&http=172.28.1.107:8080/gd-app-api");
+			// console.log(val);
+		}
+	};
+	preview.init();
+	
+</script>

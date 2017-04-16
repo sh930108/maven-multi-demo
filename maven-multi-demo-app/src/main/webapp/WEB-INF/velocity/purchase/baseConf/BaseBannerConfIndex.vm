@@ -1,0 +1,235 @@
+##每月购Banner配置管理
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+#set($defaultPic=$!{request.getContextPath()}+"/res/images/photo-default.png")
+#set($valide=$!{request.getParameter('valide')})
+<style>
+    .table th, .table td{padding: 10px 2px}
+    .table td .ellipsis{display: -webkit-box;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp:1;-webkit-box-orient: vertical;word-break: break-word;}
+    .form-horizontal .up-photo .up-pic {min-width: inherit;min-height:inherit}
+    /*.form-horizontal .up-photo .up-pic img{max-width: inherit}*/
+    .js-age-condition input[type=text]{width: 40px;;}
+    /*modal readonly*/
+    .readonly .submit,.readonly .up-btn{display: none}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 217});
+</script>
+<div id="content-header">
+  <h1>会员购 | 配置管理</h1>
+</div>
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box widget-tabs-box">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="javascript:;">banner配置</a></li>
+          <li><a href="$!{request.getContextPath()}/purchase/baseConf/baseIndex.do?type=2">商品标签</a></li>
+          <li><a href="$!{request.getContextPath()}/purchase/baseConf/baseIndex.do?type=3">其他配置</a></li>
+        </ul>
+        <div class="widget-content nopadding" hidden>
+          <form id="frm" class="form-horizontal form-horizontal-inline row-fluid">
+              <div class="row-fluid">
+                  <div class="span4">
+                      <div class="control-group">
+                          <label class="control-label">广告类型：</label>
+                          <div class="controls">
+                              <input type="hidden" name="valide">
+                          </div>
+                      </div>
+                  </div>
+                  <div class="span4">
+                      <div class="form-actions">
+                          <button class="btn btn-primary" type="submit">筛选</button>
+                      </div>
+                  </div>
+              </div>
+          </form>
+        </div>
+        <div class="widget-content">
+          <table class="table table-hover table-text-center">
+            <thead>
+              <tr>
+                <th width="200">标题</th>
+                <th width="200">图片</th>
+                <th>落地类型</th>
+                <th width="15%">落地页</th>
+                <th>推荐对象</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>
+                    <select class="js-ad-type" name="valide" style="width:100px;">
+                        <option value="1" #if(${valide}==1)selected#end>有效广告</option>
+                        <option value="0" #if(${valide}==0)selected#end>失效广告</option>
+                    </select></th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+<input type="hidden" id="bannerSize" value="$!{bannerSize}">
+                #foreach($item in $data)
+                    <tr data-id="$!{item.bannerId}">
+                        <td>$!{item.bannerTitle}</td>
+                        <td><div class="photo"><img src="${imgpath}$!{item.pic}" width="200"></div></td>
+                        <td>
+                            #if($!{item.linkType}==1)无#elseif($!{item.linkType}==2)商品ID#elseif($!{item.linkType}==3)H5链接#elseif($!{item.linkType}==4)会员中心#end
+                        </td>
+                        <td><div class="ellipsis">$!{item.linkTo}</div></td>
+                        <td style="text-align: left">
+                            #if($!item.wantPregnent)
+                                <p>备孕</p>
+                            #end
+                            #if($!item.pregnentBeginDays >= 0)
+                                <p>孕妈：<small>预产期前#covertDay2Date($!item.pregnentBeginDays)-#covertDay2Date($!item.pregnentEndDays)</small></p>
+                            #end
+                            #if($!item.babyEndDays > 0)
+                                <p>宝妈：
+                                    <small>
+                                        #covertDay2Date($!item.babyBeginDays)-#covertDay2Date($!item.babyEndDays) ，
+                                        #if($!item.babySex == 0)
+                                            不限
+                                        #elseif($!item.babySex == 1)
+                                            王子
+                                        #elseif($!item.babySex == 2)
+                                            公主
+                                        #end
+                                    </small>
+                                </p>
+                            #end
+                        </td>
+                        <td>
+                            <p>$!{item.beginTime}</p>
+                            <p>00:00:00</p>
+                        </td>
+                        <td>
+                            <p>$!{item.endTime}</p>
+                            <p>23:59:59</p>
+                        </td>
+                        <td><span class="label label-success">$!{item.desc}</span></td>
+                        <td>
+                            #if(${item.role}==1 || ${item.role}==2)
+                                <a class="btn btn-success btn-mini js-view" href="javascript:;">查看</a>
+                            #elseif(${item.role}==3)
+                                <a class="btn btn-primary btn-mini js-edit" href="javascript:;">编辑</a>
+                                <a class="btn btn-warning btn-mini js-del" href="javascript:;">删除</a>
+                            #elseif(${item.role}==4)
+                                <a class="btn btn-success btn-mini js-view" href="javascript:;">查看</a>
+                                <a class="btn btn-inverse btn-mini js-offline" href="javascript:;">下线</a>
+                            #end
+                        </td>
+                    </tr>
+                #end
+
+            </tbody>
+          </table>
+          <div class="table-footer-tool clearfix">
+            <div class="tool">
+              <a class="btn btn-primary js-add" href="javascript:;">添加</a>
+            </div>
+            <div class="pagination text-right">
+              ##分页
+              #parse("pagination.vm")
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 首页banner、闪屏广告、ICON广告区域 -->
+<div class="modal modal-lg hide fade" id="js-banner-pop">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>编辑banner</h3></div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+    	<div class="form-arr-item">
+	      <div class="control-group"><label class="control-label"><i>*</i>标题：</label><div class="controls"><input type="text" class="span3 bannerTitle" name="name" placeholder="最多不超过20字" maxlength="20" data-toast="标题"></div></div>
+	      <div class="control-group">
+	        <label class="control-label"><i>*</i>图片：</label>
+	        <div class="controls">
+	          <span class="up-photo">
+	            <input type="hidden" id="home-hidden" name="pic" value="" data-toast="图片"/>
+	            <div class="up-pic" id="home-pic">
+	               <img src="$!{defaultPic}">
+	            </div>
+	            <div class="up-btn" data-id="home" data-size="628x200"><a href="javascript:;" id="home" class="btn">选择图片</a></div>
+                <div><span class="label label-info">(628px*200px)</span></div>
+	          </span>
+	        </div>
+	      </div>
+	      <div class="control-group"><label class="control-label"><i>*</i>落地类型：</label><div class="controls"><select class="span3 linkType" name="linkType"><option value="1">无</option><option value="2">商品ID</option><option value="3">H5链接</option><option value="4">会员中心</option></select></div></div>
+	      <div class="control-group linkContainer" hidden><label class="control-label"><i>*</i>落地页：</label><div class="controls"><input type="text" class="span3 linkTo" name="linkTo" maxlength="255"></div></div>
+	      <div class="control-group"><label class="control-label"><i>*</i>开始时间：</label><div class="controls"><input id="beginTime" class="span3 beginTime" type="text" name="beginTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', maxDate:'#F{$dp.$D(\'endTime\')}'})"/></div></div>
+	      <div class="control-group"><label class="control-label"><i>*</i>结束时间：</label><div class="controls"><input id="endTime" class="span3 endTime" type="text" name="endTime" maxlength="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd', minDate:'#F{$dp.$D(\'beginTime\')}'})"  /></div></div>
+        <div class="control-group js-age-condition">
+            <label class="control-label"><i>*</i>推荐对象：</label>
+            <div class="controls">
+                <!-- <p class="nomargin option js-pgWantPregnant">
+                    <label class="notepad-inline">
+                        <input class="pgWantPregnent" type="checkbox" name="wantPregnent" value="true" checked/> 备孕
+                    </label>
+                </p> -->
+                <p class="nomargin option js-pgPregnant">
+                    <label class="notepad-inline">
+                        <input class="pgPregnant" type="checkbox" name="wantPregnent" /> 孕妈
+                    </label> | 预产期前 <span>
+                    <input type="text" data-type="integer" data-name="BeginMs" maxlength="2" />个月</span>--<span>
+                    <input type="text" data-type="integer" data-name="EndMs" maxlength="2" />个月</span>
+                </p>
+                <p class="nomargin option js-pgBaby">
+                    <label class="notepad-inline">
+                        <input class="pgBaby" type="checkbox" name="wantPregnent" /> 宝妈
+                    </label>
+                    | 宝宝年龄
+                    <span>
+                        <input type="text" data-type="integer" data-name="BeginYs" maxlength="2" />岁
+                        <input type="text" data-type="integer" data-name="BeginMs" maxlength="2" />个月
+                    </span>
+                    --
+                    <span>
+                        <input type="text" data-type="integer" data-name="EndYs" maxlength="2" />岁
+                        <input type="text" data-type="integer" data-name="EndMs" maxlength="2" />个月
+                    </span> |
+                    宝宝性别
+                    <select class="babySex" name="pgBabySex">
+                        <option value="0">不限</option><option value="2">公主</option><option value="1">王子</option>
+                    </select>
+                </p>
+            </div>
+        </div>
+        <div class="control-group"><label class="control-label"><i>*</i>推荐地区：</label>
+        	<div class="controls">
+            <label class="notepad-inline"><input type="radio" name="allCountry" checked="checked" value="true" class="js-city-radio" /> 支持全国</label>
+            <label class="notepad-inline"><input type="radio" name="allCountry" value="false" class="js-city-radio" /> 支持部分城市</label>
+            <div class="js-select-city none">
+              <div>
+                <p>添加城市：</p>
+                <p class="MA-address-select js-address-list"></p>
+              </div>
+              <div><a href="javascript:;" class="btn btn-info btn-mini js-address">点击选择城市</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <a class="btn" href="javascript:;" data-dismiss="modal">取消</a>
+    <button class="btn btn-success submit js-submit">保存</button>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script>
+    var VM = {
+        "rootPath": '$!{request.getContextPath()}',
+        "goodsImagePath": '$!{goodsImagePath}',
+        "imgpath": '$!{imgpath}',
+        "defaultPic": '$!{defaultPic}',
+        "jsonData": '$!{jsonData}',
+    };
+</script>
+<script src="http://s.mamhao.cn/admin/yy/js/purchase-banner-conf.js"></script>
+

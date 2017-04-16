@@ -1,0 +1,178 @@
+##分公司基本信息
+<form id="frm" method="post" action="$!{request.getContextPath()}/company/save.do">
+<input type="hidden" name="companyId" value="$!company.companyId"/>
+<input type="hidden" name="companyVerifyStatus" value="$!company.companyVerifyStatus"/>
+<input type="hidden" name="companyVerifyDate" value="$!company.companyVerifyDate"/>
+<div class="content">
+	<div class="title">
+		<title_1>分公司信息</title_1>
+		<title_2>
+		 #if($!company.companyVerifyStatus==0)
+		              待审核
+		 #elseif($!company.companyVerifyStatus==2)
+		     #if($!available==0)
+		                             被拉黑
+		     #else
+		                      审核通过                         
+		     #end
+		 #else
+		                  审核未通过
+		 #end
+		 
+		</title_2>
+		<p_end>
+		   #if($!company.companyVerifyStatus!=0)
+		                  审核时间：$!date.format('yyyy-MM-dd HH:mm:ss ',$!company.companyVerifyDate)
+		   #end
+		</p_end>
+	</div>
+	<article>
+	<div class="form0">
+		<div class="form_group0">
+  			<div class="form_group_left">
+				<p>分公司信息</p>
+			</div>	
+    		<div class="form_group_right">
+      			<p>$!company.companyName</p>
+				<input id="" class="input" type="hidden"  name="companyName" value="$!company.companyName"/>
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>营业执照</p>
+			</div>	
+    		<div class="form_group_right">
+      			<img src="$!company.companyBusiLicense" width="" height="" alt="" />	
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>合作协议</p>
+			</div>	
+    		<div class="form_group_right">
+      			<img src="$!company.companyCooperAgree" width="" height="" alt="" />
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>总经理姓名</p>
+			</div>	
+    		<div class="form_group_right">
+      			<span class="view_stat">$company.companyManagerName</span>
+				<span class="edit_stat"><input id="" class="input" type="text" name="companyManagerName" value="$!company.companyManagerName"/></span>
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>总经理手机号</p>
+			</div>	
+    		<div class="form_group_right">
+      			<span class="view_stat">$!company.companyManagerPhone</span>
+  				<span class="edit_stat"><input id="" class="input" type="text" name="companyManagerPhone" value="$!company.companyManagerPhone"/></span> 
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>联系人姓名</p>
+			</div>	
+    		<div class="form_group_right">
+      			<span class="view_stat">$company.companyContactName</span>
+  				<span class="edit_stat"><input id="companyContactName" class="input" type="text" name="companyContactName" value="$!company.companyContactName" maxlength="50"/></span>
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>联系人QQ</p>
+			</div>	
+    		<div class="form_group_right">
+      			<span class="view_stat">$!company.companyContactQq</span>
+  				<span class="edit_stat"><input id="companyContactQq" class="input" type="text" name="companyContactQq" value="$!company.companyContactQq" maxlength="11"/></span>
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>联系人手机号</p>
+			</div>	
+    		<div class="form_group_right">
+      			<span class="view_stat">$company.companyContactPhone</span>
+  				<span class="edit_stat"><input id="companyContactPhone" class="input" type="text" name="companyContactPhone" value="$!company.companyContactPhone" maxlength="11"/></span>
+			</div>
+		</div>
+		<div class="form_group0">
+			<div class="form_group_left">
+				<p>分公司地址</p>
+			</div>	
+    		<div class="form_group_rightbox">
+        		<div class="form_group_right">
+      				<span class="view_stat">
+						$!companyAddr.province
+						#if($!companyAddr.province != $!companyAddr.city)
+							$!companyAddr.city
+						#end
+						$!companyAddr.name
+						$!company.companyAddrDetail
+                    </span>
+					<span class="edit_stat">
+	            		<div class="form_group_right">
+              				<select id="loc_province" name="companyAddrProvince" class="select"></select> 	
+    						<select id="loc_city" name="companyAddrCity" class="select"></select> 
+    						<select id="loc_town" name="companyAddrDistrict" class="select"></select>
+						</div>		
+              			<div class="form_group_right">
+              				<input id="companyAddrDetail	" class="input" type="text" name="companyAddrDetail" value="$company.companyAddrDetail"/>
+              			</div>
+                    </span>
+      			</div>		
+			</div>
+		</div>
+		<div class="form_group0">
+			<button type="button" class="btn_small back_btn">返回</button>
+			<button type="submit" class="btn_small submit_btn js-submit">确认修改</button>
+			<button type="button" class="btn_small edit_btn" >修改</button>
+  		</div>
+  	</div>         		          		
+	</article>	        		
+</div>
+	
+</form>	
+<script>
+	$(function(){
+		showLocation('$!company.companyAddrProvince','$!company.companyAddrCity','$!company.companyAddrDistrict'); //省市区
+		
+		$(".edit_stat").hide();
+		$(".back_btn,.submit_btn").hide();
+		
+		$(".edit_btn").on("click",function(){
+			$(".view_stat,.edit_btn").hide();
+			$(".back_btn,.submit_btn,.edit_stat").show();
+		});
+		
+		$(".back_btn").on("click",function(){
+			$(".view_stat,.edit_btn").show();
+			$(".back_btn,.submit_btn,.edit_stat").hide();
+		});
+
+		var companyContactName = $("#companyContactName"),
+			companyContactQq = $("#companyContactQq"),
+			companyContactPhone = $("#companyContactPhone");
+		$(".js-submit").on("click", function () {
+
+			if(isForm.isTrim(companyContactName.val())){
+				companyContactName.focus();
+				Toast.show("用户名不能为空");
+				return false;
+			}
+			if(!isForm.isQQ(companyContactQq.val())){
+				companyContactQq.focus();
+				Toast.show("请输入正确的QQ");
+				return false;
+			}
+			if(!isForm.isMobile(companyContactPhone.val())){
+				companyContactPhone.focus();
+				Toast.show("请输入正确的手机号");
+				return false;
+			}
+		});
+
+	});
+</script>

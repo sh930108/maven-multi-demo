@@ -1,0 +1,348 @@
+##众筹商品添加，编辑页面
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+    Matrix.Nav({"menu": 246, "cmenu": 247});
+</script>
+<style>
+    ul,li{list-style:none;}
+    textarea{resize:none; width: 100% !important;}
+    .mt1x{margin-top: 10px;}
+    .mr1x{margin-right: 10px;}
+    .mb1x{margin-bottom: 10px;}
+    .ml1x{margin-left: 10px;}
+    .dib{display: inline-block;}
+    .custom-item{border: 1px solid #ccc;float:left;padding: 10px;text-align: center;width: 200px;margin: 0 5px 5px 0;}
+    .custom-item h4{margin-top: 0;font-weight: normal;}
+    .custom-item .option .btn{margin: 0 5px;}
+    .support-item{border: 1px solid #ccc;float:left;padding: 10px;text-align: center;min-width:300px;max-width: 400px;margin: 0 5px 5px 0;}
+    .support-item h4{margin-top: 0;font-weight: normal;text-align: left;display: -webkit-box;-webkit-box-orient:vertical;overflow: hidden;text-overflow: ellipsis;-webkit-line-clamp:2;}
+    .support-item .option .btn{margin: 0 5px;}
+    .block{margin:0 10px;padding: 10px;display: block;}
+    .comment{margin: 10px 15px;}
+    .comment {margin: 0;}
+    .comment li{border-bottom: 1px solid #DCDCDC;}
+    .comment .opt{display: none;}
+    .comment .article-post:hover .opt{display: inline-block;}
+    .comment .article-post{margin-left: 54px;padding: 10px 0; border-bottom: 1px dotted #AEBDC8;}
+    .comment .article-post:last-child{border-bottom: none;}
+    .comment p{margin:5px 0;}
+    .comment .user-info{font-size: 14px;font-weight: 800;margin-right: 10px;color: #006DCC;}
+    .comment .time{color: #999;}
+    .comment .user-avatar{width: 40px;height: 40px;margin-right: 10px;margin-top: 5px;padding: 2px;float: left;padding: 2px;}
+    .comment .user-avatar img{border-radius: 50%;}
+    .thumbnails img{width: 150px;}
+    .modal{width: 760px;margin-left: -380px;}
+    .specs ul{margin: 0;}
+    .specs dl{display: inline-flex; padding: 10px;border: 1px solid #ccc;}
+    .specs li:first-child dl{border-bottom: none;}
+    .specs dd,.specs dt{display: inline-block;float: left;padding: 5px 10px;border:1px dashed #ccc;min-width: 50px;}
+    .specs dd{color: #333;border-left: none !important;}
+    .specs dt{color: #006DCC}
+    .item{border: 1px solid #dcdcdc;margin-top: 10px;}
+</style>
+<div id="content-header">
+    <h1>妈妈筹 | 商品定制</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>商品定制 > 查看商品</h5>
+                    <h5>${request.removeAttribute("planId")}
+                    </h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <div class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>商品标题：</label>
+                            <div class="controls">
+                                <span class="notepad-inline">$!{planData.planGoodsTitle}</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>商品简介：</label>
+                            <div class="controls">
+                                <span class="notepad-inline">$!{planData.planGoodsDesc}</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>商品图片：</label>
+                            <div class="controls">
+                                <ul class="thumbnails">
+                                    #if($planData.planPics)
+                                    #foreach($img in $planData.planPics.split(","))
+                                    <li>
+                                        <img src="$imgpath${img}">                             
+                                    </li>
+                                    #end
+                                    #else
+                                    #end
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>是否增加价格显示:</label>
+                            <div class="controls">
+                                <span class="notepad-inline">#if($planData.showPriceForBoolean)是#else 否#end</span>
+                            </div>
+                        </div>
+                        #if($planData.showPriceForBoolean)
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>众筹价:</label>
+                            <div class="controls">
+                                <span class="notepad-inline">
+                                    #formatThousands($!planData.planPrice) 元
+                                </span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>市场价:</label>
+                            <div class="controls">
+                                <span class="notepad-inline">#formatThousands($!planData.martketPrice) 元</span>
+                            </div>
+                        </div>
+                        #end
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>众筹总金额:</label>
+                            <div class="controls">
+                                <span class="notepad-inline">#formatThousands($!planData.planAllPrice) 元</span>
+                                <span class="help-block">(已众筹<span class="badge badge-warning">#if($planData.planMoneyTotal != 0)#formatThousands($!planData.planMoneyTotal)#else 0#end</span>元)</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>众筹总天数:</label>
+                            <div class="controls">
+                                #if($planData.remainDays < 0)
+                                #set($remainDays = 0)
+                                #else
+                                #set($remainDays = $planData.remainDays)
+                                #end
+                                <span class="notepad-inline">$!{planData.planDays} 天</span>
+                                <span class="help-block">(剩余<span class="badge badge-warning">$!{remainDays}</span>天)</span>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label"><i>*</i>是否增加专属定制:</label>
+                            <div class="controls">
+                                #if($!planData.customForBoolean)
+                                <span class="notepad-inline">是</span>
+                                #else
+                                <span class="notepad-inline">否</span>
+                                #end
+                            </div>
+                        </div>
+                        #if($!planData.customForBoolean)
+                        <div class="mt-20 alert alert-success">定制组件</div>
+                        <div class="control-group">
+                            <div class="item-list mt1x block">
+                                #foreach($customCompoent in $planData.planCustomCompoents)
+                                <div class="item custom-item" data-id="1">
+                                    <div class="context">
+                                        <h4>${customCompoent.customName}</h4>
+                                        <p>定制价格：<strong>¥#formatThousands($customCompoent.customPrice)元</strong></p>
+                                    </div>
+                                    <div class="option">
+                                        <button type="button" class="btn btn-primary js-view-custom" data-cid="$!{customCompoent.customCompoentId}">查看</button>
+                                    </div>
+                                </div>
+                                #end
+                            </div>
+                        </div>
+                        #end
+                        <!-- 查看定制组件弹窗 -->
+                        <div class="modal hide in" aria-hidden="false" id="customModal">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3>查看定制组件</h3>
+                            </div>
+                            <div class="modal-body">
+                                #foreach($customCompoent in $planData.planCustomCompoents)
+                                <div class="form-horizontal" id="custom-$!{customCompoent.customCompoentId}" hidden>
+                                    <div class="control-group">
+                                        <label class="control-label">定制组件名称：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">$!{customCompoent.customName}</span>
+                                        </div>
+                                    </div>
+                                    #if($customCompoent.desc)
+                                    <div class="control-group">
+                                        <label class="control-label">备注信息：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">#if($customCompoent.desc != "")$!{customCompoent.desc}#else 无#end</span>
+                                        </div>
+                                    </div>
+                                    #end
+                                    <div class="control-group">
+                                        <label class="control-label">样式：</label>
+                                        <ul class="thumbnails">
+                                            #foreach($style in $customCompoent.styles)
+                                            <li>
+                                                <img src="$imgpath${style.stylePic}">                             
+                                            </li>
+                                            #end
+                                        </ul>
+                                    </div>
+                                    #if($customCompoent.showInput)
+                                    <div class="control-group">
+                                        <label class="control-label">文本框字数限制：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">$!{customCompoent.limitWordNum}字</span>
+                                        </div>
+                                    </div>
+                                    #end
+                                    <div class="control-group">
+                                        <label class="control-label">定制价格：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">¥#formatThousands($customCompoent.customPrice)元</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                #end
+                            </div>
+                            <div class="modal-footer"><a href="javascript:;" class="btn" data-dismiss="modal">关闭</a> 
+                            </div>
+                        </div>
+                        <!-- /查看定制组件弹窗 -->
+                        <div class="mt-10 alert alert-success">商品描述</div>
+                        <div class="block item">
+                            $!{planData.planGoodsDescHtml}
+                        </div>
+                        <div class="mt-10 alert alert-success">支持组件</div>
+                        <div class="control-group">
+                            <div class="item-list mt1x block">
+                                #foreach($supportCompoent in $planData.planSupportCompoents)
+                                #set($imgs = ${supportCompoent.compoentPics.split(",")})
+                                <div class="item support-item" data-id="1">
+                                    <div class="context">
+                                        <h4>${supportCompoent.compoentDes}</h4>
+                                        <div class="img-list">
+                                            <img src="$imgpath${imgs.get(0)}" alt="">
+                                        </div>
+                                        <p>支持：<strong>¥#formatThousands($supportCompoent.supportPrice)元</strong></p>
+                                    </div>
+                                    <div class="option">
+                                        <button type="button" class="btn btn-primary js-view-support" data-sid="$!{supportCompoent.supportCompoentId}">查看</button>
+                                        #if($supportCompoent.customCompoentForBoolean)
+                                        <label class="label label-important">有专属定制</label>
+                                        #end
+                                    </div>
+                                </div>
+                                #end
+                            </div>
+                        </div>
+                        <!-- 查看支持组件弹窗 -->
+                        <div class="modal hide in" aria-hidden="false" id="supportModal">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h3>查看支持组件</h3>
+                            </div>
+                            <div class="modal-body">
+                                #foreach($supportCompoent in $planData.planSupportCompoents)
+                                <div class="form-horizontal" id="support-$!{supportCompoent.supportCompoentId}">
+                                    <div class="control-group">
+                                        <label class="control-label">文字：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">$!{supportCompoent.compoentDes}</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">样式：</label>
+                                        <div class="controls">
+                                            <ul class="thumbnails">
+                                                #if($supportCompoent.compoentPics)
+                                                #foreach($img in $supportCompoent.compoentPics.split(","))
+                                                <li>
+                                                    <img src="${imgpath}${img}">                             
+                                                </li>
+                                                #end
+                                                #end
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">支持类型：</label>
+                                        <div class="controls">
+                                            #set($compoentType = ["","定制","抽奖","无偿"])
+                                            <span class="notepad-inline">$compoentType.get($supportCompoent.compoentType)</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">支持金额：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">#formatThousands($!{supportCompoent.supportPrice})元</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">限额人数：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">$!{supportCompoent.limitPeopleNumber}人</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">邮费金额：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">￥#formatThousands($supportCompoent.postageFee)元</span>
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">商品规格：</label>
+                                        <div class="controls">
+                                            #if($supportCompoent.itemSpecForBoolean)
+                                            <div class="specs" data-specs='$supportCompoent.specJson'> <ul></ul></div>
+                                            #else
+                                            <span class="notepad-inline">无</span>
+                                            #end
+                                        </div>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label">定制商品发货时间：</label>
+                                        <div class="controls">
+                                            <span class="notepad-inline">定制商品众筹成功后<span class="badge badge-warning">${supportCompoent.deliveryDelay}</span>天内发货</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                #end
+                            </div>
+                            <div class="modal-footer"><a href="javascript:;" class="btn" data-dismiss="modal">关闭</a> </div>
+                        </div>
+                        <!-- /查看支持组件弹窗 -->
+                        <div class="mt-10 alert alert-success">商品风险说明</div>
+                        <div class="block">
+                            <p>1.定制商品众筹中或众筹成功后，均不办理退款退货</p>
+                            <p>2.定制商品众筹失败，支持者将于7-15个工作日收到退款</p>
+                            <span class="help-block">(用户在定制商品下单时，会作为风险提示用户)</span>
+                        </div>
+                        <div class="mt-10 alert alert-success">评论</div>
+
+                        <div class="block">
+                            <ul class="comment"></ul>
+                            <div id="pagination"></div>
+                            <div class="reply js-addComment">
+                                <p>
+                                    <textarea id="commentCtn" name="" rows="5" class="span12" maxlength="200"></textarea>
+                                </p>
+                                <p>
+                                    <button class="btn btn-success mr1x js-comment-submit">添加评论</button>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <a class="btn btn-primary" href="javascript:history.go(-1)">返回</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+	var VM = {
+		rootPath : '$!{request.getContextPath()}',
+		planId : Number('${planData.planId}')
+	}
+</script>
+<script src="http://s.mamhao.cn/admin/yy/js/plan_view.js"></script>

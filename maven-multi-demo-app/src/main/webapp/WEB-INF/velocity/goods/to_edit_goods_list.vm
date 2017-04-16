@@ -1,0 +1,471 @@
+##待编辑商品列表
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 107, "cmenu": 109});
+#*
+    #if($!data)
+    var msg = '';
+        #if($!data ==  -1)
+        msg = '款式编码、排序值中包含空值！';
+        #elseif($!data == 1)
+        msg = '导入成功';
+        #elseif($!data == 0)
+        msg = '文件内容为空，或格式错误';
+        #elseif($!data == -2)
+        msg = '导入失败,服务器异常';
+        #end
+    Toast.show(msg);
+    #end
+*#
+</script>
+<style>
+	.form-horizontal-inline .control-label{width: 150px;}
+	.form-horizontal-inline .controls{margin-left: 160px;}
+</style>
+<div id="content-header">
+	<h1>商品管理 | 待编辑商品</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+					<h5>待编辑商品列表</h5>
+				</div>
+				<div class="widget-content nopadding">
+					<form id="form" class="form-horizontal form-horizontal-inline" method="get" action="$!{request.getContextPath()}/gb/goods/queryToEditGoodsList.do">
+						<input type="hidden" name="deleted" value="$!{searchDto.deleted}"/>
+						<input type="hidden" name="operateStatus" value="$!{searchDto.operateStatus}"/>
+						<div class="row-fluid">
+							<div class="span3">
+								<div class="control-group">
+									<label class="control-label">商品ID：</label>
+									<div class="controls">
+										<input type="text" placeholder="" class="span12" name="styleNumId" value="$!{searchDto.styleNumId}">
+									</div>
+								</div>
+							</div>
+							<div class="span3">
+								<div class="control-group">
+									<label class="control-label">款式编码：</label>
+									<div class="controls">
+										<input type="text" placeholder="" class="span12" name="styleId" value="$!{searchDto.styleId}">
+									</div>
+								</div>
+							</div>
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">事业部：</label>
+                                    <div class="controls">
+                                        ##<input type="text" class="span12" name="divName" value="$!{searchDto.divName}">
+                                        <select name="divNumId">
+                                            <option value="-1" #if($!{request.getParameter('divNumId')} !='' && $!{request.getParameter('divNumId')} == -1) selected #end>请选择</option>
+                                            #foreach($div in $!{dlist})
+                                                <option value="$!{div.divNumId}"
+                                                    #if($!{request.getParameter('divNumId')} !='' && $!{request.getParameter('divNumId')} == $!{div.divNumId}) selected
+                                                #end>$!{div.divName}</option>
+                                            #end
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+						</div>
+                        <div class="row-fluid">
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">商品建档时间：</label>
+                                    <div class="controls">
+                                        <input type="text" id="createDocTime" class="span12" name="createDocTime" value="$!date.format('yyyy-MM-dd',$!searchDto.createDocTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">入库时间：</label>
+                                    <div class="controls">
+                                        <input type="text" id="entryTime" class="span12" name="entryTime" value="$!date.format('yyyy-MM-dd',$!searchDto.entryTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="control-group">
+                                    <label class="control-label">计划上线时间：</label>
+                                    <div class="controls">
+                                        <input type="text" id="planOnlineTime" class="span12" name="planOnlineTime" value="$!date.format('yyyy-MM-dd',$!searchDto.planOnlineTime)" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="span3">
+                                <div class="form-actions">
+                                    <button class="btn btn-success" type="submit" id="next">筛选</button>
+                                    <button class="btn btn-warning" type="reset">重置</button>
+                                    <button id="importPlanOnlineTimeBtn" class="btn btn-primary" type="button">导入</button>
+                                    <div class="btn-group tip-right" data-original-title="由于数据量大，导出速度比较慢，请点击“生成数据”，稍后再进行数据下载(导出excel表格)。">
+                                        <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">导出 <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" id="exportOrder"></ul>
+                                    </div>
+                                    ##<span class="up-photo">
+                                       ## <a href="$!{request.getContextPath()}/gb/goods/batchUploadStyleSkuImgData.do"  class="btn">批量维护临时上架图片</a>
+                                    ##</span>
+                                </div>
+                            </div>
+                        </div>
+					</form>
+					
+				</div>
+				<div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+							<li class="#if($searchDto.operateStatus == 0 || $searchDto.operateStatus == 4 || !$!searchDto.operateStatus && !$!searchDto.deleted ) active #end">
+                                <a href="$!{request.getContextPath()}/gb/goods/queryToEditGoodsList.do?operateStatus=0">待编辑</a>
+                            </li>
+							 <li class="#if($!searchDto.operateStatus == 5) active #end">
+                                <a href="$!{request.getContextPath()}/gb/goods/queryToEditGoodsList.do?operateStatus=5">事业部待审核</a>
+                            </li>
+							 <li class="#if($!searchDto.operateStatus == 2) active #end">
+                                <a href="$!{request.getContextPath()}/gb/goods/queryToEditGoodsList.do?operateStatus=2">已拒绝</a>
+                            </li>
+                            <li class="#if($!searchDto.deleted) active #end">
+                                <a href="$!{request.getContextPath()}/gb/goods/queryToEditGoodsList.do?deleted=true">已删除</a>
+                            </li>
+                        </ul>
+                        <div class="widget-content tab-content">
+							<table class="table table-hover with-check table-text-center">
+						<thead>
+							<tr>
+								<th style="width: 150px;">商品ID</th>
+								#if($!searchDto.operateStatus != 2)
+									<th>事业部</>
+								#end
+								<th>款式编码</th>
+								#if($!searchDto.operateStatus != 2)
+    								<th>商品简称</th>
+                                    <th>建档时间</th>
+    								#if(!$!searchDto.deleted)
+                                    	<th>入库时间</th>
+                                    	<th>计划上线时间</th>
+    								#else
+                                    	<th>删除原因</th>
+    								#end
+								#else
+									<th>商品标题</th>
+									<th>所属一级类目</th>
+									<th>拒绝原因</th>
+								#end
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							#foreach($data in ${dataList})
+							#set($index = $loopCounter + 1)
+							<tr>
+								<td>$!{data.styleNumId}</td>
+								#if($!searchDto.operateStatus != 2)
+									<td>$!{data.divName}</td>
+								#end
+								<td>$!{data.styleId}</td>
+								#if($!searchDto.operateStatus != 2)
+    								<td>$!{data.itemName}</td>
+                                    <td>$!date.format('yyyy-MM-dd',$!data.createDocTime)</td>
+    								#if(!$!searchDto.deleted)
+                                    	<td>$!date.format('yyyy-MM-dd',$!data.entryTime)</td>
+                                    	<td>$!date.format('yyyy-MM-dd',$!data.planOnlineTime)</td>
+    								#else
+                                    	<td>$!{data.deletedReason}</td>
+    								#end
+								#else
+									<td>$!{data.styleTitle}</td>
+									<td>$!{data.firstName}</td>
+									<td>$!{data.refuseReason}</td>
+								#end
+								<td>
+									<a class="btn btn-warning btn-mini" href="$!{request.getContextPath()}/gb/goods/index.do?gtNo=$data.styleNumId">重新编辑</a>
+									#if($!searchDto.operateStatus == 5)
+										<a  styleNumId="$data.styleNumId" class="btn btn-danger btn-mini refuse" href="javascript:;" >拒绝</a>
+									#end
+									#if($searchDto.operateStatus == 0 || $searchDto.operateStatus == 4 || !$!searchDto.operateStatus && !$!searchDto.deleted )
+										<a styleNumId="$data.styleNumId" class="btn btn-danger btn-mini del" href="javascript:;" >删除</a>
+									#end
+								</td>
+							</tr>
+							#end
+						</tbody>
+					</table>
+						</div>
+					</div>
+					#parse("/pagination.vm")
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--拒绝原因-->
+<div class="js-refusereason-modal modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>填写拒绝原因</h3>
+    </div>
+    <div class="modal-body">
+	   <input type="hidden" id="refuseStyleNumId">
+       <select id="refuseReasonTxt1">
+           <option value="">选择拒绝原因</option>
+		   <option value="主图不符合要求">主图不符合要求</option>
+		   <option value="与规格对应图不符合要求">与规格对应图不符合要求</option>
+           <option value="详情图不符合要求">详情图不符合要求</option>
+           <option value="其他">其他</option>
+	   </select>
+	   <textarea id="refuseReasonTxt2" placeholder="也可以填写其他原因" maxlength="100"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" type="button" onclick="javascript:btnrefuseReason();">提交</button>
+        <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+    </div>
+</div>
+
+
+<!--删除原因-->
+<div class="js-deletedreason-modal modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>填写删除原因</h3>
+    </div>
+    <div class="modal-body">
+	   <input type="hidden" id="deletedStyleNumId">
+       <select id="deletedReasonTxt1">
+           <option value="">选择删除原因</option>
+		   <option value="无生产计划">无生产计划</option>
+		   <option value="售完即止">售完即止</option>
+           <option value="已淘汰">已淘汰</option>
+           <option value="无库存">无库存</option>
+           <option value="定制型号">定制型号</option>
+           <option value="建档错误重新建档">建档错误重新建档</option>
+           <option value="过季商品（运动）">过季商品（运动）</option>
+           <option value="赠品">赠品</option>
+           <option value="库存过小">库存过小</option>
+	   </select>
+	   <textarea id="deletedReasonTxt2" placeholder="也可以填写其他原因" maxlength="100"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" type="button" onclick="javascript:btnDeletedReason();">提交</button>
+        <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+    </div>
+</div>
+
+
+#*批量导入计划上线时间*#
+<div class="js-plan-online-time-modal modal hide fade">
+    <form id='planOnlineTimeFrm' action='$!{request.getContextPath()}/allgoods/importPlanOnlineTime.do' method="POST" enctype="multipart/form-data">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3>批量导入计划上线时间</h3>
+        </div>
+        <div class="modal-body">
+            <input type="file" name="file"  accept=".xls,.xlsx"/><a href="http://h4.mamahao.com/template/plan_online_time_template.rar">模版下载</a>
+            <p>若采用导出的excel导入，请设置计划上线时间列为“<b>文本</b>”类型</p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" type="submit">提交</button>
+            <a data-dismiss="modal" class="btn" href="javascript:;">关闭</a>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/jquery.form.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript">
+	$('#next').click(function(){
+		var styleNumId = $("input[name='styleNumId']");
+		if(styleNumId.val() && !isForm.isImp(styleNumId.val())){
+			Toast.show("请输入正确的款式编号");
+			styleNumId.focus();
+			return false;
+		}
+		$('#form').submit();
+	});
+
+
+    //获取正在导出的导出数据
+    function buildingOrderExport(){
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/exportNts/queryExportNotice.do",
+			val:{"status" : 1, "type" : 6},
+            fun: function(result){
+                var result = eval(result);
+                if(result != null){
+                    //数据正在导出中
+                    var html = '<li><a href="javascript:void(0)">正在生成数据，请稍后下载（数据更新时间：'+getLocalTime(result.createTime)+'）</a></li>';
+                    $("#exportOrder").append(html);
+                }else{
+                    var html = '<li><a href="javascript:exportExcel();">生成数据（后台生成数据，稍后才能进行导出）</a></li>';
+                    $("#exportOrder").append(html);
+                }
+            }
+        });
+    }
+    buildingOrderExport();
+
+
+    //获取排名下载列表
+    function buildOrderExport(){
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/exportNts/queryExportNotice.do",
+            val:{"status" : 2, "type" : 6},
+            fun: function(result){
+                if(result){
+                    //数据已完成导出
+                    var html = '<li><a href="'+root+"/"+result.message+'">数据下载（数据更新时间：'+getLocalTime(result.updateTime)+'）</a></li>';
+                    $("#exportOrder").append(html);
+                }
+            }
+        });
+    }
+    buildOrderExport();
+
+    //日期函数
+    function getLocalTime(nS) {
+        return new Date(parseInt(nS)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+    }
+
+    //导出excel
+    function exportExcel(){
+        $("#form").attr("action",root + "/allgoods/exportToEditGoods.do")
+        $("#form").submit();
+        $("#form").attr("action",root + "/gb/goods/queryToEditGoodsList.do")
+    }
+
+    //删除
+	$(".del").on("click", function(){
+        var modal = $(".js-deletedreason-modal");
+        modal.modal();
+		$("#deletedStyleNumId").val($(this).attr("styleNumId"));
+	});
+
+	function btnDeletedReason(){
+		var deletedStyleNumId = $("#deletedStyleNumId").val();
+        var txt1 = $("#deletedReasonTxt1").val();
+        var txt2 = $("#deletedReasonTxt2").val();
+        if(txt2 == '' && txt1 == ''){
+            Toast.show("请填写删除原因！");
+            return;
+        }
+		var deletedReason = txt1;
+        if(deletedReason.length){
+            deletedReason += ";" + txt2;
+        }else{
+            deletedReason = txt2;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/allgoods/deleteGbStyleByNumId.do",
+            val:{"styleNumId" : deletedStyleNumId, "deleted" : 1, "deletedReason" : deletedReason},
+            fun: function(result){
+                $(".js-deletedreason-modal").hide()
+                window.location.reload();
+            }
+        });
+	}
+
+	//拒绝
+	$(".refuse").on("click", function(){
+        var modal = $(".js-refusereason-modal");
+        modal.modal();
+		$("#refuseStyleNumId").val($(this).attr("styleNumId"));
+	});
+
+	function btnrefuseReason(){
+		var refuseStyleNumId = $("#refuseStyleNumId").val();
+        var txt1 = $("#refuseReasonTxt1").val();
+        var txt2 = $("#refuseReasonTxt2").val();
+        if(txt2 == '' && txt1 == ''){
+            Toast.show("请填写拒绝原因！");
+            return;
+        }
+		var refuseReason = txt1;
+        if(refuseReason.length){
+            refuseReason += ";" + txt2;
+        }else{
+            refuseReason = txt2;
+        }
+        Matrix.JSON({
+            showLoad: true,
+            type: "POST",
+            url: root + "/allgoods/deleteGbStyleByNumId.do",
+            val:{"styleNumId" : refuseStyleNumId, "operateStatus" : 2, "refuseReason" : refuseReason},
+            fun: function(result){
+                $(".js-deletedreason-modal").hide()
+                window.location.reload();
+            }
+        });
+	}
+
+    //导入计划上线时间
+    $("#importPlanOnlineTimeBtn").on("click",function(){
+        $(".js-plan-online-time-modal").modal();
+    });
+
+    #*
+    function batchImportPlanOnlineTime(){
+        if($("#planOnlineTimeFrm").find("input[name=file]").val() == ''){
+            Toast.show("请选择文件！");
+            return;
+        }
+
+        $("#planOnlineTimeFrm").submit();
+    }
+    *#
+
+    $(function (){
+
+
+        $('#planOnlineTimeFrm').submit(function(){
+
+            if($("#planOnlineTimeFrm").find("input[name=file]").val() == ''){
+                Toast.show("请选择文件！");
+                return;
+            }
+
+            $(this).ajaxSubmit({
+                success: function(data) { // data 保存提交后返回的数据，一般为 json 数据
+                    // 此处可对 data 作相关处理
+                    if(data){
+//                        var msg = '';
+//                        if(data.result ==  -1){
+//                            msg = '款式编码、值中包含空值！';
+//                        }else if(data.resulta == 1){
+//                            msg = '导入成功';
+//                        }else if(data.result == 0){
+//                            msg = '文件内容为空，或格式错误';
+//                        }else if(data.result == -2){
+//                            msg = '导入失败,服务器异常';
+//                        }
+                        Toast.show(data.msg);
+                        $(".js-plan-online-time-modal").hide();
+                        window.location.reload();
+                    }
+                }
+
+            });
+            $(this).resetForm(); // 提交后重置表单
+            return false;
+        });
+
+
+
+
+    });
+
+
+
+
+
+
+</script>

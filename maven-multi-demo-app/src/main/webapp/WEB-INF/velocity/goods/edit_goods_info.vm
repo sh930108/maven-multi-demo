@@ -1,0 +1,598 @@
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+	Matrix.Nav({"menu": 107, "cmenu": 27});
+</script>
+<div id="content-header">
+    <h1>编辑商品</h1>
+</div>
+
+<div class="container-fluid">
+	<hr>
+	<div class="row-fluid">
+		<form class="form-horizontal " action="$!{request.getContextPath()}/gb/goods/editGoodsInfo.do" method="post" onsubmit="return submitForm();">
+			<input type="hidden" value="$!{goods.series}" id="gtId" name="series"/>
+			<input type="hidden" value="$!{goods.styleNumId}" id="gtNo" name="styleNumId"/>
+			<div class="widget-box">
+				<div class="widget-title"> <span class="icon"> <i class="icon-arrow-right"></i> </span>
+					<h5>选择商品品类 > 编辑基本信息</h5>
+				</div>
+				
+				<div class="widget-content nopadding">
+					<div class="mt-20 alert alert-success">基本信息</div>
+					<div class="control-group">
+						<label class="control-label">款式编号：</label>
+						<div class="controls">
+							<span class="notepad-inline">$goods.styleNumId</span>
+						</div>
+						<label class="control-label">款式编码：</label>
+						<div class="controls">
+							<span class="notepad-inline">$goods.styleId</span>
+						</div>
+						<label class="control-label">商品简称：</label>
+						<div class="controls">
+							<span class="notepad-inline">
+    							#if("$!{styleMap.itemName}"=="")
+    								暂无找到简称
+    							#else
+    								$!{styleMap.itemName}
+								#end
+							</span>
+						</div>
+						<label class="control-label">商品类目：</label>
+						<div class="controls">
+							<span class="notepad-inline">$typeMap.gtName1 - $typeMap.gtName2 - $typeMap.gtName3</span>
+							<input type="hidden" value="$typeMap.gtId1" name="styleCatelogFirst"/>
+							<input type="hidden" value="$typeMap.gtId2" name="styleCatelogSec"/>
+							<input type="hidden" value="$typeMap.gtId3" name="styleCatelogThird"/>
+						</div>
+
+						#*<label class="control-label">用途分类：</label>
+						<div class="controls">
+							<select name="styleUseType" id="styleUseType" class="select_big">
+								<option value="0" #if($goods.styleUseType==0) selected #end>请选择分类</option>
+								<option value="1" #if($goods.styleUseType==1) selected #end>宝宝吃什么</option>
+								<option value="2" #if($goods.styleUseType==2) selected #end>宝宝玩什么</option>
+								<option value="3" #if($goods.styleUseType==3) selected #end>宝宝用什么</option>
+								<option value="4" #if($goods.styleUseType==4) selected #end>宝宝穿什么</option>
+								<option value="5" #if($goods.styleUseType==5) selected #end>宝宝爱学习</option>
+								<option value="6" #if($goods.styleUseType==6) selected #end>孕妈专区</option>
+							</select>
+						</div>*#
+
+						<label class="control-label">商品类型：</label>
+						<div class="controls">
+							<label><input type="radio" name="styleType" id="shiwu" value="0" checked>实物商品</label>
+							<!-- <label><input type="radio" name="styleType" id="xvni" value="1">实物商品</label> -->
+						</div>
+						<label class="control-label">适用性别：</label>
+						<div class="controls">
+							<select name="styleApplySex" class="select_big">
+								<option value="0" #if($!{goods.styleApplySex}==0) selected #end>通用</option>
+								<option value="1" #if($!{goods.styleApplySex}==1) selected #end>男宝宝</option>
+								<option value="2" #if($!{goods.styleApplySex}==2) selected #end>女宝宝</option>
+								<option value="3" #if($!{goods.styleApplySex}==3) selected #end>宝妈</option>
+							</select>
+						</div>
+						<div class="row-fluid">
+							<label class="control-label">商品品牌：</label>
+							<div class="controls">
+								<select name="brandId" id="brandId" class="select_big">
+									<option value="0">请选择品牌</option>
+									#foreach($brand in $brandList)
+									<option value="$brand.brandId" #if($goods.brandId==$brand.brandId) selected #end>$brand.brandName</option>
+									#end
+								</select>
+								<input type="text" name="" id="fastBrandId">
+								<button class="btn btn-primary" type="button" id="fastAddBrand">添加品牌</button>
+							</div>
+							
+						</div>
+						<label class="control-label">适用年龄段：</label>
+						<div class="controls">
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="-1-0" #if($!{map.get("-1-0")}) checked #end/> 孕妈咪</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="0-3"  #if($!{map.get("0-3")}) checked #end/> 0~3个月</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="3-6"  #if($!{map.get("3-6")}) checked #end/> 3~6个月</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="6-12"  #if($!{map.get("6-12")}) checked #end/> 6~12个月</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="12-36" #if($!{map.get("12-36")}) checked #end/> 12~36个月</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="36-84" #if($!{map.get("36-84")}) checked #end/> 36~84个月</label></div>
+							<div><label class="notepad-inline"><input type="checkbox" name="styleApplyAge" value="84-" #if($!{map.get("84-")}) checked #end /> 84个月以上  </label></div>
+						</div>
+					</div>
+
+					<div class="alert alert-success">商品信息</div>
+					<div class="control-group">
+						<label class="control-label">商品主标题：</label>
+						<div class="controls">
+							<input type="text" name="styleTitle" id="styleTitle" value="$!{goods.styleTitle}"   style="width:400px"/>
+						</div>
+
+						<label class="control-label">商品副标题：</label>
+						<div class="controls">
+							##<input type="text" name="styleSmallTitle" value="$!{goods.styleSmallTitle}" maxlength="140" style="width:550px"/>
+							
+							<textarea class="span6" name="styleSmallTitle" id="styleSmallTitle"  rows="5" style="width:414px;height:100px;" cols="1000" >$!{goods.styleSmallTitle}</textarea>
+							<script>	
+								function checkMaxTitle(thas){
+									if(thas.value.length > 35){
+										Toast.show("主标题只能输入35个字符");
+										thas.value = thas.value.substring(0, 70);
+									}
+								}
+								function checkMaxInput(txt)
+                                { 
+                                       if (txt.value.length > 70)
+                                       txt.value = txt.value.substring(0, 70);
+                                }
+							</script>
+						</div>
+
+						<label class="control-label">商品主图：<br /><span class="label label-info">（800*800）</span></label>
+						<div class="controls">
+							<span class="up-photo">
+		                        <input name="stylePic" id="stylePic-hidden" type="hidden" value=""/>
+		                        <!-- <div class="up-pic" id="bigPic-pic">
+		                            <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+		                        </div> -->
+		                        <div class="up-btn mult-up-btn" data-id="stylePic">
+		                        	<a href="javascript:;" id="stylePic" class="btn">上传图片</a>
+		                        </div>
+		                    </span>
+							<ul class="thumbnails up-load-img">
+							#foreach($gl in $plist)
+    							<li #if($!{goods.stylePic}==$gl.pic) class="active" #end>
+    								<img src="$goodsImagePath/$!{goods.styleId}/$gl.pic">
+    								<div class="actions">
+    									<a class="js-remove" href="javascript:;" gpid="$gl.gpId" gtid="$gtId" gtno="$gtNo">
+    										<i class="icon-remove"></i>
+    									</a>
+    								</div>
+                    <span class="label label-success" data-pic="$gl.pic">封面</span>
+    							</li>
+							#end
+						</ul>
+						</div>
+					</div>
+
+
+					<div class="alert alert-success">商品参数</div>
+
+					<div class="row-fluid">
+						<div class="form-actions">
+							<button type="button" class="btn btn-primary" id="btn-addconfigs">添加产品属性</button>
+							#if($hasParamsList.size()!=0)
+							#foreach($g in $hasParamsList)
+							#set($index = $loopCounter + 1)
+							<div class="row-fluid js-attach row-padding"> 
+								<div class="control-group">
+									<input class="span2" type="text" placeholder="属性名" attach="key" id="" value="$g.goodsKey"/>：&nbsp;
+									<input type="text" placeholder="属性值" attach="val" id="" value="$!{g.goodsValue}"/>&nbsp;
+									<button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">删除</button>
+								</div>
+							</div>
+							#end
+							#end
+							
+						</div>
+					</div>
+					<div class="alert alert-success">商品规格</div>
+					<div class="row-fluid">
+						<div class="span12">
+							<div class="widget-content">
+								<table class="table table-hover table-text-center">
+									<thead>
+										<tr>
+											<th>颜色</th>
+											<th>尺码</th>
+											<th>计量单位</th>
+											<th>SKU编码</th>
+											<th>商品条码</th>
+											<th colspan="2">图片规格(800*800)</th>
+											<th colspan="4">预览地址</th>
+											<th>上架状态</th>
+											<th colspan="4">操作</th>
+										</tr>
+									</thead>
+									<tbody id="standard-list">
+										#foreach($data in $itemList)
+										#set($index = $loopCounter + 1)
+										<tr>
+											<td>
+												<p>$!{data.colorName}</p>
+												<p>
+														<input type="text" name="itemColor" style="width:70px; text-align:center;" placeholder="颜色修正" value="$!{data.colorName1}"  />
+												</p>
+											</td>
+											<td>
+												<p>$!{data.sizeName}</p>
+												<p>
+													<input type="text" name="itemSize" style="width:70px; text-align:center;" placeholder="尺码修正" value="$!{data.sizeName1}"  />
+												</p>
+											</td>
+											<td>$!{data.unitName}</td>
+											<td>$!{data.itemId}</td>
+											<td>$!{data.itemBarCode}</td>
+											<td colspan="2">
+												<input type="hidden" id="$index" name="itemNumId" value="$!{data.itemNumId}"/>
+												<span class="up-photo">
+							                        <input name="files" id="uploadify-${index}-hidden" type="hidden" value=""/>
+							                       <!--  <div class="up-pic" id="uploadify-$index-pic">
+							                        	#if("$!data.pic"=="")
+							                            #else
+														<img src="$goodsImagePath$!{goods.styleId}/$data.pic" width="70" height="70"/>
+														#end
+							                        </div> -->
+							                        <div class="up-btn single-up-btn" data-id="uploadify-$index" itemid="$!{data.itemNumId}">
+							                        	<a href="javascript:;" id="uploadify-$index" class="btn">上传图片</a>
+							                        </div>
+							                    </span>
+											</td>
+											<td colspan="4">
+												#if("$!data.pic"=="")
+												<img id="uploadify-${index}-pic" width="70" height="70"/>
+												#else
+												<img id="uploadify-${index}-pic" src="$goodsImagePath/$!{goods.styleId}/$data.pic" width="70" height="70"/>
+												#end
+
+											</td>
+											<td colspan="2">
+												 <p id="z$!{data.itemNumId}">
+												 #if($!data.online==1)
+												 上架中
+												 #else
+												 下架中
+												 #end
+												 </p>
+											</td>
+											<!-- 上下架sku -->
+											<td colspan="4">
+												 <p id="c$!{data.itemNumId}">
+												 #if($!data.online==0)
+												 <a class="btn btn-warning btn-mini" onclick="skuOnlineHandel($!{data.itemNumId},1)" href="javascript:void(0)">上架</a>
+												 #else
+												 <a class="btn btn-danger btn-mini" onclick="skuOnlineHandel($!{data.itemNumId},0)" href="javascript:void(0)">下架</a>
+												 #end
+												 </p>
+											</td>
+										</tr>
+										#end
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="alert alert-success">开售时间</div>
+					<div class="control-group">
+						<!-- <label class="control-label">开售时间：</label> -->
+						<div class="controls">
+							<label class="span2"><input type="radio" name="styleIsSellTime" value="0"  #if($goods.styleIsSellTime==0) checked #end/>立即开售</label>
+							<label class="span2"><input type="radio" name="styleIsSellTime" value="1" id="checkTime" #if($goods.styleIsSellTime==0) #else checked #end/>定时开售</label>
+							<input class="Wdate" type="text" value="$!{goods.sellTime}" size="25" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" name="styleSellTime"  id="styleSellTime"/>
+						</div>
+					</div>
+
+                    <div class="alert alert-success">是否隐藏(隐藏的商品只在扫码的场景出现)</div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <label class="span2">
+								<select name="isHide">
+									<option value="0" #if($!goods.isHide == 0) selected  #end>否</option>
+									<option value="1" #if($!goods.isHide == 1) selected  #end>是</option>
+								</select>
+							</label>
+                        </div>
+                    </div>
+				</div>
+			</div>
+      <!-- 商品参数 -->
+			<input type="hidden" name="tParams"/>
+      <!-- 商品规格 -->
+      <input type="hidden" name="tStandard"/>
+			<div class="form-actions">
+				<button class="btn btn-success" type="submit">下一步</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript" src="http://s.mamhao.cn/common/js/json.min.js"></script>
+<script type="text/javascript">
+var series = $("input[name='series']").val();
+var styleNumId = $("input[name='styleNumId']").val();
+
+//文件上传  库存单张图
+$(".single-up-btn").each(function(index){
+    var thas = $(this);
+    var itemNumId = thas.attr("itemid");
+    thas.children().uploadify({
+        uploader: '$!{request.getContextPath()}/gb/goods/uploadGoodsStands.do',  
+        swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',  
+        queueID: 'null', // 上传进度列表;
+        fileTypeDesc: "jpg",
+        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+        formData: {'itemNumId':itemNumId,'index':index},
+        multi: false,
+        wmode: "transparent",
+        buttonText: '选择图片',
+        width: "100%",
+        height: "100%",
+        onUploadStart: function(){
+            var id = this.button.parents(".up-btn").data("id");
+            $("#" + id + "-pic").html('');
+        },
+        onUploadSuccess: function(file,data,response) {
+            //上传完成时触发（每个文件触发一次）;
+            var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+            var imgpath = "$goodsImagePath/$!{goods.styleId}/"+data.url;
+            $("#" + id + "-pic").attr("src",imgpath);
+            $("#" + id + "-hidden").val(data.fileName);
+        }
+    }); 
+});
+
+//文件上传  商品主图,可上传多张
+$(".mult-up-btn").each(function(){
+    var thas = $(this);
+    	thas.children().uploadify({
+        uploader: '$!{request.getContextPath()}/gb/goods/upload.do',  
+        swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',  
+        queueID: 'null', // 上传进度列表;
+        fileTypeDesc: "jpg",
+        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+        multi: true,
+        formData: {'gtId':series,'gtNo':styleNumId}, 
+        queueSizeLimit : 5, 
+        wmode: "transparent",
+        buttonText: '选择图片',
+        width: "100%",
+        height: "100%",
+				overrideEvents: ['onSelectError'],
+        onUploadStart: function(file){
+					// 进行中;
+	      	if($(".thumbnails li").length == 5){
+				Toast.show("最多只能上传5张图片");
+				thas.children().uploadify('cancel');
+			}else{
+				$('.thumbnails').append('<li data-index="'+ file.index +'"></li>');
+			}
+        },
+        onUploadSuccess: function(file,data,response) {
+          //上传完成时触发（每个文件触发一次）;
+          var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+          if(data.success == 0){
+				Toast.show("主图图片已经有5张了，请删除以后再上传");
+			}else{
+				var url = "$goodsImagePath/$!{goods.styleId}/"+data.fileName;
+				var html = '<img alt="" src="' + url + '"><div class="actions"><a class="js-remove" href="javascript:;" gpid="'+ data.gpId +'" gtid="$gtId" gtno="$gtNo" pic="'+ data.gpId +'"><i class="icon-remove"></i></a></div><span class="label label-success" data-pic="'+ data.fileName +'">封面</span>';
+				//$("#" + id + "-hidden").val(data.fileName);
+				$('.thumbnails li[data-index='+ file.index +']').append(html);
+			}
+        },
+        onSelectError:function(file, errorCode, errorMsg){  
+	   		if(errorCode == -100){
+				Toast.show("上传的文件数量已经超出系统限制的文件！"); 
+				return false;
+			}else if(errorCode == -110){
+				Toast.show("文件 ["+file.name+"] 大小超出系统限制的大小！"); 
+				return false;
+			}else if(errorCode == -120){
+				Toast.show("文件 ["+file.name+"] 大小异常！");
+				return false;
+			}else{
+			 	Toast.show("文件 ["+file.name+"] 类型不正确！");  
+			 	return false;
+			}
+           
+         }
+    }); 
+});
+
+// 设置封面;
+$(".up-load-img").on("click", "li .label", function(){
+	var thas = $(this), pic = thas.data("pic"), par = thas.parent();
+	if(par.hasClass("active")) return;
+	Matrix.JSON({
+		val: {styleNumId: styleNumId, stylePic: pic},
+		url: root + '/gb/goods/setGoodsMainPic.do',
+		fun: function(msg){
+			if(msg.success){
+				Toast.show('操作成功!');
+				$(".up-load-img li").removeClass("active");
+				par.addClass("active");
+			}else{
+				Toast.show('抱歉，出错了!');
+			}
+		}
+	});
+});
+
+
+
+$(function(){
+	if($("input[name='styleIsSellTime']:checked").val()=="1"){
+		$("#styleSellTime").show();
+	}else{
+		$("#styleSellTime").hide();
+	}
+	
+	$("input[name='styleIsSellTime']").bind('change',function(){
+		if ($(this).val()=="1") {
+			$("#styleSellTime").show();
+			// $('<span class="help-block">请选择具体开售时间</span>').insertAfter("#styleSellTime");
+		}else{
+			$("#styleSellTime").hide();
+		}
+	})
+	$("#btn-addconfigs").bind("click",function(){
+		var o = $('<div class="row-fluid js-attach row-padding"> <div class="control-group"><input class="span2" type="text" placeholder="属性名" attach="key" id=""/>：&nbsp;<input type="text" placeholder="属性值" attach="val" id=""/>&nbsp;<button type="button" class="btn btn-danger" onclick="$(this).parent().parent().remove()">删除</button></div></div>');
+		$(this).parent().append(o);
+	});
+
+	// 删除图片
+	$(".thumbnails").delegate(".js-remove","click",function(e){
+		$.get("$!{request.getContextPath()}/gb/goods/deletePic.do", {
+			'id' : $(this).attr("gpid"),
+			'series':series,
+			'styleNumId':styleNumId
+		}, function(data) {
+			$(e.currentTarget.parentElement.parentElement).remove();
+			Toast.show("删除成功");
+		});
+	});
+});
+
+function skuOnlineHandel(id, type) {
+		Matrix.JSON({
+			url: '$!{request.getContextPath()}/gb/goods/skuOnlineHandel.do',// 跳转到 action
+			val: {itemId: id, type: type},
+			fun: function (data) {
+				if (data.success == 0) {
+					Toast.show("更新失败");
+				} else {
+					Toast.show({
+						template: "更新成功",
+						callback: function () {
+							//window.location.reload();
+							if(type==1){
+							// 操作上架
+							// 处理操作列
+							$("#c"+id).html("<a class=\"btn btn-danger btn-mini\" onclick=\"skuOnlineHandel("+id+",0)\" href=\"javascript:void(0)\">下架</a>");
+							
+							// 处理状态列
+							$("#z"+id).html("上架中");
+							
+							}else{
+							// 操作下架
+							// 处理操作列
+							$("#c"+id).html("<a class=\"btn btn-warning btn-mini\" onclick=\"skuOnlineHandel("+id+",1)\" href=\"javascript:void(0)\">上架</a>");
+							
+							// 处理状态列
+							$("#z"+id).html("下架中");
+							
+							}
+							
+						}
+					});
+				}
+			}
+		});
+	}
+
+// 表单校验
+function submitForm(){
+	if($("#styleUseType").val() ==0){
+		Toast.show("请选择用途分类");
+		$("#styleUseType").focus();
+		return false;
+	}
+	if($("#brandId").val()==0){
+		Toast.show("请选择商品品牌");
+		$("#brandId").focus();
+		return false;
+	}
+
+	if(!$('input[name="styleApplyAge"]:checked').length){
+		Toast.show("请选择适用年龄段");
+		return false;
+	}
+	
+	if(!$("#styleTitle").val()){
+		Toast.show("商品主标题不能为空");
+		$("#styleTitle").focus();
+		return false;
+	}
+	
+	if($("#styleTitle").val().length > 35){
+		Toast.show("商品主标题不能超过35个字");
+		$("#styleTitle").focus();
+		return false;
+	}
+	
+	if(!$("#styleSmallTitle").val()){
+		Toast.show("商品副标题不能为空");
+		$("#styleSmallTitle").focus();
+		return false;
+	}
+	
+	if($("#styleSmallTitle").val().length > 70){
+		Toast.show("商品副标题不能超过70个字");
+		$("#styleSmallTitle").focus();
+		return false;
+	}
+	
+	// 附加商品属性
+	var attach = "";
+	var attachDoms = $(".js-attach"), 
+	attaInput = attachDoms.find("input[type=text]");
+	for(var i = 0; i < attaInput.length; i++){
+		if(isForm.isTrim(attaInput.eq(i).val())){
+			attaInput.eq(i).focus();
+			Toast.show("请填写商品参数");
+			return false;
+		}
+	}
+	for (var i = 0; i < attachDoms.length; i++) {
+		attach += attachDoms.eq(i).find("input[attach='key']").val();
+		attach += "=";
+		attach += attachDoms.eq(i).find("input[attach='val']").val();
+		attach += "=0=0";
+
+		if (i < attachDoms.length-1) {
+			attach += "&";
+		};	
+	};
+	$("input[name='tParams']").val(attach);
+	// 商品规格;
+	var standard = $("#standard-list tr"), stan = [];
+	for(var i = 0; i < standard.length; i++){
+		var thas = $(standard[i]), color = thas.find("input[name=itemColor]").val(), size = thas.find("input[name=itemSize]").val(), id = thas.find("input[name=itemNumId]").val();
+		if(!isForm.isTrim(color) || !isForm.isTrim(size)){
+			stan.push({
+				itemNumId: id,
+				colorName: color,
+				sizeName: size
+			});
+		}
+	}
+	//console.log(JSON.stringify(stan));
+	$("input[name=tStandard]").val(JSON.stringify(stan));;
+}
+
+
+
+
+
+$('#fastAddBrand').on("click",function(){
+	var brandName = $('#fastBrandId').val();
+	if(brandName==""){
+		Toast.show("请填写品牌名称");
+		return false;
+	}
+	if(brandName.length > 20){
+		Toast.show("品牌名称过长！");
+		$('#fastBrandId').focus();
+		return false;
+	}
+	//console.log($typeMap.gtId3);
+	$.get("$!{request.getContextPath()}/gb/goods/fastAddBrand.do", {
+			'brandName' : $('#fastBrandId').val(),
+			'typeId':$typeMap.gtId3
+	}, function(data) {
+		data = eval("("+data+")");
+		if(data.success==0){
+			Toast.show("快速添加品牌失败");
+			return false;
+		}else{
+			Toast.show("快速添加品牌成功");
+    		var bId = data.bId;
+            var option = "<option value='"+bId+"'>"+brandName+"</option>";
+    		$('#brandId').append(option).val(bId);
+			$('#fastBrandId').val("");
+			$('#fastBrandId').focus();
+		}
+		
+	});
+	
+});
+</script>

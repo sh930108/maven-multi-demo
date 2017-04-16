@@ -1,0 +1,231 @@
+#set ($layout ="/admin/layout/modal.vm")
+
+<style>
+    .modal-iframe-content .goods-option {padding-top: 20px;}
+    .modal-iframe-content .widget-box {margin: 10px;}
+</style>
+<div class="widget-box collapsible">
+
+    #foreach($data in $cMap)
+    <div class="widget-title">
+        <a data-toggle="collapse" href="#collapse-$!{data.companyId}" class="collapsed">
+            <span class="icon"><i class="icon-arrow-right"></i></span>
+            <h5>$!{data.companyName}</h5>
+        </a>
+        <span class="label label-info">$!{data.stockCount}</span>
+    </div>
+    <div id="collapse-$!{data.companyId}" class="collapse #if($loopCounter==0) in #end">
+        <div class="widget-content">
+
+            <table class="table table-hover table-text-center">
+                <thead>
+                <tr>
+					<th width="280px">门店/仓储</th>
+                    <th width="180px">颜色</th>
+                    <th width="180px">尺寸</th>
+                    <th width="180px">SKU编码</th>
+                    <th width="180px">商品条码</th>
+                    <th width="180px">itemNumId</th>
+                    <th width="180px">标准价</th>
+                    <th width="120px">库存</th>
+                    <th width="100px">
+                        ## <select name="" class="select_small" onchange="changeOnline('$styleNumId','$data.companyId',this.value)">
+                        ## <option value="-1">全部</option>
+                        ## <option value="1">已上架</option>
+                        ## <option value="0">已下架</option>
+                        ## </select>
+                        状态
+                    </th>
+                    ##if($data.companyId != 1 && $data.companyId != 63 && $data.companyId != 0)
+                        <th width="100px">
+                            <a class="btn btn-primary btn-mini" href="javascript:Matrix.CheckedAll($('#collapse-$!{data.companyId}'));">全选</a>
+                        </th>
+                    ##end
+                </tr>
+                </thead>
+                <tbody id="$data.companyId">
+                #foreach($item in $data.itemList)
+                #set($index = $loopCounter + 1)
+                <tr>
+					<td>$!item.shopName</td>
+                    <td>$!item.colorName1</td>
+                    <td>$!item.sizeName1</td>
+                    <td>$!item.itemId</td>
+                    <td>$!{item.itemBarCode}</td>
+                    <td>
+                        $!item.itemNumId
+                    </td>
+                    <td>
+                        #if("$!{item.standardPrice}"=="")
+                        0
+                        #else
+                        $!{item.standardPrice}
+                        #end
+                    </td>
+                    <td>$item.stockCount</td>
+                    <td class="$item.itemNumId">
+                        #if($item.online ==0)
+                            <span class="label">已下架</span>
+                        #elseif($item.online ==1)
+                           <span class="label label-success">已上架</span>
+                        #end
+                    </td>
+                    ##if($data.companyId != 1 && $data.companyId != 63 && $data.companyId != 0)
+                    <td>
+                        <input class="#if($item.online ==0)isOff#else isON#end"  type="checkbox" name="checkbox$data.companyId" value="$item.itemNumId" data-json='{"styleId":"${styleNumId}","itemId":"${item.itemNumId}","companyId":"${data.companyId}","type":"$!{item.type}","sid":"$!{item.sid}"}' />
+                    </td>
+                    ##end
+                </tr>
+                #end
+                </tbody>
+            </table>
+            <div class="text-right goods-option">
+            #if($!totalWarehouseSend != 1) <!--总仓发货隐藏操作按钮-->
+            ##if($data.companyId != 1 && $data.companyId != 63 && $data.companyId != 0 && $!totalWarehouseSend != 1)
+                    <button name="" type="button" value="val" class="btn btn-primary"
+                            onclick="putOnItem('$data.companyId',this,'$styleNumId')" id="putOn$data.companyId">上架
+                    </button>
+                    <button name="" type="button" value="val" class="btn btn-danger"
+                            onclick="putDownItem('$data.companyId',this,'$styleNumId')" id="putDown$data.companyId">下架
+                    </button>
+            #end
+            </div>
+        </div>
+    </div>
+    #end
+</div>
+<script>
+    //更换item状态
+    function changeOnline(styleNumId, companyId, online) {
+        $.get("$!{request.getContextPath()}/gb/goods/queryItemStock.do", {
+            'styleNumId': styleNumId,
+            'companyId': companyId,
+            'online': online
+        }, function (data) {
+            var companyId = data.companyId;
+            var albumData = data.json;
+            if (albumData.length == 0) {
+                $('#' + companyId).html("");
+            } else {
+                var str;
+                $.each(albumData, function (i, n) {
+                    str += "<tr>";
+                    str += "<td>" + n.colorName + "</td>";
+                    str += "<td>" + n.sizeName + "</td>";
+                    str += "<td>" + n.itemNumId + "</td>";
+                    str += "<td>" + n.itemBarCode + "</td>";
+                    if (n.standardPrice == undefined) {
+                        str += "<td>0</td>";
+                    } else {
+                        str += "<td>" + n.standardPrice + "</td>";
+                    }
+                    if (n.customPrice == undefined) {
+                        str += "<td>0</td>";
+                    } else {
+                        str += "<td>" + n.customPrice + "</td>";
+                    }
+                    str += "<td>" + n.stockCount + "</td>";
+                    if (n.online == 0) {
+                        str += "<td class=\"" + n.itemNumId + "\"><span class='label'>已下架</span></td>";
+                    }else if(n.online == 1){
+                        str += "<td class=\"" + n.itemNumId + "\"><span class='label label-success'>已上架</span></td>";
+                    }
+                    str += "<td><input type=\"checkbox\" name=\"checkbox" + companyId + "\" value=\"" + n.itemNumId + "\" /></td>";
+                    if (i == 0) {
+                        str += "<td rowspan=\"" + albumData.length + "\"><button name=\"\" type=\"button\" value=\"val\" onclick=\"putOnItem('" + companyId + "',this)\" class=\"btn_small0\" id=\"putOn" + companyId + "\">上架</button><button name=\"\" type=\"button\" value=\"val\" onclick=\"putDownItem('" + companyId + "',this)\" class=\"btn_small0_red\" id=\"putDown" + companyId + "\">下架</button></td>";
+                    }
+                    str += "</tr>";
+                });
+                $('#' + companyId).html(str);
+            }
+
+
+        },"json");
+    }
+
+    //上架商品
+    function putOnItem(companyId, obj, styleNumId) {
+        var val = [],itemIds = "";
+        $("input[name='checkbox" + companyId + "']:checked").each(function () {
+            var thas = $(this), json = thas.data("json");
+            itemIds += thas.val() + ",";
+            val.push(json);
+        })
+        if (!val.length) {
+            Toast.show("请勾选你要操作的数据");
+            return false;
+        }
+
+        if($("input.isON[name='checkbox" + companyId + "']:checked")[0]){
+            Toast.show("请勿勾选已上架商品！");
+            return false;
+        }
+
+
+        //console.log(JSON.stringify(val));
+        if (confirm("您确定要上架该商品么")) {
+            Matrix.JSON({
+                type: 'POST',
+                showLoad:true,
+                url: '$!{request.getContextPath()}/gb/goods/batchOnlineItem.do',
+                val:{
+                    'dataJson': JSON.stringify(val),
+                    'online': 1
+                },
+                fun: function (data) {
+                    Toast.show("更新成功");
+                    $("input[name='checkbox" + companyId + "']:checked").each(function () {
+                        var thas = $(this);
+                        thas.parent("td").prev().html("<span class='label label-success'>已上架</span>");
+                    })
+
+                }
+            });
+        }
+
+    }
+
+    //下架商品
+    function putDownItem(companyId, obj, styleNumId) {
+
+
+        var val = [],itemIds = "";
+        $("input[name='checkbox" + companyId + "']:checked").each(function () {
+            var thas = $(this), json = thas.data("json");
+            itemIds += thas.val() + ",";
+            val.push(json);
+        })
+        if (!val.length) {
+            Toast.show("请勾选你要操作的数据");
+            return false;
+        }
+
+        if($("input.isOff[name='checkbox" + companyId + "']:checked")[0]){
+            Toast.show("请勿勾选已下架商品！");
+            return false;
+        }
+        //console.log(JSON.stringify(val));
+        if (confirm("您确定要下架该商品么")) {
+
+            Matrix.JSON({
+                type: 'POST',
+                showLoad:true,
+                url: '$!{request.getContextPath()}/gb/goods/batchOnlineItem.do',
+                val:{
+                    'dataJson': JSON.stringify(val),
+                    'online': 0
+                },
+                fun: function (data) {
+                    Toast.show("更新成功");
+                    $("input[name='checkbox" + companyId + "']:checked").each(function () {
+                        var thas = $(this);
+                        thas.parent("td").prev().html("<span class='label'>已下架</span>");
+                    })
+                }
+            });
+        }
+
+
+    }
+
+</script>

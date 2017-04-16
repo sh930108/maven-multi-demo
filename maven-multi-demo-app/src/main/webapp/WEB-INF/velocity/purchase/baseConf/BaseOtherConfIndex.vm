@@ -1,0 +1,417 @@
+﻿##每月购其他配置管理
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+
+#set($defaultPic=$!{request.getContextPath()}+"/res/images/photo-default.png")
+#if(!$!{data.birthPic})#set($birthPicShow=$defaultPic)#else#set($birthPicShow=${imgpath}+${data.birthPic})#end
+#if(!$!{data.oneMonthPic})#set($oneMonthPicShow=$defaultPic)#else#set($oneMonthPicShow=${imgpath}+${data.oneMonthPic})#end
+#if(!$!{data.dayFor100Pic})#set($dayFor100PicShow=$defaultPic)#else#set($dayFor100PicShow=${imgpath}+${data.dayFor100Pic})#end
+#if(!$!{data.oneAgePic})#set($oneAgePicShow=$defaultPic)#else#set($oneAgePicShow=${imgpath}+${data.oneAgePic})#end
+#if(!$!{data.ageFor2To14Pic})#set($ageFor2To14PicShow=$defaultPic)#else#set($ageFor2To14PicShow=${imgpath}+${data.ageFor2To14Pic})#end
+
+<style>
+    .form-horizontal .up-photo .up-pic img{max-width: inherit}
+</style>
+<script type="text/javascript">
+    Matrix.Nav({"menu": 215, "cmenu": 217});
+</script>
+<div id="content-header">
+  <h1>配置管理 | 其他配置</h1>
+</div>
+<div class="container-fluid">
+  <hr>
+  <div class="row-fluid">
+    <div class="span12">
+      <div class="widget-box widget-tabs-box">
+        <ul class="nav nav-tabs">
+          <li><a href="$!{request.getContextPath()}/purchase/baseConf/baseIndex.do?type=1">banner配置</a></li>
+          <li><a href="$!{request.getContextPath()}/purchase/baseConf/baseIndex.do?type=2">商品标签</a></li>
+          <li class="active"><a href="javascript:;">其他配置</a></li>
+        </ul>
+        <div class="widget-content nopadding">
+          <div class="form-horizontal fmContainer">
+            <div class="control-group">
+                <label class="control-label">会员购妈豆商品开关：</label>
+                <div class="controls">
+                    #if($data.goodSwitch==1)
+                    <a href="javascript:;" class="btn  btn-danger" id="js-goodSwitch">关闭</a>
+                    #else
+                    <a href="javascript:;" class="btn btn-success" id="js-goodSwitch">开启</a>
+                    #end
+                    (当前状态：#if($data.goodSwitch==1)<span class="label label-success">开启</span>#else<span class="label label-important">关闭</span>#end)
+                </div>
+            </div>          
+          	<!--<div class="control-group">
+              <label class="control-label">特惠日时间：</label>
+              <div class="controls">
+                <p>
+					<label class="notepad-inline">
+						<input type="radio" class="benefit" name="benefit" #if($!{data.monthlyBeginDay})checked#end value="0" />
+						每月 <input type="text" data-type="integer" class="span2 monthlyBeginDay" name="monthlyBeginDay" value="$!{data.monthlyBeginDay}"/>
+						号至 <input type="text" data-type="integer" class="span2 monthlyEndDay" name="monthlyEndDay" value="$!{data.monthlyEndDay}"/> 号
+					</label>
+				</p>
+
+				<p>
+				  <label class="notepad-inline">
+					  <input type="radio" class="benefit" name="benefit" #if($!{data.weeklyDay})checked#end value="1" /> 每周周
+					  <select style="width:100px;" class="weeklyDay" name="weeklyDay">
+						  <option value="1" #if($!{data.weeklyDay}==1)selected#end>一</option>
+						  <option value="2" #if($!{data.weeklyDay}==2)selected#end>二</option>
+						  <option value="3" #if($!{data.weeklyDay}==3)selected#end>三</option>
+						  <option value="4" #if($!{data.weeklyDay}==4)selected#end>四</option>
+						  <option value="5" #if($!{data.weeklyDay}==5)selected#end>五</option>
+						  <option value="6" #if($!{data.weeklyDay}==6)selected#end>六</option>
+						  <option value="0" #if($!{data.weeklyDay}==0)selected#end>日</option>
+					  </select>
+				  </label>
+				</p>
+              </div>
+            </div>-->
+            <div class="control-group">
+              <label class="control-label">宝宝节日送礼：<br /></label>
+              <div class="controls MA-baby-festival">
+              	<!-- 宝宝出生 -->
+              	<div class="item">
+                	<h4>宝宝出生</h4>
+                	<span class="up-photo">
+						<input type="hidden" id="Born-hidden" name="pic" value="" data-toast="广告图"/>
+						<div class="up-pic" id="Born-pic">
+						   <img data-name="birthPic" data-src="$!{data.birthPic}" src="$!{birthPicShow}">
+						</div>
+						<div class="up-btn" data-id="Born" data-size="628x200"><a href="javascript:;" id="Born" class="btn">选择图片</a></div>
+						<div><span class="label label-info">(628px*200px)</span></div>
+				    </span>
+                  <div class="content">
+					  <textarea placeholder="祝福语及妈豆赠送说明，建议不超过150字" maxlength="150" class="birthDesc">$!{data.birthDesc}</textarea>
+				  </div>
+                </div>
+                <!-- 宝宝满月 -->
+              	<div class="item">
+                	<h4>宝宝满月</h4>
+                	<span class="up-photo">
+						<input type="hidden" id="Moon-hidden" name="pic" value="" data-toast="广告图"/>
+						<div class="up-pic" id="Moon-pic">
+						   <img data-name="oneMonthPic" data-src="$!{data.oneMonthPic}" src="$!{oneMonthPicShow}">
+						</div>
+						<div class="up-btn" data-id="Moon" data-size="628x200"><a href="javascript:;" id="Moon" class="btn">选择图片</a></div>
+						<div><span class="label label-info">(628px*200px)</span></div>
+					</span>
+                  <div class="content">
+					  <textarea placeholder="祝福语及妈豆赠送说明，建议不超过150字" maxlength="150" class="oneMonthDesc">$!{data.oneMonthDesc}</textarea>
+				  </div>
+                </div>
+                <!-- 宝宝百天 -->
+              	<div class="item">
+                	<h4>宝宝百天</h4>
+                	<span class="up-photo">
+						<input type="hidden" id="Hundred-hidden" name="pic" value="" data-toast="广告图"/>
+						<div class="up-pic" id="Hundred-pic">
+						   <img data-name="dayFor100Pic" data-src="$!{data.dayFor100Pic}" src="$!{dayFor100PicShow}">
+						</div>
+						<div class="up-btn" data-id="Hundred" data-size="628x200"><a href="javascript:;" id="Hundred" class="btn">选择图片</a></div>
+						<div><span class="label label-info">(628px*200px)</span></div>
+					</span>
+                  <div class="content">
+					  <textarea placeholder="祝福语及妈豆赠送说明，建议不超过150字" maxlength="150" class="dayFor100Desc">$!{data.dayFor100Desc}</textarea>
+				  </div>
+                </div>
+                <!-- 宝宝一周岁 -->
+              	<div class="item">
+                	<h4>宝宝一周岁</h4>
+                	<span class="up-photo">
+						<input type="hidden" id="Year-hidden" name="pic" value="" data-toast="广告图"/>
+						<div class="up-pic" id="Year-pic">
+						   <img data-name="oneAgePic" data-src="$!{data.oneAgePic}" src="$!{oneAgePicShow}">
+						</div>
+						<div class="up-btn" data-id="Year" data-size="628x200"><a href="javascript:;" id="Year" class="btn">选择图片</a></div>
+						<div><span class="label label-info">(628px*200px)</span></div>
+					</span>
+
+                  <div class="content">
+					  <textarea placeholder="祝福语及妈豆赠送说明，建议不超过150字" maxlength="150" class="oneAgeDesc">$!{data.oneAgeDesc}</textarea>
+				  </div>
+                </div>
+                <!-- 2岁-14岁生日 -->
+              	<div class="item">
+                	<h4>2岁-14岁生日</h4>
+                	<span class="up-photo">
+						<input type="hidden" id="Birthday-hidden" name="pic" value="" data-toast="广告图"/>
+						<div class="up-pic" id="Birthday-pic">
+						   <img data-name="ageFor2To14Pic" data-src="$!{data.ageFor2To14Pic}" src="$!{ageFor2To14PicShow}">
+						</div>
+						<div class="up-btn" data-id="Birthday" data-size="628x200"><a href="javascript:;" id="Birthday" class="btn">选择图片</a></div>
+						<div><span class="label label-info">(628px*200px)</span></div>
+					</span>
+                  <div class="content">
+					  <textarea placeholder="祝福语及妈豆赠送说明，建议不超过150字" maxlength="150" class="ageFor2To14Desc">$!{data.ageFor2To14Desc}</textarea>
+				  </div>
+                </div>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label">每月购首次公告：</label>
+              <div class="controls">
+                <!-- <textarea placeholder="该编辑器需要支持：空格、换行操作" style="width:500px;" class="notice" name="notice"></textarea> -->
+                <textarea placeholder="编辑内容只支持换行" class="notice" style="width:500px; height:200px;">$!{data.notice}</textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-success js-submit">保存设置</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/kindeditor.js"></script>
+<script type="text/javascript" charset="utf-8" src="$!{request.getContextPath()}/res/tool/kineditor/lang/zh_CN.js"></script>
+<script>
+    /*富文本编辑器，放在这儿，避免由于js加载过慢导致页面空白的问题*/
+    var editor;
+    KindEditor.ready(function (K) {
+        editor = K.create('textarea[name="notice"]', {
+            uploadJson: VM.rootPath + '/oss/uploadFiles4Editor.do?type=0',
+            fileManagerJson: 'kindeditor/jsp/file_manager_json.jsp',
+            allowFileManager: true,
+            allowImageRemote: false,
+            items:[ 'undo', 'redo', '|', 'preview', 'cut', 'copy', 'paste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat'],
+            afterBlur: function () {
+                this.sync();
+            },
+            afterCreate: function () {
+                this.sync();
+            }
+        });
+    });
+</script>-->
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script>
+    var VM = {
+        "rootPath": '$!{request.getContextPath()}',
+        "goodsImagePath": '$!{goodsImagePath}',
+        "imgpath": '$!{imgpath}',
+        "defaultPic": '$!{defaultPic}',
+    };
+    ;
+    (function () {
+        var page = {
+            info: {
+                vm: VM,
+                uploadImgSize: [628, 200],
+                api:{
+                	"onOff": '/purchase/baseConf/updateOnline.do',
+                    'saveOtherConf': '/purchase/baseConf/saveOtherConf.do'
+                }
+            },
+            init: function () {
+                var c = page.info;
+                $('#js-goodSwitch').on('click',function(){
+                    page.ajax({
+                        url: 'onOff',
+                        data: {"type":4},
+                        success: function (res) {
+                            console.log(res)
+                            if (res.success) {
+                                Toast.show({
+                                    template: '更新成功',
+                                    callback: setTimeout('window.location.reload()', 500)
+                                });
+                            } else {
+                                Toast.show(res.msg);
+                            }
+                        }
+                    })  
+                });
+                $('.js-submit').on('click', page.submit);
+
+                //文件上传
+                $(".up-btn").each(function () {
+                    var c = page.info;
+                    var thas = $(this);
+                    thas.children().uploadify({
+                        uploader: c.vm.rootPath + '/oss/uploadFiles.do',
+                        swf: c.vm.rootPath + '/res/uploadify/uploadify.swf',
+                        queueID: 'null', // 上传进度列表;
+                        fileTypeDesc: "jpg",
+                        fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+                        multi: false,
+                        wmode: "transparent",
+                        buttonText: '选择图片',
+                        width: "100%",
+                        height: "100%",
+                        onUploadStart: function () {
+                        },
+                        onUploadSuccess: function (file, data, response) {
+                            //上传完成时触发（每个文件触发一次）;
+                            //console.log([file,data,response]);
+                            var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+                            if (!data.success) {
+                                Toast.show(data.msg);
+                                $("#" + id + "-pic").html('<img src="' + c.vm.defaultPic +'"/>');
+                            } else {
+                                var img = new Image();
+                                img.src = c.vm.imgpath + data.fileName;
+                                // 不校验尺寸;
+
+                                /*校验尺寸*/
+                                img.onload = function () {
+                                    var _item = $("#" + id + "-pic").find('img');
+                                    var upload_size = thas.data('size');
+                                    upload_size = upload_size ? upload_size.split('x') : c.uploadImgSize ? c.uploadImgSize : null;
+                                    if (upload_size && (img.width != upload_size[0] || img.height != upload_size[1])) {
+                                        var tips = '图片尺寸不符合要求，应该为' + upload_size[0] + 'px*' + upload_size[1] + 'px！';
+                                        Toast.show(tips);
+                                    } else {
+                                        _item.attr('src', img.src).data('src', data.fileName);
+                                    }
+                                };
+                            }
+                        },
+                        onSelectError: function (file, errorCode, errorMsg) {
+                            if (errorCode == -100) {
+                                Toast.show("上传的文件数量已经超出系统限制的文件！");
+                                return false;
+                            } else if (errorCode == -110) {
+                                Toast.show("文件 [" + file.name + "] 大小超出系统限制的大小！");
+                                return false;
+                            } else if (errorCode == -120) {
+                                Toast.show("文件 [" + file.name + "] 大小异常！");
+                                return false;
+                            } else {
+                                Toast.show("文件 [" + file.name + "] 类型不正确！");
+                                return false;
+                            }
+
+                        }
+                    });
+                });
+            },
+            /*表单校验*/
+            validate: function (container) {
+                var check_res = true;
+                var _container = container;
+                var _validate_ele = _container.find('input:text:visible,textarea:visible,select:visible').not('.unnecessary');
+                $.each(_validate_ele, function () {
+                    var _this = $(this), this_val = _this.val();
+                    var tips = _this.closest('.control-group').find('.control-label').text().replace(/[*：:]/g, '');
+                    /*特惠日类型*/
+                    if ($('.benefit:checked').val() == 1 && (_this.is('.monthlyBeginDay') || _this.is('.monthlyEndDay'))) {
+                        return true;
+                    }
+										
+                    if (!$.trim(this_val)) {
+                        _this.focus();
+                        Toast.show(tips + '不能为空！');
+                        return check_res = false;
+                    }
+
+                    if (_this.data('type') === 'integer' && !/^[1-9]\d*$/.test(this_val)) {
+                        _this.focus();
+                        Toast.show(tips + '只允许输入正整数！');
+                        return check_res = false;
+                    }
+
+                    if (_this.data('type') === 'CN' && !/^[\u4e00-\u9fa5]+$/.test(this_val)) {
+                        _this.focus();
+                        Toast.show(tips + '只允许输入中文，不允许特殊字符！');
+                        return check_res = false;
+                    }
+
+                });
+
+                /*如果表单元素校验通过，则继续校验图片数量*/
+                if (check_res) {
+                    var _uploadImg = _container.find('.up-pic').not('.unnecessary');
+                    if (!_uploadImg.find('img').data('src')) {
+                        var tips = _uploadImg.closest('.item').find('.h4').text().replace(/[*：:]/g, '');
+                        Toast.show(tips + '图片不能为空！');
+                        return check_res = false;
+                    }
+                }
+
+                return check_res;
+            },
+            submit: function () {
+                var c = page.info;
+                //校验
+                if (!page.validate($('.fmContainer'))) return false;
+								
+                var data = {
+                    "birthPic": "",//宝宝出生图片地址
+                    "birthDesc": $('.birthDesc').val(),//宝宝出生文案
+                    "oneMonthPic": "",//满月图片
+                    "oneMonthDesc": $('.oneMonthDesc').val(),//满月文案
+                    "dayFor100Pic": "",//百天图片
+                    "dayFor100Desc": $('.dayFor100Desc').val(),//百天文案
+                    "oneAgePic": "",//周岁图片
+                    "oneAgeDesc": $('.oneAgeDesc').val(),//周岁文案
+                    "ageFor2To14Pic": "",//2-14岁图片
+                    "ageFor2To14Desc": $('.ageFor2To14Desc').val(),//2-14岁文案
+                    "notice": $('.notice').val()//每月购公告
+                };
+
+                /*特惠日类型*/
+                if ($('.benefit:checked').val() === '0') {
+                    data.monthlyBeginDay = +$('.monthlyBeginDay').val();//从每月X天开始
+                    data.monthlyEndDay = +$('.monthlyEndDay').val();//从每月X天结束
+					if(data.monthlyBeginDay > data.monthlyEndDay){
+						$('.monthlyEndDay').focus();
+						return Toast.show("特惠日开始时间不能大于结束时间");
+					}
+                } else {
+                    data.weeklyDay = $('.weeklyDay').val();//每周X
+                }
+
+                /*图片*/
+                $.each($('.up-pic img'), function (i, v) {
+                    var _this = $(this);
+                    data[_this.data('name')] = _this.data('src') || '';
+                })
+
+                page.ajax({
+                    url: 'saveOtherConf',
+                    data: data,
+                    success: function (res) {
+                        console.log(res)
+                        if (res.success) {
+                            Toast.show({
+                                template: '保存成功',
+                                callback: page.refresh
+                            });
+                        } else {
+                            Toast.show(res.msg);
+                        }
+                    }
+                })
+            },
+            ajax: function (params) {
+                var c = page.info;
+                Matrix.JSON({
+                    url: c.vm.rootPath + c.api[params.url],
+                    val: params.data,
+                    type: 'POST',
+                    fun: function (res) {
+                        //回调
+                        if (params.success && typeof params.success === 'function') {
+                            params.success.call(null, res);
+                        }
+                    }
+                });
+            },
+            refresh: function () {
+                window.location.reload();
+            }
+        };
+
+        page.init();
+    })();
+
+
+</script>

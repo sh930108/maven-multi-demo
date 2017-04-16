@@ -1,0 +1,351 @@
+##众筹商品订单列表页
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript" src="../../res/js/jquery.form.js"></script>
+<div id="content-header">
+    <h1>妈妈筹 | 订单管理</h1>
+</div>
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title"><span class="icon"> <i class="icon-align-justify"></i> </span>
+                    <h5>查询条件</h5>
+                </div>
+                <div class="widget-content nopadding">
+					#parse("plan/order/order_head.vm")
+                </div>
+                <div class="widget-content">
+                    <div class="widget-box widget-tabs-box">
+                        <ul class="nav nav-tabs">
+                            <li  #if($dto.orderState == -2) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=-2">全部</a></li>
+                            <li  #if($dto.orderState == 3) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=3">待付款</a></li>
+                            <li  #if($dto.orderState == 4) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=4">待发货</a></li>
+                            <li  #if($dto.orderState == 5) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=5">已发货</a></li>
+                            <li  #if($dto.orderState == 0) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=0">已完成</a></li>
+                            <li  #if($dto.orderState == 2) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=2">已取消</a></li>
+                            <li  #if($dto.orderState == 1) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=1">已失效</a></li>
+                            <li  #if($dto.orderState == 9) class="active" #end><a
+                                    href="$!{request.getContextPath()}/plan/order/queryPlanOrderList.do?orderState=9">退款</a></li>
+                        </ul>
+                        <div class="widget-content">
+                                <table class="table table-text-center table-order">
+
+                                    <!-- 待发货tab特殊处理 start -->
+									#if($dto.orderState == 4)
+                                        <thead>
+                                        <tr>
+                                            <td class="text-left" colspan="8">
+                                                <div class="span4">
+                                                    <div class="control-group">
+                                                        众筹商品id：
+                                                        <input class="span3" type="text" id="planId"
+                                                               value="$!dto.planId"/>
+                                                    </div>
+                                                </div>
+                                                <div class="span4">
+                                                    <div class="control-group">
+                                                        众筹支持类型：
+                                                        <select id="compoentType" class="span3">
+                                                            <option value=""  #if ($dto.compoentType == "")
+                                                                    selected #end>全部
+                                                            </option>
+                                                            <option value="1" #if ($dto.compoentType == 1)
+                                                                    selected #end>定制
+                                                            </option>
+                                                            <option value="2" #if ($dto.compoentType == 2)
+                                                                    selected #end>抽奖
+                                                            </option>
+                                                            <option value="3" #if ($dto.compoentType == 3)
+                                                                    selected #end>无偿
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="span4">
+                                                    <div class="control-group">
+                                                        <button id="export" class="btn btn-success">订单导出</button>
+                                                        <a id="import" class="btn btn-success">物流信息导入</a>
+                                                    </div>
+                                                    <div align="center" style="display: none;" id="import-tips"><font
+                                                            color="red">正在导入，请稍等...</font></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="sep-row">
+                                            <td colspan="8"></td>
+                                        </tr>
+                                        </thead>
+									#end
+                                    <!-- 待发货tab特殊处理 end -->
+
+                                    <thead>
+                                    <tr>
+                                        <th class="text-left">众筹商品</th>
+                                        <th>支持类型</th>
+                                        <th>专属定制状态</th>
+                                        <th>支持价格</th>
+                                        <th>专属定制价格</th>
+                                        <th>实付价格</th>
+                                        <th>订单状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+									#foreach($info in $list)
+                                        <tbody>
+                                        <!-- 商品行之间的间距行  start-->
+                                        <tr class="sep-row">
+                                            <td colspan="8"></td>
+                                        </tr>
+                                        <!-- 商品行之间的间距行 end -->
+                                        <!-- 商品行上的标题等属性行 start -->
+                                        <tr class="order-hd">
+                                            <td class="text-left first">
+                                                <span class="dealtime" title="$!{info.createTime}"><s
+                                                        class="icon-time"></s>$!{info.createTime}</span>
+		                              <span class="number">
+										订单号：$!{info.orderNo}
+									  </span>
+                                            </td>
+                                            <td class="text-left column" colspan="2">
+                                                <span class="buyers">用户ID：$!{info.memberId}</span>
+                                            </td>
+                                            <td class="text-left column" colspan="2">
+                                                <span class="buyers">收货人：$!{info.consigneeName}</span>
+                                            </td>
+                                            <td class="text-left column" colspan="2">
+                                                <span class="phone">收货人手机：$!{info.consigneePhone}</span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span class="label label-important">优惠  $!{info.reducePrice} 元</span>
+                                            </td>
+                                        </tr>
+                                        <!-- 商品行上的标题等属性行  end-->
+                                        <!-- 商品   start-->
+                                        <tr class="order-bd">
+
+                                            <td class="text-left baobei">
+                                                <a href="javascript:;" class="pic"><img
+                                                        src="$!{imgpath}/$!{info.goodsPic}"/></a>
+
+                                                <div class="desc">
+                                                    <p><a href="javascript:;" class="baobei-name">$!{info.goodsName}</a>
+                                                    </p>
+                                                    <small>规格：$!{info.goodsSpec}</small>
+                                                </div>
+                                            </td>
+
+                                            <td class="price">
+                                                <p>$!{info.compoentTypeDes}</p>
+                                            </td>
+
+                                            <td class="source">
+												#foreach($str in $info.customCompoentDes)
+                                                    <p>
+														$!{str}
+                                                    </p>
+												#end
+                                            </td>
+
+                                            <td class="amount">
+                                                <p class="special-num"><strong>$!{info.supportPrice}</strong></p>
+
+                                            </td>
+                                            <td class="source">
+												#foreach($str in $info.customPriceDes)
+                                                    <p>
+														$!{str}
+                                                    </p>
+												#end
+                                            </td>
+                                            <td class="status">
+                                                <p class="special-num"><strong>$!{info.payPrice}</strong></p>
+
+                                                <p>(含运费：<span class="special-num">$!{info.mailPrice}</span>)</p>
+                                            </td>
+                                            <td class="status">
+												#if($info.orderState == 0)
+                                                    <span class="label label-success">已完成</span>
+												#elseif ($info.orderState == 1)
+                                                    <span class="label">已失效</span>
+												#elseif ($info.orderState == 2)
+                                                    <span class="label">已取消</span>
+												#elseif ($info.orderState == 3)
+                                                    <span class="label label-warning">待付款</span>
+												#elseif ($info.orderState == 4)
+                                                    <span class="label label-inverse">待发货</span>
+												#elseif ($info.orderState == 5)
+                                                    <span class="label label-warning">已发货</span>
+												#elseif ($info.orderState == 7)
+                                                    <span class="label">初始状态</span>
+												#elseif ($info.orderState == 8)
+                                                    <span class="label label-important">已删除</span>
+												#elseif ($info.orderState == 9)
+												<p><span class="label label-important">已全部退款退货</span></p>
+												#end
+                                            </td>
+                                            <td class="operate">
+                                                <p>
+                                                    <a href="$!{request.getContextPath()}/plan/order/orderDetail.do?orderNo=$!{info.orderNo}&orderState=$!{info.orderState}">查看详情</a>
+                                                </p>
+
+                                                <p>
+                                                    <a href="javascript:showRemark('$!{info.orderNo}','$!{info.remark}');">备注</a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        <!-- 商品   end-->
+											#if($info.remark && $info.remark !="")
+                                            <tr class="order-last">
+                                                <td class="text-left" colspan="8"><span class="label label-success">商家备注：$!{info.remark}</span>
+                                                </td>
+                                            </tr>
+											#end
+                                        </tbody>
+									#end
+                                </table>
+                            <div class="pagination text-right">
+							##分页
+                            #parse("pagination.vm")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--导入数据-->
+<div class="modal hide" id="importPlanOrder">
+	<div class="modal-header">
+		<button type="button" class="close importExit" data-dismiss="modal">×</button>
+		<h3>物流信息导入</h3>
+	</div>
+	<form action="$!{request.getContextPath()}/plan/order/importLogistics.do" name="importForm" id="importForm" method="post" enctype="multipart/form-data">
+		<div class="modal-body nopadding">
+			<div class="form-horizontal">
+				<div class="control-group">
+					<label class="control-label mustFill-label">
+						<i>*</i>请选择导入文件：
+					</label>
+
+					<div class="controls">
+						<input id="file" name="file" class="controll" type="file" accept=".xlsx">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" id="importLogistics">确定</a>
+			<a href="javascript:;" class="btn importExit" data-dismiss="modal">关闭</a>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	Matrix.Nav({"menu": 246, "cmenu": 248});
+	//筛选按钮
+	$("#Choice").bind("click",function(){
+		var orderNo = $("#form-orderNo").val();
+		var consigneeName = $("#form-consigneeName").val();
+		var consigneePhone = $("#form-consigneePhone").val();
+		var planId = $("#form-planId").val();
+		if (orderNo != "") {
+			if (orderNo.length > 20) {
+				Toast.show('订单号超长，请控制在20个字符以内！');
+				return false;
+			}
+			if(isNaN(orderNo)){
+				Toast.show('订单号只能为数字！');
+				return false;
+			}
+		}
+		if (consigneeName != "" && consigneeName.length > 20) {
+			Toast.show('收货人名称超长，请控制在20个字符以内！');
+			return false;
+		}
+		if (consigneePhone != "") {
+			if (consigneePhone.length > 20) {
+				Toast.show('收货人手机超长，请控制在20个字符以内！');
+				return false;
+			}
+			if(isNaN(consigneePhone)){
+				Toast.show('收货人手机只能为数字！');
+				return false;
+			}
+		}
+		if (planId != "") {
+			if (planId.length > 20) {
+				Toast.show('众筹商品ID超长，请控制在20个字符以内！');
+				return false;
+			}
+			if(isNaN(planId)){
+				Toast.show('众筹商品ID只能为数字！');
+				return false;
+			}
+		}
+	
+		$("#orderForm").attr("action","$!{request.getContextPath()}/plan/order/queryPlanOrderList.do");
+		document.getElementById("orderForm").submit();
+	});
+	//筛选按钮
+	$("#export").bind("click", function () {
+		var planId = $("#planId").val();
+		var compoentType = $("#compoentType").val();
+		if (planId == "") {
+			Toast.show('请填写众筹id');
+			return false;
+		}
+		$("input[name='planId']").val(planId);
+		$("select[name='compoentType']").val(compoentType);
+		$("#orderForm").attr("action", "$!{request.getContextPath()}/plan/order/exportPlanOrder.do");
+		document.getElementById("orderForm").submit();
+	});
+
+    //导入按钮
+    $("#import").bind("click", function () {
+    	$(".btn-import-submit").attr('disabled', false);
+    	$(".importExit").attr('disabled', false);
+    	$(".error-msg").hide();
+        $("#file").val("");
+    	$("#importPlanOrder").modal("show");
+    });
+
+
+    //导入文件操作
+    $("#importLogistics").bind("click", function () {
+    	$("#import-tips").show();
+    	$(".btn-import-submit").attr('disabled', true);
+    	$(".importExit").attr('disabled', true);
+    	var file = $('#file').val();
+    	if (file == '') {
+    		Toast.show('请选择上传文件');
+    		return;
+    	}
+
+        $('#importForm').ajaxSubmit({
+            success: function (data, status) {
+                data = eval(data);
+                $("#import-tips").hide();
+                Toast.show(data.msg);
+                if (data.result == 1) {
+                    //导入成功
+                    $(".error-msg").hide();
+                    $(".importExit").click();
+                    window.location.reload();
+                }
+                $(".btn-import-submit").attr('disabled', false);
+                $(".importExit").attr('disabled', false);
+            }
+        });
+});
+</script>

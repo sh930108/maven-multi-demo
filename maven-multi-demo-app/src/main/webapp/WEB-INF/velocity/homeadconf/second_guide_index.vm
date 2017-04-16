@@ -1,0 +1,21 @@
+##二级导航首页
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 231});
+</script>
+<div id="content-header">
+    <h1>$!{request.getParameter('bannerName')} > 二级导航首页 </h1>
+</div>
+<hr>
+<div class="MA-have-first">
+	#if($data.groups)
+	<ul>
+		#foreach($groups in ${data.groups})
+		<li><a href="$!{request.getContextPath()}/homeAdConf/secondGuideConf.do?bannerId=${groups.bannerId}&bannerName=${groups.bannerName}">${groups.bannerName}</a></li>
+		#end
+	</ul>
+	#else
+		没有数据
+	#end
+</div>

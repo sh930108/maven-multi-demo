@@ -1,0 +1,156 @@
+##App配置管理-图标维护
+#parse("/admin/com/common.vm")
+#set($layout="/admin/layout/matrix.vm")
+<script type="text/javascript">
+Matrix.Nav({"menu": 117, "cmenu": 147});
+</script>
+<div id="content-header">
+    <h1>APP管理 | 图标管理</h1>
+</div>
+
+<div class="container-fluid">
+    <hr>
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box widget-tabs-box">
+               
+                <div class="widget-content tab-content">
+                	<div class="app-ad-block">
+                		<div class="app-icon-ad">
+                				
+                			<div class="_icon-block">
+                				<h3>品牌图标 <span class="label label-info">130*130</span></h3>
+                				<div class="clearfix _icon-block-2">
+                				</div>
+                			</div>
+                		</div>
+                	</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<link rel="stylesheet" type="text/css" href="$!{request.getContextPath()}/res/uploadify/uploadify.css" />
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.js"></script>
+<script>
+
+	$(function () {
+		bindingUpload;
+
+		//获取首页图标
+		$.getJSON(root + "/appconf/getAppPicByKeys.do?jsoncallback=?",
+				{
+					keys: "ROCK_MBEAN,RED_PACKET,CATEGORY"
+				}, function (ret) {
+					if (ret.success && ret.count != 0) {
+						$.each(ret.data, function (i, o) {
+							var html = "<img src='$imgpath" + o.pic + "' />";
+							$("#" + o.key).html(html);
+						});
+					} else {
+						//Toast.show(ret.msg);
+					}
+				});
+
+
+		//获取品牌列表	
+		$.getJSON(root + "/brand/getBrandList.do?jsoncallback=?", {
+			bStatus: 1
+		}, function (ret) {
+			if (ret.success && ret.count > 0) {
+				var html = "";
+				$(ret.data).each(function (i, o) {
+					html += '<dl>';
+					html += '<dt>' + o.bName + '</dt>';
+					html += '<dd><div class="photo" id="' + o.bId + '">';
+					if (o.bLogo && o.bLogo != "") {
+						html += "<img src='$imgpath" + o.bLogo + "' />";
+					}
+					html += '</div></dd>';
+					html += '<dd class="tool"><button id="b_' + i + '" class="file_upload" type="button" class="btn_normal">修改</button></dd>';
+					html += '</dl>';
+				});
+
+				$("._icon-block-2").html(html);
+				bindingUpload();
+			}
+		});
+
+	});
+
+	//保存
+	function save(key, fileName, type, des) {
+	console.log(fileName);
+		if (type) {  //保存首页图标
+			$.getJSON(root + "/appconf/save.do?jsoncallback=?",
+					{
+						"key": key,
+						"name": des,
+						"pic": fileName
+					}, function (ret) {
+						Toast.show(ret.msg);
+					});
+		} else {  //保存品牌图标
+			$.getJSON(root + "/brand/updateProperty.do?jsoncallback=?",
+					{
+						"id": key,
+						"value": '"'+fileName+'"',
+						"propertyName": "b_logo"
+					}, function (ret) {
+						Toast.show(ret.msg);
+					});
+		}
+	}
+
+
+	//绑定文件上传
+	function bindingUpload() {
+		$(".file_upload").uploadify({
+			'uploader': '$!{request.getContextPath()}/oss/uploadFiles.do',
+			'swf': '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+			'cancelImg': '$!{request.getContextPath()}/res/uploadify/uploadify-cancel.png',
+			//'folder' : 'uploads',//您想将文件保存到的路径
+			'queueID': 'fileQueue',//与下面的id对应
+			'queueSizeLimit': 5,
+			//'formData'      : {'gtId':$('#gtId').val()},
+			'fileTypeDesc': '图标',
+			'fileTypeExts': '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+			'fileDataName': 'file',
+			'auto': true,
+			'multi': true,
+			'simUploadLimit': 2,
+			'buttonText': '修改',
+			'onUploadSuccess': function (file, data, response) {//上传完成时触发（每个文件触发一次）
+				var ret = eval("(" + data + ")");
+				if (ret.success) {
+					var id = file.id.split("_"),
+							photo = $("#" + id[0] + "_" + id[1]).parents(".tool").prev().find(".photo"),
+							html = "<img src='$imgpath" + ret.fileName + "' />";
+					var imgObj = photo.find("img");
+					if(imgObj.length){
+						var imgFileName = imgObj.attr("src");
+						deleteFileByName(imgFileName.substring(imgFileName.lastIndexOf("/") + 1));
+					}		
+					photo.html(html);
+					var type = photo.attr("type");
+					var key = photo.attr("id");
+					var des = photo.parent().prev().text();
+					save(key, ret.fileName, type, des);
+					//console.log();
+					// var html = "<img src='$imgpath"+ret.fileName+"' />";
+					//$(this).parent().prev().find("photo").html(html);
+					//$('#picName').html(ret.fileName);
+					//$('#pic').val(ret.fileName);
+				} else {
+					Toast.show(ret.msg);
+					return;
+				}
+			}
+		});
+		//file upload end
+	}
+
+</script>

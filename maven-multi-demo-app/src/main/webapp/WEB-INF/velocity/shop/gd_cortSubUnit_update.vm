@@ -1,0 +1,453 @@
+##修改门店
+#set($layout="/admin/layout/matrix.vm")
+#parse("/admin/com/common.vm")
+<style type="text/css">
+.form-label-inline ul li{list-style-type: none;float: left;text-align: center;margin: 0 10px;}
+.form-label-inline ul li img{display: inline-block;width: 45px;}
+</style>
+<div id="content-header">
+ <h1>门店资料修改</h1>
+</div>
+<div class="container-fluid">
+ <hr>
+ <div class="row-fluid">
+  <div class="span12">
+   <div class="widget-box">
+     <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
+       <h5>门店资料</h5>
+     </div>
+     <div class="widget-content nopadding">
+       <form method="post" action="$!{request.getContextPath()}/gbCortSubUnit/save.do" class="form-horizontal">
+         <div class="control-group">
+           <label class="control-label">门店编码：</label>
+           <div class="controls">
+             <span class="notepad-inline">$!gbCortSubUnit.get('SUB_UNIT_NUM_ID')</span>
+           </div>
+         </div>
+         <div class="control-group">
+           <label class="control-label">店长姓名：<br /><span class="label label-info">（GB推送）</span></label>
+           <div class="controls">
+            <span class="notepad-inline">$!gbCortSubUnit.get('GB_LINKMAN')</span>
+          </div>
+        </div>
+        <div class="control-group">
+         <label class="control-label"><i>*</i>店长姓名：</label>
+         <div class="controls">
+          <input type="text" name="contEmpeOne" value="$!gbCortSubUnit.get('CONT_EMPE1')" maxlength="32"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label">联系方式：<br /><span class="label label-info">（GB推送）</span></label>
+        <div class="controls">
+          <span class="notepad-inline">$!gbCortSubUnit.get('GB_LINKTEL')</span>
+        </div>
+      </div>
+      <div class="control-group">
+       <label class="control-label"><i>*</i>联系方式：</label>
+       <div class="controls">
+         <input type="text" name="telephone" value="$!gbCortSubUnit.get('TELEPHONE')" maxlength="32"/>
+       </div>
+     </div>
+     <div class="control-group">
+       <label class="control-label"><i>*</i>门店类型：</label>
+       <div class="controls">
+         <select name="ornNumId" class="select" id="shopTypeID">
+           <option value="">请选择</option>
+           #foreach($key in  ${GBCortSubUnitTypes.keySet()})
+           <option value='${GBCortSubUnitTypes.get($key).get('a_value')}'>$key</option>
+           #end
+         </select>
+       </div>
+     </div>
+     <div class="control-group">
+       <label class="control-label">门店名称：</label>
+       <div class="controls">
+         <span class="notepad-inline">$!gbCortSubUnit.get('SUB_UNIT_NAME')</span>
+       </div>
+     </div>
+     <div class="control-group">
+       <label class="control-label"><i>*</i>线上店铺名：</label>
+       <div class="controls">
+         <input type="text" name="OnlineSubUnitName" value="$!gbCortSubUnit.get('ONLINE_SUB_UNIT_NAME')" maxlength="255"/>
+       </div>
+     </div>
+     <div class="control-group js-service-tag">
+       <label class="control-label"><i>*</i>服务标签：</label>
+       <div class="controls">
+         <div class="form-label-inline">
+
+           #if("$!gbCortSubUnit.get('TAG')"=="")
+           #set($ifchecked="checked") 
+           #end
+           #foreach($!tag in $!tags)
+           <label class="span2" for="tag-$!tag.tagId"><input type="checkbox" value="$!tag.tagId" name="tag" id="tag-$!tag.tagId" $ifchecked>$!tag.tagName</label>
+           #end
+         </div>
+       </div>
+     </div>
+     <div class="control-group js-shop-service-tag">
+      <label class="control-label"><i>*</i>实体店服务标签：</label>
+      <div class="controls">
+        <div class="form-label-inline">
+          <ul>
+            #foreach($!shopServiceLabel in $!shopServiceLabels)
+            <li>
+              <img src="$!{imgpath}$!shopServiceLabel.tagPic"/>
+              <p><label class="" for="shopServiceLabel-$!shopServiceLabel.tagId"><input type="checkbox" value="$!shopServiceLabel.tagId" name="shopServiceLabel" id="shopServiceLabel-$!shopServiceLabel.tagId">$!shopServiceLabel.tagTitle</label></p>
+            </li>
+            #end
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label"><i>*</i>门店首页店招：<br /><span class="label label-info">（750*360）</span></label>
+      <div class="controls">
+        <span class="up-photo">
+          <input name="indexLogoPic" id="indexLogoPic-hidden" type="hidden" value="$!gbCortSubUnit.get('INDEX_LOGO_PIC')" />
+          <div class="up-pic" id="indexLogoPic-pic">
+           #if($!gbCortSubUnit.get('INDEX_LOGO_PIC'))
+           <img src="$imgpath$!gbCortSubUnit.get('INDEX_LOGO_PIC')">
+           #else
+           <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+           #end
+         </div>
+         <div class="up-btn" data-id="indexLogoPic"><a href="javascript:;" id="indexLogoPic" class="btn">选择图片</a></div>
+       </span>
+     </div>
+   </div>
+   <div class="control-group">
+    <label class="control-label"><i>*</i>门店外景图：<br /><span class="label label-info">（650*500）</span></label>
+    <div class="controls">
+      <span class="up-photo">
+        <input name="outPageLogoPic" id="outPageLogoPic-hidden" type="hidden" value="$!gbCortSubUnit.get('OUTPAGE_LOGO_PIC')" />
+        <div class="up-pic" id="outPageLogoPic-pic">
+         #if($!gbCortSubUnit.get('OUTPAGE_LOGO_PIC'))
+         <img src="$imgpath$!gbCortSubUnit.get('OUTPAGE_LOGO_PIC')">
+         #else
+         <img src="$!{request.getContextPath()}/res/images/photo-default.png">
+         #end
+       </div>
+       <div class="up-btn" data-id="outPageLogoPic"><a href="javascript:;" id="outPageLogoPic" class="btn">选择图片</a></div>
+     </span>
+   </div>
+ </div>
+ <div class="control-group">
+   <label class="control-label"><i>*</i>门店简介：</label>
+   <div class="controls">
+     <textarea class="span4" name="subUnitDesc" maxlength="160">$!gbCortSubUnit.get('SUB_UNIT_DESC')</textarea>
+   </div>
+ </div>
+ <div class="control-group">
+   <label class="control-label"><i>*</i>营业时间：</label>
+   <div class="controls"><!--value="$!gbCortSubUnit.get('BEGIN_OPEN_HOURS')"  value="$!gbCortSubUnit.get('END_OPEN_HOURS')"-->
+     <input class="span1" type="text" name="beginOpenHours" placeholder="请输入开始时间" value="$!gbCortSubUnit.get('BEGIN_OPEN_HOURS')" onClick="WdatePicker({dateFmt:'HH:mm'})" /> 至
+     <input class="span1" type="text" name="endOpenHours" placeholder="请输入结束时间"  value="$!gbCortSubUnit.get('END_OPEN_HOURS')" onClick="WdatePicker({dateFmt:'HH:mm'})"/>
+   </div>
+ </div>
+ <div class="control-group">
+   <label class="control-label"><i>*</i>节假日营业时间：</label>
+   <div class="controls"><!--value="$!gbCortSubUnit.get('HD_BG_OPEN_HOURS')"  value="$!gbCortSubUnit.get('HD_ED_OPEN_HOURS')"-->
+     <input class="span1" type="text" name="hdBgOpenHours" placeholder="请输入开始时间" value="$!gbCortSubUnit.get('HD_BG_OPEN_HOURS')" onClick="WdatePicker({dateFmt:'HH:mm'})" /> 至
+     <input class="span1" type="text" name="hdBgEndOpenHours" placeholder="请输入结束时间"  value="$!gbCortSubUnit.get('HD_ED_OPEN_HOURS')" onClick="WdatePicker({dateFmt:'HH:mm'})"/>
+   </div>
+ </div>
+ <div class="control-group">
+   <label class="control-label">客服热线：</label>
+   <div class="controls"><!--value="$!gbCortSubUnit.get('SC_PHONE')"-->
+     <input type="text" name="scPhone" value="$!gbCortSubUnit.get('SC_PHONE')" maxlength="50"/>
+   </div>
+ </div>
+ <div class="control-group">
+  <label class="control-label">门店地址：<br /><span class="label label-info">（GB推送）</span></label>
+  <div class="controls">
+    <p class="notepad-block">$!gbCortSubUnit.get('PRV_NAME') $!gbCortSubUnit.get('CITY_NAME') $!gbCortSubUnit.get('CITY_AREA_NAME') $!gbCortSubUnit.get('GB_ADR')</p>
+  </div>
+</div>
+<div class="control-group">
+ <label class="control-label"><i>*</i>门店地址：</label>
+ <div class="controls">
+   <p class="notepad-block">
+   ## $!gbCortSubUnit.get('PRV_NAME') $!gbCortSubUnit.get('CITY_NAME') $!gbCortSubUnit.get('CITY_AREA_NAME')&nbsp;
+   <select id="prv" class="span2" onchange="showCity(this.value)" name="gbPrv.prvNumId" ><option value="">全部</option></select>
+   <select id="city" class="span2" onchange="showArea(this.value)" name="gbCity.cityNumId" ><option value="">全部</option></select>
+   <select id="area" class="span2" name="gbCityArea.cityAreaNumId"><option value="">全部</option></select>
+    <input type="text" name="adr" value="$!gbCortSubUnit.get('ADR')" maxlength="255" style="width: 400px;"/>
+    <a href="javascript:validataXY();">校验地址</a>
+  </p>
+  <div class="form_group_right" style="height:300px;top:20px;"><div id="locationMap" style="width: 430px; height: 290px; left:0px;border: 1px solid gray;overflow:hidden;"></div></div>
+</div>
+</div>
+<div class="control-group js-cityAreas">
+ <label class="control-label"><i>*</i>配送区域：</label>
+ <div class="controls">
+   <div class="form-label-inline clearfix" id="cityAreas"></div>
+ </div>
+</div>
+<div class="control-group js-hotBrands">
+ <label class="control-label"><i>*</i>热卖品牌：</label>
+ <div class="controls">
+   <div class="form-label-inline clearfix">
+    #foreach($!brand in $!hotbrands)
+    #if("$!brand.bLogo"=="")
+    #set($blogo='null')
+    #else
+    #set($blogo=$!brand.bLogo)
+    #end
+    <label class="span2" for="hotBrands-$!brand.bId"><input type="checkbox" id="hotBrands-$!brand.bId" name="hotBrands" value="$!brand.bId,$!brand.bName,$blogo">$!brand.bName</label>
+    #end
+  </div>
+</div>
+</div>
+##<input type="hidden" name="gbPrv.prvNumId" value="$!gbCortSubUnit.get('PRV_NUM_ID')"/>
+##<input type="hidden" name="gbCity.cityNumId" value="$!gbCortSubUnit.get('CITY_NUM_ID')"/>
+##<input type="hidden" name="gbCityArea.cityAreaNumId" value="$!gbCortSubUnit.get('CITY_AREA_NUM_ID')"/>
+<input type="hidden" name="subUnitNumId" value="$!gbCortSubUnit.get('SUB_UNIT_NUM_ID')"/>
+<input type="hidden" name="subUnitName" value="$!gbCortSubUnit.get('SUB_UNIT_NAME')"/>
+<input type="hidden" name="mapLocationX" value="$!gbCortSubUnit.get('MAPLOCATION_X')" id="lng"/>
+<input type="hidden" name="mapLocationY" value="$!gbCortSubUnit.get('MAPLOCATION_Y')" id="lat"/>
+<input type="hidden" name="online" value="$!gbCortSubUnit.get('ONLINE')"/>
+#set($beforeStatus = "")
+#if($!gbCortSubUnit.get('STATUS') == 0)
+#set($beforeStatus = "TO_AUDIT")
+#elseif($!gbCortSubUnit.get('STATUS') == 1)
+#set($beforeStatus = "NO_CHECK_AUDIT")
+#elseif($!gbCortSubUnit.get('STATUS') == 2)
+#set($beforeStatus = "NO_PASS_AUDIT")
+#elseif($!gbCortSubUnit.get('STATUS') == 3)
+#set($beforeStatus = "PASS_AUDIT")
+#elseif($!gbCortSubUnit.get('STATUS') == 4)
+#set($beforeStatus = "EditEd")
+#elseif($!gbCortSubUnit.get('STATUS') == 5)
+#set($beforeStatus = "DeleteEd")
+#elseif($!gbCortSubUnit.get('STATUS') == 9)
+#set($beforeStatus = "WAITE_ONLINE")
+#elseif($!gbCortSubUnit.get('STATUS') == 10)
+#set($beforeStatus = "ONLINE")
+#end
+<input type="hidden" name="beforeStatus" value="$!beforeStatus"/>
+<input type="hidden" name="page" value="$!page"/>
+
+#if($!gbCortSubUnit.get('STATUS') == 0)
+<input type="hidden" name="firstCommit" value="1"/>
+#else
+<input type="hidden" name="firstCommit" value="0"/>
+#end
+
+#if($!gbCortSubUnit.get('STATUS') != 1)
+<div class="form-actions">
+ <button type="submit" class="btn btn-success js-submit">提交审核</button>
+</div>
+#end
+
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/prvCityArea.js"></script>
+
+#*
+<script type="text/javascript" src="http://map.qq.com/api/js?v=2.exp" charset="utf-8"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/sosoMap.js"></script>
+*#
+<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=12e03dbea057b706868ddae95f0038a3"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/js/gaodeMap.js"></script>
+
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="$!{request.getContextPath()}/res/uploadify/JSON.js"></script>
+<script type="text/javascript">
+	// 定位左侧主导航;
+	Matrix.Nav({"menu": 6, "cmenu": 7});
+
+	//定位地址 sso地图;
+	//showMapByXY("$!gbCortSubUnit.get('MAPLOCATION_Y')","$!gbCortSubUnit.get('MAPLOCATION_X')");
+    codeAddress("$!gbCortSubUnit.get('PRV_NAME')$!gbCortSubUnit.get('CITY_NAME')$!gbCortSubUnit.get('CITY_AREA_NAME')$!gbCortSubUnit.get('ADR')");
+	
+	// 选中门店类型;
+	$("#shopTypeID").val("$!gbCortSubUnit.get('ORN_NUM_ID')");
+
+
+    initCityDispatarea("$!gbCortSubUnit.get('CITY_NUM_ID')");
+
+    function initCityDispatarea(cityNumId) {
+        // 配送区域;
+        $.ajax({
+            type: "POST",
+            url: root + "/gbCortSubUnit/getCitydispatarea.do",
+            data: {cityId: cityNumId},
+            dataType: "json",
+            success: function(msg){
+                if(msg == ""){
+                    Toast.show("门店的市区信息有误!!!");
+                }else{
+                    var albumData = msg,arr = [],shopArea = "$!gbCortSubUnit.get('DISPAT_AREA')".split(',');
+                    $.each(albumData,function(i, n) {
+                        arr.push('<label class="span2" for="areaIds-'+ n.cityAreaNumId +'"><input type="checkbox" value="'+n.cityAreaNumId +'" name="areaIds" id="areaIds-'+ n.cityAreaNumId +'">'+ n.cityAreaName +'</label>');
+                    });
+                    $("#cityAreas").html(arr.join(''));
+                    for(var i = 0; i < shopArea.length; i++){
+                        $("#areaIds-" + shopArea[i]).attr("checked", true);
+                    }
+
+                }
+            }
+        });
+    }
+  //选择区域,动态切换配送区域
+  $("#city").on("change", function () {
+      var cityNumId = $(this).val();
+      if(cityNumId.length){
+          initCityDispatarea(cityNumId);
+      }
+  })
+
+	// 选中标签;
+  var tag = "$!gbCortSubUnit.get('TAG')".split(','), tagEL = $("input[name='tag']");
+  for(var i = 0; i < tag.length; i++){
+   $("#tag-" + tag[i]).attr("checked", true);
+ }
+    //选中热卖品牌
+    var hot = "$!gbCortSubUnit.get('HOT_BRAND')".split(','), hotEL = $("input[name='hotBrands']");
+    for(var i = 0; i < hot.length; i++){
+      $("#hotBrands-" + hot[i]).attr("checked", true);
+    }
+
+    // 选中门店实体店服务标签;
+    var shoplb = "$!gbCortSubUnit.get('SHOP_SERVICE_LABEL')".split(','), shoplbEL = $("input[name='shopServiceLabel']");
+    for(var i = 0; i < shoplb.length; i++){
+      $("#shopServiceLabel-" + shoplb[i]).attr("checked", true);
+    }
+
+
+	//文件上传
+	$(".up-btn").each(function(){
+		var thas = $(this);
+		thas.children().uploadify({
+      　　		uploader: '$!{request.getContextPath()}/oss/uploadFiles.do',
+      swf: '$!{request.getContextPath()}/res/uploadify/uploadify.swf',
+			queueID: 'null', // 上传进度列表;
+			fileTypeDesc: "jpg",
+			fileTypeExts: '*.jpg;*.png', //控制可上传文件的扩展名，启用本项时需同时声明fileTypeDesc
+			multi: false,
+			wmode: "transparent",
+			buttonText: '选择图片',
+			width: "100%",
+			height: "100%",
+			onUploadStart: function(){
+				var id = this.button.parents(".up-btn").data("id");
+				$("#" + id + "-pic").html('');
+			},
+			onUploadSuccess: function(file, data, response){
+				//上传完成时触发（每个文件触发一次）;
+				var data = JSON.parse(data), id = this.button.parents(".up-btn").data("id");
+				if(!data.success){
+          Toast.show(data.msg);
+          $("#" + id + "-pic").html('<img src="$!{request.getContextPath()}/res/images/photo-default.png"/>');
+        }else{
+//         deleteFileByName($("#" + id + "-hidden").val());
+         $("#" + id + "-pic").html('<img src="$imgpath'+ data.fileName +'"/>');
+         $("#" + id + "-hidden").val(data.fileName);
+       }	 
+     }
+   });
+	});
+
+
+  $(".js-submit").on("click", function () {
+    /*表单验证*/
+        var shopType = $("#shopTypeID"),    //门店类型
+            OnlineSubUnitName = $("[name='OnlineSubUnitName']"), //门店名称
+            serviceTag = $(".js-service-tag"),  //服务标签
+            indexLogoPic = $("#indexLogoPic-hidden"),   //门店首页店招
+            outPageLogoPic = $("#outPageLogoPic-hidden"), //门店外景图
+            subUnitDesc = $("[name='subUnitDesc']"),  //门店简介
+            beginOpenHours = $("[name='beginOpenHours']"),
+            endOpenHours = $("[name='endOpenHours']"),  //营业时间
+            hdBgOpenHours = $("[name='hdBgOpenHours']"),
+            hdBgEndOpenHours = $("[name='hdBgEndOpenHours']"),  //节假日营业时间
+            cityAreas = $(".js-cityAreas"), //配送区域
+            hotBrands = $(".js-hotBrands"),//热卖品牌
+            shopServiceLabel = $(".js-shop-service-tag"); //实体店服务店标签
+            if(shopType.val() === ""){
+              Toast.show("请选择门店类型");
+              return false;
+            }
+
+            if(isForm.isTrim(OnlineSubUnitName.val()) || isForm.isCheck(OnlineSubUnitName.val())){
+              Toast.show("请输入正确的店铺名称");
+              OnlineSubUnitName.focus();
+              return false;
+            }
+
+            if(!serviceTag.find(":checkbox:checked")[0]){
+              Toast.show("请选择服务标签");
+              return false;
+            }
+
+//            if(!shopServiceLabel.find(":checkbox:checked")[0]){
+//              Toast.show("请选择实体店服务标签");
+//              return false;
+//            }
+
+            if(!indexLogoPic.val()){
+              Toast.show("门店首页店招图片不能为空");
+              return false;
+            }
+            if(!outPageLogoPic.val()){
+              Toast.show("门店外景图图片不能为空");
+              return false;
+            }
+            if(!subUnitDesc.val()){
+              Toast.show("门店简介不能为空");
+              subUnitDesc.focus();
+              return false;
+            }
+
+            if(!beginOpenHours.val() || !endOpenHours.val()){
+              Toast.show("营业时间不能为空");
+              if(!beginOpenHours.val()){
+                beginOpenHours.focus();
+              }else{
+                endOpenHours.focus();
+              }
+              return false;
+            }
+
+            if(!hdBgOpenHours.val() || !hdBgEndOpenHours.val()){
+              Toast.show("节假日营业时间不能为空");
+              if(!hdBgOpenHours.val()){
+                hdBgOpenHours.focus();
+              }else{
+                hdBgEndOpenHours.focus();
+              }
+              return false;
+            }
+
+            if(!cityAreas.find(":checkbox:checked")[0]){
+              Toast.show("请选择配送区域");
+              return false;
+            }
+
+            if(!hotBrands.find(":checkbox:checked")[0]){
+              Toast.show("请选择热卖品牌");
+              return false;
+            }
+
+
+            validataXY();
+          });
+
+
+    getPrv('$!gbCortSubUnit.get("PRV_NUM_ID")'); //省
+    showCity('$!gbCortSubUnit.get("PRV_NUM_ID")', '$!gbCortSubUnit.get("CITY_NUM_ID")');  //市
+    showArea('$!gbCortSubUnit.get("CITY_NUM_ID")','$!gbCortSubUnit.get('CITY_AREA_NUM_ID')');	//区
+
+
+  function  validataXY(){
+    codeAddress("$!gbCortSubUnit.get('PRV_NAME')$!gbCortSubUnit.get('CITY_NAME')$!gbCortSubUnit.get('CITY_AREA_NAME')"+  $("input[name='adr']").val());
+  }
+
+
+</script>
