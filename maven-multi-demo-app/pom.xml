@@ -173,7 +173,7 @@
 
 
     <build>
-        <finalName>maven-multi-demo-app</finalName>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
